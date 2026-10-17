@@ -551,9 +551,9 @@ let db=(function(){
   d.users=d.users.filter(u=>u&&typeof u==='object');
   return d;
 })();
-if(!db.users.some(u=>u.admin))db.users.push({role:'TEACHER',name:'Ayan',pw:'Ayan@1234',mobile:'',admin:true});
+if(!db.users.some(u=>u.admin))db.users.push({role:'TEACHER',name:'Ayan',pw:'Ayan@2101',mobile:'',admin:true});
 /* >>> Paste your Google Apps Script Web App URL between the quotes (see setup steps) <<< */
-const API='https://script.google.com/macros/s/AKfycbwG5auNVM4bcCUcraPiT5Qr9B-dvgdxMMZbAluTPp6L0cwfVnY9RfrRnIp4EPkaj1eeag/exec';
+const API='https://script.google.com/macros/s/AKfycbyqrAT8LhsjmJ7Eic3EgV31bEEhpMXH-9SQlgFCEicgwb_x-2zudsUadKjq4uevMEBlIA/exec';
 const REMOTE=/^https:\/\/script\.google\.com\//.test(API);
 const SS={get(){try{return JSON.parse(sessionStorage.getItem('ks_s')||'null')}catch(e){return null}},set(v){try{sessionStorage.setItem('ks_s',JSON.stringify(v))}catch(e){}},del(){try{sessionStorage.removeItem('ks_s')}catch(e){}}};
 async function api(action,o,ms){
@@ -1928,5 +1928,116 @@ function editItem(i){if(!isAdmin())return;const k=cur.join('/'),it=(db.items[k]|
  new MutationObserver(m=>m.forEach(x=>{x.type==='characterData'?fx(x.target):x.addedNodes.forEach(fx)})).observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
 </script>
+<!-- ===== HELP / CHAT: பயனாளர் கேள்வி → Admin பதில் ===== -->
+<style>
+#hc-fab{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:900;width:52px;height:52px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;opacity:.38;box-shadow:0 4px 14px #0003;cursor:pointer;transition:opacity .25s,transform .25s}
+#hc-fab:hover,#hc-fab:focus-visible,#hc-fab.open{opacity:.95;transform:scale(1.06)}
+#hc-fab .hc-b{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#e5002b;color:#fff;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 5px}
+#hc-fab .hc-b.on{display:flex}
+#hc-pan{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 62px);z-index:901;width:min(380px,calc(100vw - 28px));height:min(520px,calc(100dvh - 120px));background:#fff;border-radius:18px;box-shadow:0 14px 40px #1f2f5640;display:none;flex-direction:column;overflow:hidden;border:1px solid #f0d9bd}
+#hc-pan.on{display:flex}
+#hc-pan header{all:unset;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--grad);color:#fff;padding:12px 14px;font-weight:700;font-size:16px}
+#hc-pan header button{background:rgba(255,255,255,.25);color:#fff;border:0;border-radius:50%;width:30px;height:30px;font-size:16px}
+#hc-body{flex:1;overflow:auto;padding:12px;background:#fffaf2;display:flex;flex-direction:column;gap:10px}
+.hc-m{max-width:88%;padding:8px 12px;border-radius:14px;line-height:1.5;font-size:14.5px;word-break:break-word;white-space:pre-wrap}
+.hc-q{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.hc-a{align-self:flex-start;background:#fff;border:1px solid #f0d9bd;border-bottom-left-radius:4px}
+.hc-a b{display:block;font-size:11px;color:#ff6b35;margin-bottom:2px}
+.hc-t{display:block;font-size:10.5px;opacity:.65;margin-top:3px}
+.hc-w{align-self:flex-start;font-size:12px;opacity:.7;font-style:italic}
+.hc-hint{text-align:center;font-size:13px;opacity:.75;padding:20px 8px}
+#hc-form{display:flex;gap:6px;padding:8px;border-top:1px solid #f0d9bd;background:#fff}
+#hc-form textarea{flex:1;width:auto;min-height:44px;max-height:100px;resize:none;padding:9px 12px;font-size:15px;border:2px solid #e3e8f2;border-radius:14px}
+#hc-form button{flex:0 0 auto;border:0;border-radius:14px;background:var(--grad);color:#fff;font-weight:700;padding:0 14px}
+#hc-form button[disabled]{opacity:.6}
+.hc-th{background:#fff;border:1px solid #f0d9bd;border-radius:12px;padding:10px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.hc-th.un{border-left:5px solid #e5002b}
+.hc-th small{display:block;opacity:.65;margin-top:2px}
+.hc-bk{align-self:flex-start;border:0;background:#fff3e0;border-radius:10px;padding:5px 10px;font-weight:700;color:var(--navy)}
+.hc-adm{display:flex;gap:6px;margin-top:6px}.hc-adm button{border:0;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;background:#fff3e0;color:var(--navy)}.hc-adm .d{background:#fde0e0;color:#b3261e}
+@media print{#hc-fab,#hc-pan{display:none!important}}
+@media(prefers-reduced-motion:reduce){#hc-fab{transition:none}}
+</style>
+<button type="button" id="hc-fab" aria-label="உதவி / Chat" title="உதவி / Chat">💬<span class="hc-b" id="hc-bd"></span></button>
+<div id="hc-pan" role="dialog" aria-label="உதவி Chat">
+ <header><span id="hc-ti">💬 உதவி — கேள்வி கேளுங்கள்</span><button type="button" id="hc-x" aria-label="Close">✕</button></header>
+ <div id="hc-body"></div>
+ <form id="hc-form" autocomplete="off"><textarea id="hc-in" rows="1" maxlength="600" placeholder="உங்கள் சந்தேகத்தை எழுதுங்கள்…"></textarea><button id="hc-go">அனுப்பு</button></form>
+</div>
+<script>
+(function(){
+ var pan=document.getElementById('hc-pan'),fab=document.getElementById('hc-fab'),bd=document.getElementById('hc-bd'),
+     body=document.getElementById('hc-body'),form=document.getElementById('hc-form'),inp=document.getElementById('hc-in'),
+     go=document.getElementById('hc-go'),ti=document.getElementById('hc-ti');
+ var cid=store.get('ks_chat_id');if(!cid){cid='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);store.set('ks_chat_id',cid)}
+ var msgs=[],openT=null,timer=null,sending=false;
+ function creds(){return {cid:cid,name:me?me.name:'',role:me?me.role:'VISITOR',pw:me?me.pw:''}}
+ function adm(){return !!(typeof isAdmin==='function'&&isAdmin())}
+ function fmt(ts){try{return new Date(ts).toLocaleString('ta-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+ function who(m){return m.name||'Visitor'}
+ function seenGet(){return +(store.get('ks_chat_seen')||0)}
+ function badge(){var n=0;
+  if(adm())n=msgs.filter(function(m){return !m.a}).length;
+  else{var s=seenGet();n=msgs.filter(function(m){return m.a&&m.at>s}).length}
+  bd.textContent=n;bd.classList.toggle('on',n>0)}
+ async function load(){
+  if(!REMOTE)return;
+  try{var r=await api(adm()?'chatall':'chatmine',adm()?Object.assign(creds(),{name:me.name,role:me.role,pw:me.pw}):creds(),20000);
+   if(r&&r.ok&&Array.isArray(r.msgs)){msgs=r.msgs;badge();if(pan.classList.contains('on'))draw()}
+   else if(r&&!r.ok&&/unknown|invalid action|not supported|no action/i.test(r.err||''))body.innerHTML='<div class="hc-hint">⚠ Server script-இல் Chat வசதி இன்னும் சேர்க்கப்படவில்லை (Code.gs புதுப்பித்து Re-deploy செய்யவும்).</div>';
+  }catch(e){}}
+ function bubbles(list){
+  return list.map(function(m){
+   var h='<div class="hc-m hc-q">'+(adm()?'<b style="display:block;font-size:11px;opacity:.8">'+esc(who(m))+'</b>':'')+esc(m.q)+'<span class="hc-t">'+fmt(m.qt)+'</span></div>';
+   if(m.a)h+='<div class="hc-m hc-a"><b>Admin பதில்</b>'+esc(m.a)+'<span class="hc-t">'+fmt(m.at)+'</span></div>';
+   else if(!adm())h+='<div class="hc-w">Admin பதிலுக்காகக் காத்திருக்கிறது…</div>';
+   if(adm())h+='<div class="hc-adm"><button type="button" data-r="'+esc(m.id)+'">'+(m.a?'✏️ பதிலைத் திருத்து':'↩ பதில் அளி')+'</button><button type="button" class="d" data-d="'+esc(m.id)+'">🗑 நீக்கு</button></div>';
+   return h}).join('')}
+ function draw(){
+  var stick=body.scrollHeight-body.scrollTop-body.clientHeight<60;
+  if(adm()){
+   ti.textContent='💬 பயனாளர் கேள்விகள் (Admin)';
+   form.style.display='none';
+   if(!msgs.length){body.innerHTML='<div class="hc-hint">இன்னும் கேள்விகள் எதுவும் வரவில்லை.</div>';return}
+   var sorted=msgs.slice().sort(function(a,b){return (a.a?1:0)-(b.a?1:0)||b.qt-a.qt});
+   body.innerHTML=sorted.map(function(m){
+    return '<div>'+bubbles([m])+'</div>'}).join('');
+   return}
+  ti.textContent='💬 உதவி — கேள்வி கேளுங்கள்';form.style.display='';
+  body.innerHTML=msgs.length?bubbles(msgs):'<div class="hc-hint">உங்கள் சந்தேகத்தைக் கீழே எழுதி அனுப்புங்கள். Admin பதில் இங்கேயே தெரியும்.</div>';
+  if(stick)body.scrollTop=body.scrollHeight}
+ function open(){pan.classList.add('on');fab.classList.add('open');draw();load().then(function(){
+   if(!adm()){var mx=msgs.reduce(function(a,m){return Math.max(a,m.at||0)},0);if(mx){store.set('ks_chat_seen',String(mx));badge()}}
+   body.scrollTop=adm()?0:body.scrollHeight});
+  clearInterval(timer);timer=setInterval(function(){if(!document.hidden)load()},15000);if(!adm())setTimeout(function(){inp.focus()},50)}
+ function close(){pan.classList.remove('on');fab.classList.remove('open');clearInterval(timer);timer=null}
+ fab.onclick=function(){pan.classList.contains('on')?close():open()};
+ document.getElementById('hc-x').onclick=close;
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&pan.classList.contains('on'))close()});
+ form.onsubmit=async function(e){e.preventDefault();if(sending)return;var t=inp.value.trim();if(!t)return;
+  if(!REMOTE){alert('Chat வசதிக்கு server இணைப்பு தேவை.');return}
+  sending=true;go.disabled=true;
+  try{var r=await api('chatask',Object.assign(creds(),{text:t}),20000);
+   if(r&&r.ok){inp.value='';await load();body.scrollTop=body.scrollHeight}
+   else alert((r&&r.err)||'அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்.')}
+  catch(x){alert('இணைய இணைப்பைச் சரிபார்க்கவும்.')}
+  finally{sending=false;go.disabled=false}};
+ inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
+ body.addEventListener('click',async function(e){if(!adm())return;
+  var r=e.target.closest('[data-r]'),d=e.target.closest('[data-d]');
+  if(r){var m=msgs.find(function(x){return x.id===r.dataset.r});if(!m)return;
+   var a=prompt('பதில் ('+who(m)+'):\n'+m.q,m.a||'');if(a===null||!a.trim())return;
+   var x=await api('chatreply',Object.assign(creds(),{id:m.id,a:a.trim()}),20000);
+   if(!x.ok)alert(x.err||'பதிலைச் சேமிக்க முடியவில்லை');await load()}
+  if(d){if(!confirm('இந்தக் கேள்வியை நீக்கவா?'))return;
+   var y=await api('chatdel',Object.assign(creds(),{id:d.dataset.d}),20000);
+   if(!y.ok)alert(y.err||'நீக்க முடியவில்லை');await load()}});
+ /* பக்கம் மாறும்போது (login/logout) குறியீடு புதுப்பிக்க */
+ var lastU='';setInterval(function(){var u=me?me.name+me.role:'';if(u!==lastU){lastU=u;msgs=[];badge();if(pan.classList.contains('on'))draw();load()}},1500);
+ setInterval(function(){if(!pan.classList.contains('on')&&!document.hidden)load()},60000);
+ load();
+})();
+</script>
+
 </body>
 </html>
