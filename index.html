@@ -2068,116 +2068,211 @@ function editItem(i){if(!isAdmin())return;const k=cur.join('/'),it=(db.items[k]|
 #pr canvas{display:none;width:100%;height:auto;border:1px solid #888;margin:6px 0}
 </style>
 <script>
-/* ---- AUDIO BOOK: PDF-ஐ பக்கம் வாரியாக, பத்தி வாரியாகப் படித்துக் காட்டுதல் (pdf.js + Browser voice) ---- */
+/* ---- AUDIO BOOK: PDF-ஐ பக்கம் வாரியாக, பத்தி வாரியாகப் படித்துக் காட்டுதல் (pdf.js + OCR + Browser voice) ----
+   தமிழ் எழுத்துப் பிழை திருத்தம்:
+   1) PDF-இல் உள்ள எழுத்துகள் "பார்வை வரிசை"யில் (ெ, ே, ை முன்னால்) இருந்தால் தானாகச் சரியான Unicode வரிசைக்கு மாற்றப்படும்.
+   2) பழைய Font (Bamini, TSCII, Vanavil...) / படமாக உள்ள (scan) PDF என்றால் தானாக OCR (Tesseract - தமிழ்) மூலம் படிக்கப்படும். */
 const abPdf=it=>!!it&&cur[0]==='video'&&/audio/i.test(cur[5]||'')&&(/pdf/i.test(it.ty||'')||/\.pdf$/i.test(it.n||'')||/\.pdf(?:[?#]|$)/i.test(it.u||''));
 const PR=(()=>{
- const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
- let pdf=null,pg=1,paras=[],pi=0,playing=false,run=0,cache={},wd=null,hinted=false;
- const g=id=>document.getElementById(id);
- const isTa=t=>((t.match(/[\u0B80-\u0BFF]/g)||[]).length>t.length*.2);
- const lang=t=>isTa(t)?'ta-IN':'en-IN';
- const voice=l=>{const v=speechSynthesis.getVoices()||[],p=l.slice(0,2);return v.find(x=>x.lang.replace('_','-').toLowerCase()===l.toLowerCase())||v.find(x=>x.lang.toLowerCase().startsWith(p))};
- function chunks(t){/* Browser voices stop on very long text, so each paragraph is read in short pieces */
-  const s=t.match(/[^.!?।]+[.!?।]*\s*/g)||[t],out=[];let c='';
-  const push=x=>{x=x.trim();if(x)out.push(x)};
-  for(const p of s){
-   if(p.length>220){push(c);c='';let w=p.split(/\s+/),a='';for(const x of w){if((a+' '+x).length>180){push(a);a=x}else a=a?a+' '+x:x}push(a);continue}
-   if((c+p).length>180){push(c);c=p}else c+=p}
-  push(c);return out}
- function toParas(lines){/* lines: [{y,t}] top→bottom. A new paragraph starts at a bigger vertical gap (or after a finished sentence once long enough) */
-  const gaps=[];for(let i=1;i<lines.length;i++)gaps.push(Math.abs(lines[i-1].y-lines[i].y));
-  const sorted=gaps.slice().sort((a,b)=>a-b),typ=sorted.length?sorted[Math.floor(sorted.length/2)]:0;
-  const out=[];let cur='';
-  lines.forEach((l,i)=>{
-   if(i>0){const gap=gaps[i-1],ended=/[.!?।:"”’)]$/.test(cur.trim());
-    if((typ&&gap>typ*1.35)||(ended&&cur.length>320)){out.push(cur);cur=''}}
-   cur+=(cur?' ':'')+l.t});
-  if(cur)out.push(cur);
-  return out.map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>1)}
- async function pageParas(n){
-  if(cache[n])return cache[n];
-  const p=await pdf.getPage(n),tc=await p.getTextContent(),lines=[];let cl=null;
-  for(const s of tc.items){
-   if(!s.str)continue;const y=s.transform[5],h=Math.abs(s.transform[3])||s.height||10;
-   if(cl&&Math.abs(y-cl.y)<h*.5)cl.t+=s.str;else{cl={y,t:s.str};lines.push(cl)}}
-  return cache[n]=toParas(lines.filter(l=>l.t.trim()))}
- async function pdfBytes(it){
-  const ok=ab=>{const h=new Uint8Array(ab.slice(0,5));return h[0]===37&&h[1]===80&&h[2]===68&&h[3]===70?ab:null};/* "%PDF" */
-  if(it.f){const b=await fget(it.f);return b?ok(await b.arrayBuffer()):null}
-  const did=it.d||driveId(it.u);
-  if(did){
-   try{const r=await api('getfile',{id:did,name:me?me.name:'',role:me?me.role:'VISITOR',pw:me?me.pw:''},60000);
-    if(r&&r.ok&&r.b64){const bin=atob(r.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);const x=ok(u.buffer);if(x)return x}}catch(e){}
-   try{const r=await fetch('https://drive.google.com/uc?export=download&id='+did);if(r.ok){const x=ok(await r.arrayBuffer());if(x)return x}}catch(e){}
+  const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',CMAPS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/';
+  const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+  let pdf=null,pg=1,paras=[],pi=0,playing=false,run=0,cache={},wd=null,hinted=false,ocrDoc=false,visDoc=false,tw=null,twP=null,inflight={},loadTk=0;
+  const g=id=>document.getElementById(id);
+  const mode=()=>(g('prM')&&g('prM').value)||'auto';
+  const setH=t=>{const h=g('prH')||g('prL');if(h)h.textContent=t};
+  const isTa=t=>((t.match(/[\u0B80-\u0BFF]/g)||[]).length>t.length*.2);
+  const lang=t=>isTa(t)?'ta-IN':'en-IN';
+  const voice=l=>{const v=speechSynthesis.getVoices()||[],p=l.slice(0,2);return v.find(x=>x.lang.replace('_','-').toLowerCase()===l.toLowerCase())||v.find(x=>x.lang.toLowerCase().startsWith(p))};
+  /* ---------- தமிழ் எழுத்துத் திருத்தம் ---------- */
+  const C='[\\u0B95-\\u0BB9]',PRE='[\\u0BC6-\\u0BC8]';
+  const VIS=new RegExp('(?:^|[^\\u0B95-\\u0BB9\\u0BBE-\\u0BC8\\u0BCA-\\u0BCC])'+PRE+C);   /* சொல்லின் தொடக்கத்தில்/புள்ளிக்குப் பின் ெ ே ை => பார்வை வரிசை */
+  const SWAP=new RegExp('('+PRE+')((?:'+C+'\\u0BCD)*'+C+')','g');
+  function fixTa(t,vis){
+   t=t.replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g,'');
+   if(vis){
+    t=t.replace(SWAP,'$2$1');                                   /* ெப => பெ */
+    t=t.replace(/\u0BC6\u0BC6/g,'\u0BC8');                      /* ெெ => ை */
+    t=t.replace(new RegExp('('+C+')\\u0BC6\\u0BB3(?![\\u0BCD\\u0BBE-\\u0BCC])','g'),'$1\u0BCC')   /* ெ+ள => ௌ */
+   }
+   t=t.replace(/([\u0B95-\u0BB9\u0BBE-\u0BCD])[ \t]+([\u0BBE-\u0BCD])/g,'$1$2');   /* குறியீடு தனியாகப் பிரிந்திருந்தால் இணை */
+   return t.normalize('NFC')}                                  /* ெ+ா => ொ, ே+ா => ோ */
+  function quality(ps){
+   const t=ps.join(' ');if(t.replace(/\s/g,'').length<3)return{bad:true,why:'empty'};
+   const len=t.length,tam=(t.match(/[\u0B80-\u0BFF]/g)||[]).length;
+   const odd=(t.match(/[\u0080-\u024F\uE000-\uF8FF\uFFFD]/g)||[]).length;
+   const inv=(t.match(/(?:^|[^\u0B95-\u0BB9\u0BBE-\u0BC8\u0BCA-\u0BCC\u0B82\u0B83])[\u0BBE-\u0BCD]|[\u0BBE-\u0BC8\u0BCA-\u0BCD][\u0BBE-\u0BC8\u0BCA-\u0BCC]/g)||[]).length;
+   const emb=(t.match(/[A-Za-z][;\[\]\\`<>=]/g)||[]).length;                  /* Bamini/TSCII போன்ற பழைய font => "jkpo;" */
+   if(odd>=4&&odd/len>.015)return{bad:true,why:'legacy'};   /* தமிழும் குழப்பமான குறியீடுகளும் கலந்திருந்தால் (à © Ô ô ▯) */
+   if(emb/len>.03&&tam/len<.2)return{bad:true,why:'legacy'};
+   if(tam>0&&inv/tam>.02)return{bad:true,why:'broken'};
+   return{bad:false}}
+  /* ---------- பத்தி பிரித்தல் ---------- */
+  function chunks(t){/* Browser voices stop on very long text, so each paragraph is read in short pieces */
+   const s=t.match(/[^.!?।]+[.!?।]*\s*/g)||[t],out=[];let c='';
+   const push=x=>{x=x.trim();if(x)out.push(x)};
+   for(const p of s){
+    if(p.length>220){push(c);c='';let w=p.split(/\s+/),a='';for(const x of w){if((a+' '+x).length>180){push(a);a=x}else a=a?a+' '+x:x}push(a);continue}
+    if((c+p).length>180){push(c);c=p}else c+=p}
+   push(c);return out}
+  const speakClean=s=>s.replace(/[•●▪■◆◇○✓✔►▶|_~^*#\[\]{}<>]+/g,' ').replace(/\s+/g,' ').trim();
+  function toParas(lines){/* lines: [{y,t}] top→bottom. A new paragraph starts at a bigger vertical gap (or after a finished sentence once long enough) */
+   const gaps=[];for(let i=1;i<lines.length;i++)gaps.push(Math.abs(lines[i-1].y-lines[i].y));
+   const sorted=gaps.slice().sort((a,b)=>a-b),typ=sorted.length?sorted[Math.floor(sorted.length/2)]:0;
+   const out=[];let cur='';
+   lines.forEach((l,i)=>{
+    if(i>0){const gap=gaps[i-1],ended=/[.!?।:"”’)]$/.test(cur.trim());
+     if((typ&&gap>typ*1.35)||(ended&&cur.length>320)){out.push(cur);cur=''}}
+    cur+=(cur?' ':'')+l.t});
+   if(cur)out.push(cur);
+   return out.map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>1)}
+  /* ---------- PDF text layer ---------- */
+  async function textParas(n){
+   const p=await pdf.getPage(n),tc=await p.getTextContent(),lines=[];let cl=null;
+   for(const s of tc.items){
+    if(typeof s.str!=='string'||!s.str)continue;
+    const x=s.transform[4],y=s.transform[5],h=Math.abs(s.transform[3])||s.height||10,w=s.width||0;
+    if(cl&&Math.abs(y-cl.y)<h*.5){
+     const gap=x-cl.e;
+     if(gap>h*.3&&!/\s$/.test(cl.t)&&!/^\s/.test(s.str)&&!/^[\u0BBE-\u0BCD]/.test(s.str))cl.t+=' ';
+     cl.t+=s.str;cl.e=x+w}
+    else{cl={y,t:s.str,e:x+w};lines.push(cl)}}
+   const ls=lines.filter(l=>l.t.trim());
+   if(!visDoc&&VIS.test(ls.map(l=>l.t).join('\n')))visDoc=true;
+   ls.forEach(l=>{l.t=fixTa(l.t,visDoc)});
+   return toParas(ls)}
+  /* ---------- OCR (Tesseract: தமிழ் + English) ---------- */
+  async function getWorker(){
+   if(tw)return tw;if(twP)return twP;
+   twP=(async()=>{
+    setH('⏳ OCR தமிழ் மொழிக் கோப்பு ஏற்றப்படுகிறது… (முதல் முறை மட்டும், Internet தேவை)');
+    if(!window.Tesseract)await loadJs(TESS);
+    const w=await Tesseract.createWorker(['tam','eng'],1,{logger:m=>{if(m&&m.status&&m.status==='recognizing text')setH('🔎 OCR: எழுத்துகள் படிக்கப்படுகின்றன '+Math.round((m.progress||0)*100)+'%')}});
+    tw=w;return w})();
+   try{return await twP}catch(e){twP=null;throw e}}
+  function ocrParas(d){
+   let ps=[];
+   if(d.paragraphs&&d.paragraphs.length)ps=d.paragraphs.map(x=>x.text);
+   else if(d.blocks&&d.blocks.length)d.blocks.forEach(b=>(b.paragraphs||[]).forEach(x=>ps.push(x.text)));
+   if(!ps.length)ps=(d.text||'').split(/\n\s*\n/);
+   return ps.map(x=>fixTa(String(x||'').replace(/[|¦_~^`]+/g,' ').replace(/\s*\n\s*/g,' ').replace(/\s+/g,' ').trim(),false)).filter(x=>x.replace(/[\s\d\W]/g,'').length>1)}
+  async function ocrPage(n){
+   const p=await pdf.getPage(n),v0=p.getViewport({scale:1}),sc=Math.min(3,Math.max(1.6,2000/v0.width)),v=p.getViewport({scale:sc});
+   const c=document.createElement('canvas');c.width=Math.floor(v.width);c.height=Math.floor(v.height);
+   const cx=c.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,c.width,c.height);
+   await p.render({canvasContext:cx,viewport:v}).promise;
+   const w=await getWorker();setH('🔎 OCR: பக்கம் '+n+' படிக்கப்படுகிறது…');
+   const r=await w.recognize(c);c.width=c.height=0;
+   return ocrParas(r.data)}
+  async function build(n){
+   const m=mode();
+   if(m==='ocr'||(m==='auto'&&ocrDoc)){
+    try{return await ocrPage(n)}catch(e){setH('⚠ OCR ஏற்ற முடியவில்லை (Internet / Browser சரிபார்க்கவும்). PDF text பயன்படுத்தப்படுகிறது.')}
+    return textParas(n)}
+   const tp=await textParas(n);
+   if(m==='text')return tp;
+   const q=quality(tp);
+   if(q.bad){
+    try{const o=await ocrPage(n);if(o.length){if(q.why!=='empty'||n<=3)ocrDoc=true;return o}}
+    catch(e){setH('⚠ இந்தப் பக்கத்தில் எழுத்துகள் சரியாக இல்லை; OCR ஏற்ற முடியவில்லை (Internet தேவை).')}}
+   return tp}
+  function pageParas(n){
+   if(cache[n])return Promise.resolve(cache[n]);
+   if(inflight[n])return inflight[n];
+   return inflight[n]=build(n).then(r=>{cache[n]=r;delete inflight[n];return r},e=>{delete inflight[n];throw e})}
+  /* ---------- PDF கோப்பைப் பெறுதல் ---------- */
+  async function pdfBytes(it){
+   const ok=ab=>{const h=new Uint8Array(ab.slice(0,5));return h[0]===37&&h[1]===80&&h[2]===68&&h[3]===70?ab:null};/* "%PDF" */
+   if(it.f){const b=await fget(it.f);return b?ok(await b.arrayBuffer()):null}
+   const did=it.d||driveId(it.u);
+   if(did){
+    try{const r=await api('getfile',{id:did,name:me?me.name:'',role:me?me.role:'VISITOR',pw:me?me.pw:''},60000);
+     if(r&&r.ok&&r.b64){const bin=atob(r.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);const x=ok(u.buffer);if(x)return x}}catch(e){}
+    try{const r=await fetch('https://drive.google.com/uc?export=download&id='+did);if(r.ok){const x=ok(await r.arrayBuffer());if(x)return x}}catch(e){}
+    return null}
+   if(it.u){try{const r=await fetch(it.u);if(r.ok)return ok(await r.arrayBuffer())}catch(e){}}
    return null}
-  if(it.u){try{const r=await fetch(it.u);if(r.ok)return ok(await r.arrayBuffer())}catch(e){}}
-  return null}
- function stop(){run++;playing=false;clearTimeout(wd);try{speechSynthesis.cancel()}catch(e){}btn()}
- function btn(){const b=g('prG');if(b)b.textContent=playing?'⏸ நிறுத்து':'▶ வாசி'}
- function draw(){
-  const t=g('prT');if(!t)return;
-  g('prN').textContent='பக்கம் '+pg+' / '+pdf.numPages;
-  t.innerHTML=paras.length?paras.map((x,i)=>`<p class="pp${i===pi?' on':''}" data-i="${i}">${esc(x)}</p>`).join(''):'<p class="prh">இந்தப் பக்கத்தில் வாசிக்க text இல்லை (படம் மட்டும் இருக்கலாம்). அடுத்த பக்கத்திற்குச் செல்லவும்.</p>'}
- function mark(){const t=g('prT');if(!t)return;t.querySelectorAll('.pp').forEach((e,i)=>{e.classList.toggle('on',i===pi);if(i===pi)e.scrollIntoView({block:'nearest',behavior:'smooth'})})}
- async function showImg(){
-  const c=g('prC'),on=g('prI')&&g('prI').checked;if(!c)return;c.style.display=on?'block':'none';if(!on)return;
-  try{const p=await pdf.getPage(pg),v=p.getViewport({scale:1.3});c.width=v.width;c.height=v.height;await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise}catch(e){}}
- async function loadPage(n,auto){
-  stop();pg=Math.min(Math.max(1,n),pdf.numPages);pi=0;paras=await pageParas(pg);draw();showImg();
-  if(auto&&paras.length)play();else if(auto&&pg<pdf.numPages)loadPage(pg+1,true)}
- function speakNext(my){
-  if(my!==run||!playing)return;
-  if(pi>=paras.length){if(pg<pdf.numPages)loadPage(pg+1,true);else stop();return}
-  mark();
-  const parts=chunks(paras[pi]),l=lang(paras[pi]),v=voice(l);
-  if(!v&&l==='ta-IN'&&!hinted){hinted=true;const h=g('prH');if(h)h.textContent='⚠ இந்தச் சாதனத்தில் தமிழ் குரல் (Tamil voice) இல்லை. Android: Settings › Text-to-speech › Google › தமிழ் குரலை நிறுவவும்; Windows: Settings › Time & language › Speech › தமிழ் சேர்க்கவும்.'}
-  let k=0;
-  const nextPart=()=>{
+  /* ---------- திரை / வாசிப்பு ---------- */
+  function stop(){run++;playing=false;clearTimeout(wd);try{speechSynthesis.cancel()}catch(e){}btn()}
+  function btn(){const b=g('prG');if(b)b.textContent=playing?'⏸ நிறுத்து':'▶ வாசி'}
+  function draw(){
+   const t=g('prT');if(!t)return;
+   g('prN').textContent='பக்கம் '+pg+' / '+pdf.numPages;
+   t.innerHTML=paras.length?paras.map((x,i)=>`<p class="pp${i===pi?' on':''}" data-i="${i}">${esc(x)}</p>`).join(''):'<p class="prh">இந்தப் பக்கத்தில் வாசிக்க text இல்லை (படம் மட்டும் இருக்கலாம்). "🔎 OCR" பொத்தானை அழுத்திப் பார்க்கவும் அல்லது அடுத்த பக்கத்திற்குச் செல்லவும்.</p>'}
+  function mark(){const t=g('prT');if(!t)return;t.querySelectorAll('.pp').forEach((e,i)=>{e.classList.toggle('on',i===pi);if(i===pi)e.scrollIntoView({block:'nearest',behavior:'smooth'})})}
+  async function showImg(){
+   const c=g('prC'),on=g('prI')&&g('prI').checked;if(!c)return;c.style.display=on?'block':'none';if(!on)return;
+   try{const p=await pdf.getPage(pg),v=p.getViewport({scale:1.3});c.width=v.width;c.height=v.height;await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise}catch(e){}}
+  async function loadPage(n,auto){
+   stop();const tk=++loadTk;pg=Math.min(Math.max(1,n),pdf.numPages);pi=0;
+   const t=g('prT');if(t)t.innerHTML='<p class="prh" style="color:#1a2f8f">⏳ பக்கம் தயாராகிறது…</p>';
+   g('prN').textContent='பக்கம் '+pg+' / '+pdf.numPages;
+   let r=[];try{r=await pageParas(pg)}catch(e){}
+   if(tk!==loadTk)return;
+   paras=r;draw();showImg();
+   if(mode()==='ocr'||ocrDoc){if(pg<pdf.numPages)pageParas(pg+1).catch(()=>{})}   /* அடுத்த பக்கத்தை முன்கூட்டியே தயார் செய்தல் */
+   if(auto&&paras.length)play();else if(auto&&pg<pdf.numPages)loadPage(pg+1,true)}
+  function speakNext(my){
    if(my!==run||!playing)return;
-   if(k>=parts.length){pi++;speakNext(my);return}
-   const txt=parts[k++],u=new SpeechSynthesisUtterance(txt);u.lang=l;u.rate=+(g('prR')?g('prR').value:.85)||.85;if(v)u.voice=v;
-   let fin=false;const done=()=>{if(fin)return;fin=true;clearTimeout(wd);nextPart()};
-   u.onend=done;u.onerror=done;
-   clearTimeout(wd);wd=setTimeout(done,Math.max(5000,txt.length*320));
-   try{speechSynthesis.speak(u)}catch(e){done()}};
-  nextPart()}
- function play(){
-  if(!window.speechSynthesis){alert('இந்த Browser-இல் வாசிக்கும் வசதி இல்லை. Chrome / Edge பயன்படுத்தவும்.');return}
-  try{speechSynthesis.cancel()}catch(e){}
-  run++;playing=true;btn();speechSynthesis.getVoices();speakNext(run)}
- function jump(d){const was=playing;stop();const n=pi+d;
-  if(n<0){if(pg>1)loadPage(pg-1,was).then(()=>{pi=Math.max(0,paras.length-1);draw();if(was)play()});return}
-  if(n>=paras.length){if(pg<pdf.numPages)loadPage(pg+1,was);return}
-  pi=n;mark();if(was)play()}
- async function open(it){
-  const mc=g('mc'),m=g('modal');
-  mc.innerHTML='<p style="margin:14px">📖 PDF ஏற்றப்படுகிறது… சிறிது காத்திருக்கவும்.</p>';m.style.display='flex';
-  let buf=null;try{buf=await pdfBytes(it)}catch(e){}
-  if(!buf){mc.innerHTML='';m.style.display='none';return false}
-  try{
-   if(!window.pdfjsLib)await loadJs(PDFJS);
-   pdfjsLib.GlobalWorkerOptions.workerSrc=WORKER;
-   pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
-  }catch(e){mc.innerHTML='';m.style.display='none';return false}
-  cache={};pg=1;pi=0;playing=false;hinted=false;
-  let first=0;for(let n=1;n<=Math.min(pdf.numPages,3)&&!first;n++){if((await pageParas(n)).length)first=n}
-  if(!first){mc.innerHTML='';m.style.display='none';alert('இந்த PDF படமாக (scan) உள்ளது; வாசிக்க text இல்லை. சாதாரணமாகத் திறக்கப்படுகிறது.');return false}
-  mc.innerHTML=`<section id="pr"><b>${esc(it.t)}</b>
-<section class="prb"><button type="button" class="btn sm dk" id="prP">◀ முந்தைய பக்கம்</button><span id="prN" style="font-weight:700"></span><button type="button" class="btn sm dk" id="prX">அடுத்த பக்கம் ▶</button></section>
-<section class="prb"><button type="button" class="btn sm" id="prG">▶ வாசி</button><button type="button" class="btn sm" id="prB">⏮ முந்தைய பத்தி</button><button type="button" class="btn sm" id="prF">அடுத்த பத்தி ⏭</button>
-<label>வேகம் <select id="prR"><option value=".6">மெதுவாக</option><option value=".85" selected>சாதாரணம்</option><option value="1.1">வேகமாக</option></select></label>
-<label><input type="checkbox" id="prI"> 🖼 பக்கப் படம்</label></section>
-<p class="prh" id="prH"></p><canvas id="prC"></canvas><section class="prt" id="prT"></section></section>`;
-  g('prP').onclick=()=>{const w=playing;loadPage(pg-1,w)};
-  g('prX').onclick=()=>{const w=playing;loadPage(pg+1,w)};
-  g('prG').onclick=()=>{playing?stop():play()};
-  g('prB').onclick=()=>jump(-1);g('prF').onclick=()=>jump(1);
-  g('prI').onchange=showImg;
-  g('prR').onchange=()=>{if(playing)play()};
-  g('prT').onclick=e=>{const p=e.target.closest('.pp');if(!p)return;pi=+p.dataset.i;mark();play()};
-  await loadPage(first,false);
-  return true}
- return{open,stop}})();
+   if(pi>=paras.length){if(pg<pdf.numPages)loadPage(pg+1,true);else stop();return}
+   mark();
+   const parts=chunks(speakClean(paras[pi])).filter(x=>x),l=lang(paras[pi]),v=voice(l);
+   if(!v&&l==='ta-IN'&&!hinted){hinted=true;const h=g('prH');if(h)h.textContent='⚠ இந்தச் சாதனத்தில் தமிழ் குரல் (Tamil voice) இல்லை. Android: Settings › Text-to-speech › Google › தமிழ் குரலை நிறுவவும்; Windows: Settings › Time & language › Speech › தமிழ் சேர்க்கவும்.'}
+   let k=0;
+   const nextPart=()=>{
+    if(my!==run||!playing)return;
+    if(k>=parts.length){pi++;speakNext(my);return}
+    const txt=parts[k++],u=new SpeechSynthesisUtterance(txt);u.lang=l;u.rate=+(g('prR')?g('prR').value:.85)||.85;if(v)u.voice=v;
+    let fin=false;const done=()=>{if(fin)return;fin=true;clearTimeout(wd);nextPart()};
+    u.onend=done;u.onerror=done;
+    clearTimeout(wd);wd=setTimeout(done,Math.max(5000,txt.length*320));
+    try{speechSynthesis.speak(u)}catch(e){done()}};
+   nextPart()}
+  function play(){
+   if(!window.speechSynthesis){alert('இந்த Browser-இல் வாசிக்கும் வசதி இல்லை. Chrome / Edge பயன்படுத்தவும்.');return}
+   try{speechSynthesis.cancel()}catch(e){}
+   run++;playing=true;btn();speechSynthesis.getVoices();speakNext(run)}
+  function jump(d){const was=playing;stop();const n=pi+d;
+   if(n<0){if(pg>1)loadPage(pg-1,was).then(()=>{pi=Math.max(0,paras.length-1);draw();if(was)play()});return}
+   if(n>=paras.length){if(pg<pdf.numPages)loadPage(pg+1,was);return}
+   pi=n;mark();if(was)play()}
+  async function forceOcr(){
+   const w=playing,tk=++loadTk,n=pg;stop();
+   setH('🔎 OCR நடைபெறுகிறது… (முதல் முறை 20–40 விநாடி ஆகலாம்)');
+   try{const r=await ocrPage(n);if(tk!==loadTk)return;cache[n]=r;paras=r;pi=0;draw();setH(r.length?'✅ OCR முடிந்தது. எழுத்துகளைப் பக்கப் படத்துடன் ஒப்பிட்டுப் பார்க்கலாம்.':'⚠ இந்தப் பக்கத்தில் எழுத்துகள் கண்டறியப்படவில்லை.');if(w&&r.length)play()}
+   catch(e){setH('⚠ OCR ஏற்ற முடியவில்லை. Internet இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.')}}
+  async function open(it){
+   const mc=g('mc'),m=g('modal');
+   mc.innerHTML='<p id="prL" style="margin:14px">📖 PDF ஏற்றப்படுகிறது… சிறிது காத்திருக்கவும்.</p>';m.style.display='flex';
+   let buf=null;try{buf=await pdfBytes(it)}catch(e){}
+   if(!buf){mc.innerHTML='';m.style.display='none';return false}
+   try{
+    if(!window.pdfjsLib)await loadJs(PDFJS);
+    pdfjsLib.GlobalWorkerOptions.workerSrc=WORKER;
+    pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),cMapUrl:CMAPS,cMapPacked:true}).promise;
+   }catch(e){mc.innerHTML='';m.style.display='none';return false}
+   cache={};inflight={};pg=1;pi=0;playing=false;hinted=false;ocrDoc=false;visDoc=false;loadTk++;
+   let first=0;
+   try{for(let n=1;n<=Math.min(pdf.numPages,3)&&!first;n++){setH('📖 பக்கம் '+n+' சரிபார்க்கப்படுகிறது…');if((await pageParas(n)).length)first=n}}catch(e){}
+   if(!first){mc.innerHTML='';m.style.display='none';alert('இந்த PDF-இலிருந்து எழுத்துகளை எடுக்க முடியவில்லை. சாதாரணமாகத் திறக்கப்படுகிறது.');return false}
+   mc.innerHTML=`<section id="pr"><b>${esc(it.t)}</b>
+ <section class="prb"><button type="button" class="btn sm dk" id="prP">◀ முந்தைய பக்கம்</button><span id="prN" style="font-weight:700"></span><button type="button" class="btn sm dk" id="prX">அடுத்த பக்கம் ▶</button></section>
+ <section class="prb"><button type="button" class="btn sm" id="prG">▶ வாசி</button><button type="button" class="btn sm" id="prB">⏮ முந்தைய பத்தி</button><button type="button" class="btn sm" id="prF">அடுத்த பத்தி ⏭</button>
+ <label>வேகம் <select id="prR"><option value=".6">மெதுவாக</option><option value=".85" selected>சாதாரணம்</option><option value="1.1">வேகமாக</option></select></label>
+ <label><input type="checkbox" id="prI"> 🖼 பக்கப் படம்</label></section>
+ <section class="prb"><label>எழுத்து முறை <select id="prM"><option value="auto" selected>தானியங்கி (சரியில்லையெனில் OCR)</option><option value="text">PDF text மட்டும்</option><option value="ocr">எப்போதும் OCR (படத்திலிருந்து)</option></select></label><button type="button" class="btn sm rd" id="prO">🔎 இந்தப் பக்கத்தை OCR செய்</button></section>
+ <p class="prh" id="prH"></p><canvas id="prC"></canvas><section class="prt" id="prT"></section></section>`;
+   g('prP').onclick=()=>{const w=playing;loadPage(pg-1,w)};
+   g('prX').onclick=()=>{const w=playing;loadPage(pg+1,w)};
+   g('prG').onclick=()=>{playing?stop():play()};
+   g('prB').onclick=()=>jump(-1);g('prF').onclick=()=>jump(1);
+   g('prI').onchange=showImg;
+   g('prR').onchange=()=>{if(playing)play()};
+   g('prO').onclick=forceOcr;
+   g('prM').onchange=()=>{const w=playing;cache={};inflight={};ocrDoc=false;loadPage(pg,w)};
+   g('prT').onclick=e=>{const p=e.target.closest('.pp');if(!p)return;pi=+p.dataset.i;mark();play()};
+   await loadPage(first,false);
+   return true}
+  return{open,stop,_t:{fixTa,quality,VIS}}})();
 </script>
 
 </body>
