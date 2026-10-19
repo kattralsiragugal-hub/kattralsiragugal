@@ -633,7 +633,7 @@ LV.cvid=LV.cwork=['f2','lesson','items'];/* EXAM VIDEOS and EXAM WORK SHEET (Pdf
 LV.cvid=['f2','cat2','lesson','items'];/* COMPETITIVE EXAM: NMMS / TRUST › VIDEOS / INTRACTIVE CONTENT / ONLINE EXAM / WORK SHEETS (PDF File) › Lesson › Upload */
 LV.tet=['cat2','lesson','items'];/* TET: VIDEOS / INTRACTIVE CONTENT / ONLINE EXAM / WORK SHEETS (PDF File) › Lesson › Upload (same as NMMS) */
 const NOF1=['cvid','cwork'];/* f1: Online Interactive Sheet / ONLINE EXAM  ›  f2: NMMS / TRUST  ›  lesson  ›  items */
-const F_DEF={f1:['Online Interactive Sheet','ONLINE EXAM'],f2:['NMMS','TRUST'],term:['TERM 1','TERM 2','TERM 3'],sub:['TAMIL','ENGLISH','MATHS','EVS'],med:['TAMIL MEDIUM','ENGLISH MEDIUM'],cat:['VIDEOS','INTRACTIVE CONTENT','WORK SHEETS (PDF File)','TEXT BOOK','AUDIO BOOK','THB'],cat2:['VIDEOS','INTRACTIVE CONTENT','ONLINE EXAM','WORK SHEETS (PDF File)']};
+const F_DEF={f1:['Online Interactive Sheet','ONLINE EXAM'],f2:['NMMS','TRUST'],term:['TERM 1','TERM 2','TERM 3'],sub:['தமிழ்','ENGLISH','கணக்கு','சூழ்நிலையியல்','அறிவியல்','சமூக அறிவியல்'],med:['TAMIL MEDIUM','ENGLISH MEDIUM'],cat:['VIDEOS','INTRACTIVE CONTENT','WORK SHEETS (PDF File)','TEXT BOOK','AUDIO BOOK','THB'],cat2:['VIDEOS','INTRACTIVE CONTENT','ONLINE EXAM','WORK SHEETS (PDF File)']};
 /* ---- menu buttons: Admin can add / edit (rename) / delete. Kept in db.folders['__nav'] as 'key|type|label' so it syncs like the other folder lists.
    type: b = built-in button, 1 = new button (files / links only), 2 = new button (Class > Lesson > files) ---- */
 const NAV_KEY='__nav';
@@ -709,7 +709,7 @@ const foldNames=(key,t)=>{
  if(t==='med'&&isOneMed(key.split('/')[3]))return['TAMIL MEDIUM'];
  let a=db.folders[key];
  if(t==='lesson'&&!Array.isArray(a)&&key.split('/')[0]==='video')return['Lesson 1','Lesson 2','Lesson 3','Lesson 4','Lesson 5','Lesson 6','Lesson 7','Lesson 8','Lesson 9','Lesson 10'];/* VIDEOS / INTRACTIVE CONTENT / WORK SHEETS: default Lesson 1-5 in every class */
- if(t==='sub'&&!Array.isArray(a)&&key.split('/')[0]==='video'){const n=parseInt((key.split('/')[1]||'').replace(/\D/g,''),10);if(n>=6)return['TAMIL','ENGLISH','MATHS','SCIENCE','SOCIAL SCIENCE']}/* STD 6-8: SCIENCE, SOCIAL SCIENCE (separate TAMIL MEDIUM / ENGLISH MEDIUM) */
+ if(t==='sub'&&!Array.isArray(a)&&key.split('/')[0]==='video'){const n=parseInt((key.split('/')[1]||'').replace(/\D/g,''),10);if(n>=6)return F_DEF.sub.slice()}/* STD 6-8: SCIENCE, SOCIAL SCIENCE (separate TAMIL MEDIUM / ENGLISH MEDIUM) */
  if(NOF1.includes(key)&&Array.isArray(a)){a=a.filter(n=>n!=='Online Interactive Sheet'&&n!=='ONLINE EXAM');if(!a.length)a=null}/* old 2-level folders removed from the videos button */
  if(t==='cat'&&Array.isArray(a)&&!a.includes('AUDIO BOOK')){const i=a.indexOf('TEXT BOOK');if(i>=0&&a[i+1]==='THB'){a=a.slice();a.splice(i+1,0,'AUDIO BOOK')}}
  if(t==='cat2'&&Array.isArray(a)){a=a.filter(n=>!/^lesson\b/i.test(n));if(!a.length)a=null}
@@ -1523,7 +1523,7 @@ function section(){
  }else{
   const its=db.items[key]||[];listCache=its;
   body=its.map((it,i)=>(it.pend&&!isAdmin()&&!(me&&it.by===me.name))?'':`<div class="item"><strong>${icImg(it)}${esc(it.t)}${itTag(it)}${it.h5?' <span style="font-size:12px;color:#1b6ca8">◆ H5P</span>':''}${ytId(it.u)&&!it.f&&!it.d?' <span style="font-size:12px;color:#b3261e">▶ YouTube</span>':''}${VIEW_SECS.includes(sec)?`<span class="vw" id="vw${i}">${viewTxt(viewN(key,it))}</span>`:''}</strong><div class="sh">${it.pend&&isAdmin()?`<button class="btn sm" style="background:#1b7a2f" onclick="approveItem(${i})">✔ ஒப்புதல் வழங்கு</button>`:''}
-   <button class="btn sm" onclick="openItem(${i})">View</button>${canDl(it)?`<button class="btn sm" onclick="dl(${i})">⬇ Download</button>`:''}
+   <button class="btn sm" onclick="openItem(${i})">${abPdf(it)?'📖 படி / 🔊 கேள்':'View'}</button>${canDl(it)?`<button class="btn sm" onclick="dl(${i})">⬇ Download</button>`:''}
    <button class="btn sic" style="--c:#25D366" title="WhatsApp" aria-label="Share on WhatsApp" onclick="share('wa',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.8h-.01a9.9 9.9 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88zM20.52 3.45A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.42-8.46z"/></svg></button><button class="btn sic" style="--c:#1877F2" title="Facebook" aria-label="Share on Facebook" onclick="share('fb',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.69.24 2.69.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></button><button class="btn sic" style="--c:#E4405F" title="Instagram" aria-label="Share on Instagram" onclick="share('ig',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12c0-3.2.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg></button><button class="btn sic" style="--c:#000000" title="X" aria-label="Share on X" onclick="share('x',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.6l5.24 6.93zm-1.29 19.5h2.04L6.48 3.24H4.3z"/></svg></button><button class="btn sic" style="--c:#229ED9" title="Telegram" aria-label="Share on Telegram" onclick="share('tg',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M11.94 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.06 0zm4.96 7.2c.1 0 .32.02.46.14.12.1.15.23.17.33.01.1.04.3.02.47-.18 1.9-.96 6.5-1.36 8.62-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.12-2.68-1.8-1.18-.78-.42-1.2.26-1.89.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.11.02-1.78 1.13-5.02 3.32-.48.33-.9.49-1.29.48-.42-.01-1.24-.24-1.85-.44-.75-.24-1.34-.37-1.29-.78.03-.21.32-.43.89-.66 3.49-1.52 5.82-2.52 6.98-3 3.33-1.39 4.02-1.63 4.47-1.64z"/></svg></button>
    ${isAdmin()?`<button class="btn sm" onclick="editItem(${i})">Edit</button><button class="btn sm rd" onclick="delItem(${i})">Delete</button>`:''}</div></div>`).join('')||`<div class="empty">Nothing uploaded here yet.</div>`;
   if(isAdmin())body+=`<p><button class="btn" onclick="addItem()">+ Add</button></p>`;
@@ -1582,7 +1582,7 @@ function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('ks_files',
 async function fput(id,blob){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction('f','readwrite');t.objectStore('f').put(blob,id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
 async function fget(id){const d=await idb();return new Promise((res,rej)=>{const r=d.transaction('f').objectStore('f').get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function fdel(id){try{const d=await idb();d.transaction('f','readwrite').objectStore('f').delete(id)}catch(e){}}
-const ACC={audio:'audio/*',video:'video/*',cvid:'video/*',work:'.pdf,application/pdf',cwork:'.pdf,application/pdf',forms:'.pdf,application/pdf',tforms:'.pdf,application/pdf',itforms:'.pdf,application/pdf',emis:'video/*,.pdf,application/pdf',demo:'video/*'};
+const ACC={audio:'audio/*,.pdf,application/pdf',video:'video/*',cvid:'video/*',work:'.pdf,application/pdf',cwork:'.pdf,application/pdf',forms:'.pdf,application/pdf',tforms:'.pdf,application/pdf',itforms:'.pdf,application/pdf',emis:'video/*,.pdf,application/pdf',demo:'video/*'};
 /* upload kind: in VIDEO LESSONS the last folder decides (video file / H5P link / PDF) */
 function upKind(){const s=cur[0];if(s!=='video'&&s!=='cvid'&&s!=='tet')return s;const c=(s==='video'?cur[5]:s==='tet'?cur[1]:cur[2])||'';return /video/i.test(c)?'video':/intr?a?ctive|interactive|online/i.test(c)?'inter':/audio/i.test(c)?'audio':'forms'}
 /* ---- file icon: chosen image is shrunk to a small square-fit picture and stored with the item as it.ic ---- */
@@ -1602,7 +1602,7 @@ const icImg=it=>it&&/^data:image\//.test(it.ic||'')?`<img class="ico" src="${esc
 function addItem(){
  const s=upKind();$('#uf').accept=ACC[s]||'';$('#uf').value='';$('#uu').value='';$('#ud').value='';$('#uh5').value='';$('#uhw').style.display=H5P_SECS.includes(s)?'':'none';$('#ut').value='';$('#ui').value='';icPreview();$('#um').textContent='';$('#ub').disabled=false;
  $('#uph').textContent='+ Add — '+cur.slice(1).join(' › ');
- $('#ul').textContent=/video|cvid/.test(s)?'Choose video file':s==='audio'?'Choose audio file':/work|cwork|forms/.test(s)?'Choose PDF file':'Choose file';
+ $('#ul').textContent=/video|cvid/.test(s)?'Choose video file':s==='audio'?'Choose audio or PDF file (Audio / PDF)':/work|cwork|forms/.test(s)?'Choose PDF file':'Choose file';
  $('#uh').textContent=isVid(s)?'அல்லது (or) paste a YouTube link:':'அல்லது (or) paste a link instead:';
  $('#uu').placeholder=isVid(s)?'https://www.youtube.com/watch?v=... or https://youtu.be/...':'https://...';
  ytPreview();
@@ -1671,7 +1671,7 @@ function ytPreview(){const b=$('#uy'),u=$('#uu').value.trim();b.className='ypv';
  const y=ytId(u);
  if(y){b.className='ypv ok';b.innerHTML=`<img alt="" src="https://img.youtube.com/vi/${y}/mqdefault.jpg"><span>✔ YouTube video detected</span>`}
  else if(isYtHost(u)){b.className='ypv bad';b.textContent='This YouTube link looks incomplete. Paste the full video link.'}}
-function closeM(){const m=$('#modal');m.style.display='none';$('#mc').innerHTML=''}
+function closeM(){try{PR.stop()}catch(e){}const m=$('#modal');m.style.display='none';$('#mc').innerHTML=''}
 /* ---- download (uploaded files, Drive files, direct file links; YouTube videos cannot be downloaded) ---- */
 const DL_EXT=/\.(pdf|mp4|webm|mov|mkv|avi|m4v|3gp|docx?|pptx?|xlsx?|zip)(?:[?#]|$)/i;
 const canDl=it=>!it.h5&&!!(it.f||it.d||driveId(it.u)||(it.u&&!ytId(it.u)&&DL_EXT.test(it.u)));
@@ -1704,6 +1704,7 @@ async function openItem(i){
  countView(i);
  const it=listCache[i],m=$('#modal'),mc=$('#mc');
  const did=it.d||driveId(it.u);
+  if(abPdf(it)&&await PR.open(it))return;
  if(did){mc.innerHTML=`<iframe class="pdf" src="https://drive.google.com/file/d/${did}/preview" allowfullscreen></iframe><p><a href="https://drive.google.com/file/d/${did}/view" target="_blank" rel="noopener">Open in Google Drive</a></p>`;m.style.display='flex';return}
  if(it.f){
   const b=await fget(it.f);if(!b){alert('File not found in this browser.');return}
@@ -2050,6 +2051,133 @@ function editItem(i){if(!isAdmin())return;const k=cur.join('/'),it=(db.items[k]|
  setInterval(function(){if(!pan.classList.contains('on')&&!document.hidden)load()},60000);
  load();
 })();
+</script>
+
+<style>
+#pr{display:block;font-family:inherit}
+#pr section{display:block}
+#pr .prb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+#pr .prb label{font-size:14px;font-weight:700;display:flex;align-items:center;gap:4px}
+#pr .prb select{width:auto;padding:5px;border-width:2px;font-size:14px}
+#pr .prb input{width:auto;padding:0;border:0}
+#pr .prt{max-height:52vh;overflow:auto;border:2px solid var(--ink);border-radius:10px;padding:6px;background:#fffdf5}
+#pr .pp{margin:4px 0;padding:8px 10px 8px 14px;border-radius:8px;line-height:1.8;font-size:18px;cursor:pointer;border-left:4px solid transparent}
+#pr .pp:hover{background:#fff7ec}
+#pr .pp.on{background:#fff3d6;border-left-color:#ff9f1c}
+#pr .prh{font-size:13px;color:#b3261e;font-weight:600;margin:4px 0}
+#pr canvas{display:none;width:100%;height:auto;border:1px solid #888;margin:6px 0}
+</style>
+<script>
+/* ---- AUDIO BOOK: PDF-ஐ பக்கம் வாரியாக, பத்தி வாரியாகப் படித்துக் காட்டுதல் (pdf.js + Browser voice) ---- */
+const abPdf=it=>!!it&&cur[0]==='video'&&/audio/i.test(cur[5]||'')&&(/pdf/i.test(it.ty||'')||/\.pdf$/i.test(it.n||'')||/\.pdf(?:[?#]|$)/i.test(it.u||''));
+const PR=(()=>{
+ const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ let pdf=null,pg=1,paras=[],pi=0,playing=false,run=0,cache={},wd=null,hinted=false;
+ const g=id=>document.getElementById(id);
+ const isTa=t=>((t.match(/[\u0B80-\u0BFF]/g)||[]).length>t.length*.2);
+ const lang=t=>isTa(t)?'ta-IN':'en-IN';
+ const voice=l=>{const v=speechSynthesis.getVoices()||[],p=l.slice(0,2);return v.find(x=>x.lang.replace('_','-').toLowerCase()===l.toLowerCase())||v.find(x=>x.lang.toLowerCase().startsWith(p))};
+ function chunks(t){/* Browser voices stop on very long text, so each paragraph is read in short pieces */
+  const s=t.match(/[^.!?।]+[.!?।]*\s*/g)||[t],out=[];let c='';
+  const push=x=>{x=x.trim();if(x)out.push(x)};
+  for(const p of s){
+   if(p.length>220){push(c);c='';let w=p.split(/\s+/),a='';for(const x of w){if((a+' '+x).length>180){push(a);a=x}else a=a?a+' '+x:x}push(a);continue}
+   if((c+p).length>180){push(c);c=p}else c+=p}
+  push(c);return out}
+ function toParas(lines){/* lines: [{y,t}] top→bottom. A new paragraph starts at a bigger vertical gap (or after a finished sentence once long enough) */
+  const gaps=[];for(let i=1;i<lines.length;i++)gaps.push(Math.abs(lines[i-1].y-lines[i].y));
+  const sorted=gaps.slice().sort((a,b)=>a-b),typ=sorted.length?sorted[Math.floor(sorted.length/2)]:0;
+  const out=[];let cur='';
+  lines.forEach((l,i)=>{
+   if(i>0){const gap=gaps[i-1],ended=/[.!?।:"”’)]$/.test(cur.trim());
+    if((typ&&gap>typ*1.35)||(ended&&cur.length>320)){out.push(cur);cur=''}}
+   cur+=(cur?' ':'')+l.t});
+  if(cur)out.push(cur);
+  return out.map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>1)}
+ async function pageParas(n){
+  if(cache[n])return cache[n];
+  const p=await pdf.getPage(n),tc=await p.getTextContent(),lines=[];let cl=null;
+  for(const s of tc.items){
+   if(!s.str)continue;const y=s.transform[5],h=Math.abs(s.transform[3])||s.height||10;
+   if(cl&&Math.abs(y-cl.y)<h*.5)cl.t+=s.str;else{cl={y,t:s.str};lines.push(cl)}}
+  return cache[n]=toParas(lines.filter(l=>l.t.trim()))}
+ async function pdfBytes(it){
+  const ok=ab=>{const h=new Uint8Array(ab.slice(0,5));return h[0]===37&&h[1]===80&&h[2]===68&&h[3]===70?ab:null};/* "%PDF" */
+  if(it.f){const b=await fget(it.f);return b?ok(await b.arrayBuffer()):null}
+  const did=it.d||driveId(it.u);
+  if(did){
+   try{const r=await api('getfile',{id:did,name:me?me.name:'',role:me?me.role:'VISITOR',pw:me?me.pw:''},60000);
+    if(r&&r.ok&&r.b64){const bin=atob(r.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);const x=ok(u.buffer);if(x)return x}}catch(e){}
+   try{const r=await fetch('https://drive.google.com/uc?export=download&id='+did);if(r.ok){const x=ok(await r.arrayBuffer());if(x)return x}}catch(e){}
+   return null}
+  if(it.u){try{const r=await fetch(it.u);if(r.ok)return ok(await r.arrayBuffer())}catch(e){}}
+  return null}
+ function stop(){run++;playing=false;clearTimeout(wd);try{speechSynthesis.cancel()}catch(e){}btn()}
+ function btn(){const b=g('prG');if(b)b.textContent=playing?'⏸ நிறுத்து':'▶ வாசி'}
+ function draw(){
+  const t=g('prT');if(!t)return;
+  g('prN').textContent='பக்கம் '+pg+' / '+pdf.numPages;
+  t.innerHTML=paras.length?paras.map((x,i)=>`<p class="pp${i===pi?' on':''}" data-i="${i}">${esc(x)}</p>`).join(''):'<p class="prh">இந்தப் பக்கத்தில் வாசிக்க text இல்லை (படம் மட்டும் இருக்கலாம்). அடுத்த பக்கத்திற்குச் செல்லவும்.</p>'}
+ function mark(){const t=g('prT');if(!t)return;t.querySelectorAll('.pp').forEach((e,i)=>{e.classList.toggle('on',i===pi);if(i===pi)e.scrollIntoView({block:'nearest',behavior:'smooth'})})}
+ async function showImg(){
+  const c=g('prC'),on=g('prI')&&g('prI').checked;if(!c)return;c.style.display=on?'block':'none';if(!on)return;
+  try{const p=await pdf.getPage(pg),v=p.getViewport({scale:1.3});c.width=v.width;c.height=v.height;await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise}catch(e){}}
+ async function loadPage(n,auto){
+  stop();pg=Math.min(Math.max(1,n),pdf.numPages);pi=0;paras=await pageParas(pg);draw();showImg();
+  if(auto&&paras.length)play();else if(auto&&pg<pdf.numPages)loadPage(pg+1,true)}
+ function speakNext(my){
+  if(my!==run||!playing)return;
+  if(pi>=paras.length){if(pg<pdf.numPages)loadPage(pg+1,true);else stop();return}
+  mark();
+  const parts=chunks(paras[pi]),l=lang(paras[pi]),v=voice(l);
+  if(!v&&l==='ta-IN'&&!hinted){hinted=true;const h=g('prH');if(h)h.textContent='⚠ இந்தச் சாதனத்தில் தமிழ் குரல் (Tamil voice) இல்லை. Android: Settings › Text-to-speech › Google › தமிழ் குரலை நிறுவவும்; Windows: Settings › Time & language › Speech › தமிழ் சேர்க்கவும்.'}
+  let k=0;
+  const nextPart=()=>{
+   if(my!==run||!playing)return;
+   if(k>=parts.length){pi++;speakNext(my);return}
+   const txt=parts[k++],u=new SpeechSynthesisUtterance(txt);u.lang=l;u.rate=+(g('prR')?g('prR').value:.85)||.85;if(v)u.voice=v;
+   let fin=false;const done=()=>{if(fin)return;fin=true;clearTimeout(wd);nextPart()};
+   u.onend=done;u.onerror=done;
+   clearTimeout(wd);wd=setTimeout(done,Math.max(5000,txt.length*320));
+   try{speechSynthesis.speak(u)}catch(e){done()}};
+  nextPart()}
+ function play(){
+  if(!window.speechSynthesis){alert('இந்த Browser-இல் வாசிக்கும் வசதி இல்லை. Chrome / Edge பயன்படுத்தவும்.');return}
+  try{speechSynthesis.cancel()}catch(e){}
+  run++;playing=true;btn();speechSynthesis.getVoices();speakNext(run)}
+ function jump(d){const was=playing;stop();const n=pi+d;
+  if(n<0){if(pg>1)loadPage(pg-1,was).then(()=>{pi=Math.max(0,paras.length-1);draw();if(was)play()});return}
+  if(n>=paras.length){if(pg<pdf.numPages)loadPage(pg+1,was);return}
+  pi=n;mark();if(was)play()}
+ async function open(it){
+  const mc=g('mc'),m=g('modal');
+  mc.innerHTML='<p style="margin:14px">📖 PDF ஏற்றப்படுகிறது… சிறிது காத்திருக்கவும்.</p>';m.style.display='flex';
+  let buf=null;try{buf=await pdfBytes(it)}catch(e){}
+  if(!buf){mc.innerHTML='';m.style.display='none';return false}
+  try{
+   if(!window.pdfjsLib)await loadJs(PDFJS);
+   pdfjsLib.GlobalWorkerOptions.workerSrc=WORKER;
+   pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
+  }catch(e){mc.innerHTML='';m.style.display='none';return false}
+  cache={};pg=1;pi=0;playing=false;hinted=false;
+  let first=0;for(let n=1;n<=Math.min(pdf.numPages,3)&&!first;n++){if((await pageParas(n)).length)first=n}
+  if(!first){mc.innerHTML='';m.style.display='none';alert('இந்த PDF படமாக (scan) உள்ளது; வாசிக்க text இல்லை. சாதாரணமாகத் திறக்கப்படுகிறது.');return false}
+  mc.innerHTML=`<section id="pr"><b>${esc(it.t)}</b>
+<section class="prb"><button type="button" class="btn sm dk" id="prP">◀ முந்தைய பக்கம்</button><span id="prN" style="font-weight:700"></span><button type="button" class="btn sm dk" id="prX">அடுத்த பக்கம் ▶</button></section>
+<section class="prb"><button type="button" class="btn sm" id="prG">▶ வாசி</button><button type="button" class="btn sm" id="prB">⏮ முந்தைய பத்தி</button><button type="button" class="btn sm" id="prF">அடுத்த பத்தி ⏭</button>
+<label>வேகம் <select id="prR"><option value=".6">மெதுவாக</option><option value=".85" selected>சாதாரணம்</option><option value="1.1">வேகமாக</option></select></label>
+<label><input type="checkbox" id="prI"> 🖼 பக்கப் படம்</label></section>
+<p class="prh" id="prH"></p><canvas id="prC"></canvas><section class="prt" id="prT"></section></section>`;
+  g('prP').onclick=()=>{const w=playing;loadPage(pg-1,w)};
+  g('prX').onclick=()=>{const w=playing;loadPage(pg+1,w)};
+  g('prG').onclick=()=>{playing?stop():play()};
+  g('prB').onclick=()=>jump(-1);g('prF').onclick=()=>jump(1);
+  g('prI').onchange=showImg;
+  g('prR').onchange=()=>{if(playing)play()};
+  g('prT').onclick=e=>{const p=e.target.closest('.pp');if(!p)return;pi=+p.dataset.i;mark();play()};
+  await loadPage(first,false);
+  return true}
+ return{open,stop}})();
 </script>
 
 </body>
