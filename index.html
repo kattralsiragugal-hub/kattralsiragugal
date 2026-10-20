@@ -1510,7 +1510,7 @@ const mine=it=>me&&it.by&&it.by===me.name;
 const itTag=it=>it.pend?' <span style="font-size:12px;font-weight:700;color:#b36b00;background:#fff3d6;border-radius:8px;padding:1px 7px">⏳ ஒப்புதலுக்காக காத்திருக்கிறது</span>':((it.by&&(isAdmin()||mine(it)))?' <span style="font-size:12px;font-weight:700;color:#1b7a2f;background:#e3f6e8;border-radius:8px;padding:1px 7px">✔ ஒப்புதல் வழங்கப்பட்டது</span>':'');
 function section(){
  const sec=cur[0],lv=LV[sec],d=cur.length-1,t=lvT(cur),key=cur.join('/');
- const label=(NAV.find(n=>n[0]===sec)||[0,'UPLOAD DEMO VIDEO - பதிவேற்றம் செய்யும் முறை (மாதிரி)'])[1];
+ const label=(NAV.find(n=>n[0]===sec)||[0,'கற்றல் சிறகுகள் இணையதளப் பயன்பாடு குறித்த காணொளி'])[1];
  const crumbs=`<div class="crumb"><button class="btn sm dk" onclick="go(cur.length>(cur[0]==='video'?2:1)?cur.slice(0,-1):[])">← Back</button><h2>${esc((cur[0]==='video'?[]:[label]).concat(cur.slice(1).map((x,j)=>dispName(x,(cur[0]==='video'&&j===3)?'med':'',cur.slice(0,4).join('/')))).join(' › '))}</h2></div>`;
  let body='';
  if(t!=='items'){
@@ -1927,7 +1927,10 @@ function extras(){
  const tc=$('#tcr'),fo=$('#ft');if(tc)tc.style.display=ab?'none':'';if(fo)fo.style.display=ab?'none':'';
  const l=$('#clkL');if(l&&ab)l.querySelectorAll('.xa').forEach(x=>x.remove());
  if(l&&l.innerHTML&&!ab&&!l.querySelector('.xa'))l.insertAdjacentHTML('beforeend','<button type="button" class="nv xa" onclick="go([\'about\'])">ABOUT US</button><button type="button" class="nv xa" onclick="go([\'contact\'])">CONTACT</button>');
- const t=$('#tcr');if(t&&t.querySelector('button.upl')&&!t.querySelector('.dmo')){t.style.flexWrap='wrap';t.style.gap='8px';t.insertAdjacentHTML('afterbegin','<button type="button" class="upl dmo" style="margin-right:auto" onclick="go([\'demo\'])">🎬 Upload Demo Video<br>பதிவேற்றம் செய்யும் முறை (மாதிரி)</button>')}
+ /* Website-usage video button: always at the LEFT edge of the TEACHERS CLICK HERE row, visible to everyone. Admin gets the video upload (+ Add) inside it. */
+  const t=$('#tcr');if(t){const show=!(!me&&authOpen)&&!ab;const ex=t.querySelector('.dmo');
+   if(!show){if(ex)ex.remove()}
+   else if(!ex){t.style.flexWrap='wrap';t.style.gap='8px';t.insertAdjacentHTML('afterbegin','<button type="button" class="upl dmo" style="margin-right:auto" onclick="go([\'demo\'])">🎬 கற்றல் சிறகுகள் இணையதளப் பயன்பாடு குறித்த காணொளி'+(isAdmin()?'<br><small>வீடியோ பதிவேற்றம் செய்ய (Admin)</small>':'')+'</button>')}}
  const f=$('#ft');if(f){const so=blks('contact').filter(b=>/link|whatsapp|email/.test(b.y)).map(b=>`<span style="margin:0 8px">${BI[b.y]} ${bBody(b)}</span>`).join('');
   f.innerHTML=`<div style="text-align:center;padding:16px 10px calc(16px + env(safe-area-inset-bottom));background:var(--navy);color:#fff;font-size:14px"><button type="button" class="nv" style="background:none;border:0;color:#ffc000;font:inherit;font-weight:700;cursor:pointer" onclick="go(['about'])">ABOUT US</button> | <button type="button" class="nv" style="background:none;border:0;color:#ffc000;font:inherit;font-weight:700;cursor:pointer" onclick="go(['contact'])">CONTACT</button><div style="margin:6px 0">${so}</div>© கற்றல் சிறகுகள்</div>`;f.querySelectorAll('a').forEach(a=>a.style.color='#fff')}}
 function editItem(i){if(!isAdmin())return;const k=cur.join('/'),it=(db.items[k]||[])[i];if(!it)return;
@@ -2054,7 +2057,8 @@ function editItem(i){if(!isAdmin())return;const k=cur.join('/'),it=(db.items[k]|
 </script>
 
 <style>
-#pr{display:block;font-family:inherit}
+#pr{display:block;font-family:'Noto Sans Tamil','Latha','Nirmala UI','Vijaya','Tamil Sangam MN','Noto Serif Tamil',system-ui,Arial,sans-serif;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;font-kerning:normal}
+#pr .pp{font-family:inherit;letter-spacing:0;word-spacing:.05em}
 #pr section{display:block}
 #pr .prb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
 #pr .prb label{font-size:14px;font-weight:700;display:flex;align-items:center;gap:4px}
@@ -2072,7 +2076,12 @@ function editItem(i){if(!isAdmin())return;const k=cur.join('/'),it=(db.items[k]|
    தமிழ் எழுத்துப் பிழை திருத்தம்:
    1) PDF-இல் உள்ள எழுத்துகள் "பார்வை வரிசை"யில் (ெ, ே, ை முன்னால்) இருந்தால் தானாகச் சரியான Unicode வரிசைக்கு மாற்றப்படும்.
    2) பழைய Font (Bamini, TSCII, Vanavil...) / படமாக உள்ள (scan) PDF என்றால் தானாக OCR (Tesseract - தமிழ்) மூலம் படிக்கப்படும். */
-const abPdf=it=>!!it&&cur[0]==='video'&&/audio/i.test(cur[5]||'')&&(/pdf/i.test(it.ty||'')||/\.pdf$/i.test(it.n||'')||/\.pdf(?:[?#]|$)/i.test(it.u||''));
+/* AUDIO BOOK folder: every uploaded file AND every Drive link (even without ".pdf" in its name) is opened in the page-wise / paragraph-wise reader.
+   Only real audio / video files, YouTube and H5P links are skipped; if a file turns out not to be a PDF, PR.open() returns false and the normal viewer opens. */
+const abPdf=it=>{if(!it||it.h5||!(cur[0]==='video'&&/audio/i.test(cur[5]||'')))return false;
+ const ty=(it.ty||'').toLowerCase(),MED=/\.(?:mp3|wav|m4a|aac|ogg|oga|opus|flac|wma|mp4|webm|mov|mkv|avi|m4v|3gp)(?:[?#]|$)/i;
+ if(/^(?:audio|video)\//.test(ty)||MED.test(it.n||'')||MED.test(it.u||'')||(it.u&&ytId(it.u)&&!driveId(it.u)))return false;
+ return true};
 const PR=(()=>{
   const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',CMAPS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/';
   const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
