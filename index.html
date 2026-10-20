@@ -1269,8 +1269,28 @@ function kuralLines(t){const w=t.trim().split(/\s+/);return '<span class="kl">'+
 function fitKural(){document.querySelectorAll('.kk').forEach(el=>{el.style.fontSize='';const box=el.parentElement,cs=getComputedStyle(box),avail=box.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);let fs=parseFloat(getComputedStyle(el).fontSize);const lines=[...el.querySelectorAll('.kl')];const wide=()=>Math.max(...lines.map(l=>l.scrollWidth));let g=0;while(wide()>avail&&fs>11&&g++<60){fs-=0.5;el.style.fontSize=fs+'px'}})}
 window.addEventListener('resize',()=>{clearTimeout(window._fk);window._fk=setTimeout(fitKural,80)});
 window.addEventListener('orientationchange',()=>setTimeout(fitKural,200));
+/* ---- ADMIN: ஒப்புதலுக்காக காத்திருக்கும் ஆசிரியர் பங்களிப்புகள் (Home page notice) ---- */
+function pendList(){const r=[];Object.keys(db.items||{}).forEach(k=>(db.items[k]||[]).forEach((it,i)=>{if(it&&it.pend)r.push({k,i,it})}));return r}
+function pendApprove(el){const k=el.dataset.k,i=+el.dataset.i,it=(db.items[k]||[])[i];if(!it)return;delete it.pend;it.ad=Date.now();save();render()}
+function pendOpen(el){go(el.dataset.k.split('/'))}
+function pendBox(){
+ if(!isAdmin())return'';
+ const L=pendList();if(!L.length)return'';
+ const ago=t=>'';
+ return`<div class="noprint" style="margin:12px auto;max-width:1100px;border:2px solid #ff9f1c;border-radius:18px;background:#fff8e6;box-shadow:0 8px 24px #ff9f1c33;padding:14px 16px">
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <span style="font-size:26px">🔔</span>
+  <div style="flex:1;min-width:200px"><div style="font-weight:800;font-size:17px;color:#7a4a00">ஒப்புதலுக்காக ${L.length} பங்களிப்பு${L.length>1?'கள்':''} காத்திருக்கின்றன</div>
+  <div style="font-size:12.5px;color:#7a4a00;opacity:.85">Teachers upload செய்த Content — Admin ஒப்புதல் வழங்கிய பிறகே அனைவருக்கும் தெரியும்.</div></div>
+  <span style="background:#b3261e;color:#fff;font-weight:800;border-radius:999px;min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px">${L.length}</span>
+ </div>
+ <div style="margin-top:10px;max-height:260px;overflow:auto;display:grid;gap:8px">${L.map(x=>`<div style="background:#fff;border:1px solid #f0d9a8;border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+  <div style="flex:1;min-width:180px"><strong>${esc(x.it.t||x.it.n||'(no title)')}</strong>
+  <div style="font-size:12px;opacity:.8">👤 ${esc(x.it.by||'Teacher')} &nbsp;›&nbsp; ${esc(x.k.split('/').slice(1).join(' › '))}</div></div>
+  <button type="button" class="btn sm" data-k="${esc(x.k)}" onclick="pendOpen(this)">பார்க்க</button>
+  <button type="button" class="btn sm" style="background:#1b7a2f" data-k="${esc(x.k)}" data-i="${x.i}" onclick="pendApprove(this)">✔ ஒப்புதல் வழங்கு</button></div>`).join('')}</div></div>`}
 function home(){
- shell(`${menuRow()}${!isAdmin()&&isHid('notif')?'':`<div class="home" style="grid-template-columns:1fr">
+ shell(`${menuRow()}${pendBox()}${!isAdmin()&&isHid('notif')?'':`<div class="home" style="grid-template-columns:1fr">
   <div><h3>அறிவிப்பு - Notification ${isAdmin()?hideBtn('notif'):''}${isAdmin()&&isHid('notif')?' <small>(Hidden)</small>':''}</h3><div class="box"><div class="nmq" id="nmq">${notifs().length?`<div class="ntrack" id="ntrack">${notifs().map((n,i)=>nCard(n,i)).join('')}</div>`:'<em>No notifications yet.</em>'}</div>
   ${isAdmin()?`<p><button class="btn sm" onclick="editNotif(-1)">+ Add notification</button>${notifs().length>1?' <button class="btn sm rd" onclick="delNotif(-1)">Delete all</button>':''}</p>`:''}</div></div></div>`}`);nbMq();nbAuto();
 }
