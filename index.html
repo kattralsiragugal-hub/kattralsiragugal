@@ -627,13 +627,13 @@ function navStuToggle(k){if(!isAdmin())return;const h=stuHide().includes(k),r=na
 const NAV_DEF=[['home','HOME'],['video','VIDEO LESSONS'],['cvid','STUDENTS COMPETITIVE EXAM VIDEOS'],['forms','SCHOOL FORMS'],['tforms','TEACHERS FORM'],['itforms','IT FORM'],['emis','EMIS'],['tet','TET'],['cal','CALENDAR'],['att','FACE ATTENDANCE']];
 let NAV=NAV_DEF.map(n=>n.slice());
 const CLS_DEFAULT=['Class 1','Class 2','Class 3','Class 4','Class 5'],SG_DEFAULT=['Online Interactive Sheet','Interactive Game'];
-const LV={video:['cls','term','sub','med','cat','items'],/* VIDEO LESSONS: STD 1 › TERM 1 › TAMIL › TAMIL MEDIUM › VIDEOS / INTRACTIVE CONTENT / WORK SHEETS / TEXT BOOK / THB › Upload */inter:['cls','sg','lesson','items'],work:['cls','lesson','items'],forms:['items'],tforms:['items'],itforms:['items'],emis:['items']};
+const LV={video:['cls','term','sub','med','cat','items'],/* VIDEO LESSONS: STD 1 › TERM 1 › TAMIL › TAMIL MEDIUM › VIDEOS / INTRACTIVE CONTENT / WORK SHEETS / TEXT BOOK › Upload */inter:['cls','sg','lesson','items'],work:['cls','lesson','items'],forms:['items'],tforms:['items'],itforms:['items'],emis:['items']};
 LV.conl=['f1','f2','lesson','items'];LV.demo=['items'];
 LV.cvid=LV.cwork=['f2','lesson','items'];/* EXAM VIDEOS and EXAM WORK SHEET (Pdf): NMMS / TRUST  ›  Lesson 1  ›  items */
 LV.cvid=['f2','cat2','lesson','items'];/* COMPETITIVE EXAM: NMMS / TRUST › VIDEOS / INTRACTIVE CONTENT / ONLINE EXAM / WORK SHEETS (PDF File) › Lesson › Upload */
 LV.tet=['cat2','lesson','items'];/* TET: VIDEOS / INTRACTIVE CONTENT / ONLINE EXAM / WORK SHEETS (PDF File) › Lesson › Upload (same as NMMS) */
 const NOF1=['cvid','cwork'];/* f1: Online Interactive Sheet / ONLINE EXAM  ›  f2: NMMS / TRUST  ›  lesson  ›  items */
-const F_DEF={f1:['Online Interactive Sheet','ONLINE EXAM'],f2:['NMMS','TRUST'],term:['TERM 1','TERM 2','TERM 3'],sub:['தமிழ்','ENGLISH','கணக்கு','சூழ்நிலையியல்','அறிவியல்','சமூக அறிவியல்'],med:['TAMIL MEDIUM','ENGLISH MEDIUM'],cat:['VIDEOS','INTRACTIVE CONTENT','WORK SHEETS (PDF File)','TEXT BOOK','AUDIO BOOK','THB'],cat2:['VIDEOS','INTRACTIVE CONTENT','ONLINE EXAM','WORK SHEETS (PDF File)']};
+const F_DEF={f1:['Online Interactive Sheet','ONLINE EXAM'],f2:['NMMS','TRUST'],term:['TERM 1','TERM 2','TERM 3'],sub:['தமிழ்','ENGLISH','கணக்கு','சூழ்நிலையியல்','அறிவியல்','சமூக அறிவியல்'],med:['TAMIL MEDIUM','ENGLISH MEDIUM'],cat:['VIDEOS','INTRACTIVE CONTENT','WORK SHEETS (PDF File)','TEXT BOOK','AUDIO BOOK'],cat2:['VIDEOS','INTRACTIVE CONTENT','ONLINE EXAM','WORK SHEETS (PDF File)']};
 /* ---- menu buttons: Admin can add / edit (rename) / delete. Kept in db.folders['__nav'] as 'key|type|label' so it syncs like the other folder lists.
    type: b = built-in button, 1 = new button (files / links only), 2 = new button (Class > Lesson > files) ---- */
 const NAV_KEY='__nav';
@@ -711,7 +711,7 @@ const foldNames=(key,t)=>{
  if(t==='lesson'&&!Array.isArray(a)&&key.split('/')[0]==='video')return['Lesson 1','Lesson 2','Lesson 3','Lesson 4','Lesson 5','Lesson 6','Lesson 7','Lesson 8','Lesson 9','Lesson 10'];/* VIDEOS / INTRACTIVE CONTENT / WORK SHEETS: default Lesson 1-5 in every class */
  if(t==='sub'&&!Array.isArray(a)&&key.split('/')[0]==='video'){const n=parseInt((key.split('/')[1]||'').replace(/\D/g,''),10);if(n>=6)return F_DEF.sub.slice()}/* STD 6-8: SCIENCE, SOCIAL SCIENCE (separate TAMIL MEDIUM / ENGLISH MEDIUM) */
  if(NOF1.includes(key)&&Array.isArray(a)){a=a.filter(n=>n!=='Online Interactive Sheet'&&n!=='ONLINE EXAM');if(!a.length)a=null}/* old 2-level folders removed from the videos button */
- if(t==='cat'&&Array.isArray(a)&&!a.includes('AUDIO BOOK')){const i=a.indexOf('TEXT BOOK');if(i>=0&&a[i+1]==='THB'){a=a.slice();a.splice(i+1,0,'AUDIO BOOK')}}
+ if(t==='cat'&&Array.isArray(a)){a=a.filter(n=>n!=='THB');if(!a.includes('AUDIO BOOK')&&!db.folders['__abfix']){const i=a.indexOf('TEXT BOOK');a.splice(i>=0?i+1:a.length,0,'AUDIO BOOK')}if(!a.length)a=null}/* THB folder removed; AUDIO BOOK folder present in every STD / term / subject / medium */
  if(t==='cat2'&&Array.isArray(a)){a=a.filter(n=>!/^lesson\b/i.test(n));if(!a.length)a=null}
  if(t==='term'&&Array.isArray(a)){a=a.filter(n=>!/^lesson\b/i.test(n));if(!a.length)a=null}/* old 'Lesson n' folders are not TERM folders */
  if(Array.isArray(a))return a.slice();
@@ -1110,7 +1110,24 @@ function uplView(){
  }
  shell(`<div class="auth" style="max-width:760px">${h}${myUploads()}</div>`);
 }
+/* ONE-TIME CLEANUP (Admin): deletes every uploaded file / folder record inside AUDIO BOOK and THB (all STD, terms, subjects, mediums),
+   removes THB from saved folder lists and puts a fresh, empty AUDIO BOOK into every saved list. Marker: db.folders['__abfix'] (syncs to Drive). */
+function purgeAB(){
+ if(!(REMOTE&&me&&me.admin&&lastPull>0)||db.folders['__abfix'])return;
+ const BAD=['AUDIO BOOK','THB'],hit=k=>{const p=String(k).split('/');return p[0]==='video'&&p.length>=6&&BAD.includes(p[5])};
+ Object.keys(db.items).forEach(k=>{if(!hit(k))return;
+  (db.items[k]||[]).forEach(it=>{if(!it)return;if(it.f)fdel(it.f);if(it.d)api('del',{name:me.name,role:me.role,pw:me.pw,id:it.d}).catch(()=>{})});
+  delete db.items[k]});
+ Object.keys(db.folders).forEach(k=>{
+  if(hit(k)){delete db.folders[k];return}
+  const p=k.split('/'),a=db.folders[k];
+  if(p[0]==='video'&&p.length===5&&Array.isArray(a)&&(a.includes('TEXT BOOK')||a.includes('VIDEOS'))){
+   const b=a.filter(x=>x!=='THB');if(!b.includes('AUDIO BOOK')){const i=b.indexOf('TEXT BOOK');b.splice(i>=0?i+1:b.length,0,'AUDIO BOOK')}db.folders[k]=b}});
+ ['__hide','__stuhide'].forEach(h=>{if(Array.isArray(db.folders[h]))db.folders[h]=db.folders[h].filter(x=>!hit(x))});
+ db.folders['__abfix']=['1'];save();
+}
 function render(){
+ try{purgeAB()}catch(e){}
  adSync();nbShow(false);
  if(me)authOpen=false;
  if(!me&&authOpen){$('#clkL').innerHTML='';$('#clkR').innerHTML='';$('#tcr').innerHTML='';return authView()}
