@@ -487,6 +487,10 @@ button,.btn,.fold,.hm-i{touch-action:manipulation}
 .hmenu .hm-i.hm-m:hover{background:linear-gradient(180deg,#69ff9a 0%,#00d455 100%);color:#fff;filter:none}
 /* hover-only glowing border, same pulse as the contribution button */
 .clk .nv[aria-label="Home"]:hover,.clk-r button[onclick="openAuth()"]:hover,.clk-r button[onclick="logout()"]:hover,.hmenu .hm-i:hover,.hmenu .hm-i.hm-m:hover{animation:tcrGlow 1.4s ease-in-out infinite}
+.cntbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.cnt-pill{background:#fff;border:2px solid var(--navy);border-radius:999px;padding:4px 14px;font-weight:700;color:var(--navy);font-size:clamp(13px,2.6vw,16px);line-height:1.5}
+.cnt-pill.adm{border-color:var(--rose);color:var(--rose)}
+.cnt-pill small{font-weight:600;opacity:.8}
 </style>
 </head>
 <body>
@@ -794,7 +798,7 @@ async function doAuth0(e){
   if(mode!=='login'&&!/^\d{10}$/.test(mob))return fail('Mobile No must be 10 digits.');
   const ck=await credKey(role,name,pw);
   if(mode==='login'&&ck){const c=credGet(name);
-   if(c&&c.h===ck&&c.role===role){me={role:c.role,name:c.name,admin:!!c.admin,pw};SS.set(me);cur=[];msg='';render();
+   if(c&&c.h===ck&&c.role===role){me={role:c.role,name:c.name,admin:!!c.admin,pw};SS.set(me);cur=[];msg='';render();cntLogin();
      /* instant login: refresh data first; re-check the password in the background only if the last check is older than 10 minutes */
      const stale=!c.t||Date.now()-c.t>6e5;pull().then(ok=>ok&&render()).catch(()=>{}).then(()=>{if(stale)verifyLogin(role,name,pw,ck)});return false}}
   $('#msg').textContent='Please wait…';
@@ -806,7 +810,7 @@ async function doAuth0(e){
     if(mode!=='signup'){try{r=await api(mode,body,20000)}catch(e2){return fail('Cannot reach the server. Check your internet connection and try again.')}}
     else return fail('Server is slow. Wait a few seconds, then try Sign up again (if it says the User Name is taken, your Sign up already worked - just Login).')}
   if(!r.ok){const e=String(r.err||'');if(mode==='forgot'&&/unknown|invalid action|not supported|no action|admin only/i.test(e))return fail('Server script is outdated: it has no Forgot Password support. Update Code.gs and re-deploy (New version).');return fail(e||'Failed.')}
-  if(mode==='login'){me={role:r.user.role,name:r.user.name,admin:!!r.user.admin,pw};SS.set(me);if(ck)credPut(name,{h:ck,role:r.user.role,name:r.user.name,admin:!!r.user.admin,t:Date.now()});cur=[];msg='';render();pull().then(ok=>ok&&render())}
+  if(mode==='login'){me={role:r.user.role,name:r.user.name,admin:!!r.user.admin,pw};SS.set(me);if(ck)credPut(name,{h:ck,role:r.user.role,name:r.user.name,admin:!!r.user.admin,t:Date.now()});cur=[];msg='';render();cntLogin();pull().then(ok=>ok&&render())}
   else{if(ck)credPut(name,{h:ck,role,name,admin:false});mode='login';msg=r.msg||'Done. Please log in.';render()}
   return false;
  }
@@ -1306,10 +1310,53 @@ function pendBox(){
   <div style="font-size:12px;opacity:.8">👤 ${esc(x.it.by||'Teacher')} &nbsp;›&nbsp; ${esc(x.k.split('/').slice(1).join(' › '))}</div></div>
   <button type="button" class="btn sm" data-k="${esc(x.k)}" onclick="pendOpen(this)">பார்க்க</button>
   <button type="button" class="btn sm" style="background:#1b7a2f" data-k="${esc(x.k)}" data-i="${x.i}" onclick="pendApprove(this)">✔ ஒப்புதல் வழங்கு</button></div>`).join('')}</div></div>`}
+/* ---------- WEBSITE VISITOR COUNTER (everyone sees it on the Home page) + TEACHER LOGIN COUNTER (Admin only) ----------
+   Needs the small Apps Script "Counter_Code.gs": Deploy > New deployment > Web app (Execute as: Me, Who has access: Anyone)
+   and paste its Web App URL between the quotes below. Empty = counters are off (Admin sees a reminder). */
+const CNT_API='https://script.google.com/macros/s/AKfycbx-aKE_RLBpCUshp2Mq9VSyJOxqmredHuU68wXmM2N2GsnEYatBOj9n05RttcjZS2B6Tw/exec';
+let CNT={v:+store.get('ks_cnt_v')||0,t:+store.get('ks_cnt_t')||0,tl:+store.get('ks_cnt_tl')||0},cntLast=0;
+const cntFmt=n=>Number(n||0).toLocaleString('en-IN');
+async function cntCall(q){
+ if(!CNT_API)return null;
+ const ac=new AbortController(),to=setTimeout(()=>ac.abort(),15000);
+ try{const r=await fetch(CNT_API+(CNT_API.indexOf('?')<0?'?':'&')+q+'&_='+Date.now(),{signal:ac.signal,redirect:'follow',cache:'no-store'});
+  const j=JSON.parse(await r.text());return j&&j.ok?j:null}
+ catch(e){return null}finally{clearTimeout(to)}
+}
+function cntApply(j){
+ if(!j)return;cntLast=Date.now();
+ if(typeof j.visits==='number'){CNT.v=j.visits;store.set('ks_cnt_v',String(CNT.v))}
+ if(typeof j.teachers==='number'){CNT.t=j.teachers;store.set('ks_cnt_t',String(CNT.t))}
+ if(typeof j.logins==='number'){CNT.tl=j.logins;store.set('ks_cnt_tl',String(CNT.tl))}
+ const set=(c,v)=>document.querySelectorAll(c).forEach(e=>{e.textContent=cntFmt(v)});
+ set('.cnt-v',CNT.v);set('.cnt-t',CNT.t);set('.cnt-tl',CNT.tl);
+}
+/* one visit = one browser session (a refresh does not add another visit) */
+async function cntInit(){
+ if(!CNT_API)return;
+ let first=true;try{first=!sessionStorage.getItem('ks_cnt_s')}catch(e){}
+ const j=await cntCall(first?'a=visit':'a=stats');
+ if(!j)return;
+ if(first){try{sessionStorage.setItem('ks_cnt_s','1')}catch(e){}}
+ cntApply(j);
+}
+function cntRefresh(){if(CNT_API&&Date.now()-cntLast>60000){cntLast=Date.now();cntCall('a=stats').then(cntApply)}}
+/* a Teacher (not the Admin) has just logged in: the server counts each teacher once + every login */
+function cntLogin(){
+ try{if(!CNT_API||!me||me.admin||me.role!=='TEACHER')return;
+  cntCall('a=tlogin&n='+encodeURIComponent(String(me.name).trim().toLowerCase())).then(cntApply)}catch(e){}
+}
+function visBar(){
+ let h='';
+ if(CNT_API)h+=`<span class="cnt-pill">👁 Website பார்வையாளர்கள் / Visitors: <b class="cnt-v">${CNT.v?cntFmt(CNT.v):'…'}</b></span>`;
+ if(isAdmin())h+=CNT_API?`<span class="cnt-pill adm">👩‍🏫 Teacher Login: <b class="cnt-t">${cntFmt(CNT.t)}</b> பேர் · மொத்த Login: <b class="cnt-tl">${cntFmt(CNT.tl)}</b> <small>(Admin மட்டும்)</small></span>`:`<span class="cnt-pill adm">⚙ Counter_Code.gs Web App URL-ஐ CNT_API-இல் சேர்க்கவும் <small>(Admin மட்டும்)</small></span>`;
+ return h?`<div class="cntbar">${h}</div>`:'';
+}
+setTimeout(cntInit,400);
 function home(){
- shell(`${menuRow()}${pendBox()}${!isAdmin()&&isHid('notif')?'':`<div class="home" style="grid-template-columns:1fr">
+ shell(`${menuRow()}${visBar()}${pendBox()}${!isAdmin()&&isHid('notif')?'':`<div class="home" style="grid-template-columns:1fr">
   <div><h3>அறிவிப்பு - Notification ${isAdmin()?hideBtn('notif'):''}${isAdmin()&&isHid('notif')?' <small>(Hidden)</small>':''}</h3><div class="box"><div class="nmq" id="nmq">${notifs().length?`<div class="ntrack" id="ntrack">${notifs().map((n,i)=>nCard(n,i)).join('')}</div>`:'<em>No notifications yet.</em>'}</div>
-  ${isAdmin()?`<p><button class="btn sm" onclick="editNotif(-1)">+ Add notification</button>${notifs().length>1?' <button class="btn sm rd" onclick="delNotif(-1)">Delete all</button>':''}</p>`:''}</div></div></div>`}`);nbMq();nbAuto();
+  ${isAdmin()?`<p><button class="btn sm" onclick="editNotif(-1)">+ Add notification</button>${notifs().length>1?' <button class="btn sm rd" onclick="delNotif(-1)">Delete all</button>':''}</p>`:''}</div></div></div>`}`);nbMq();nbAuto();cntRefresh();
 }
 /* School Morning Prayer Activities: தினம் ஒரு திருக்குறள் / பழமொழி / புதிர் / முக்கிய செய்திகள் */
 /* ---- School Morning Prayer Activities: கூடுதல் தினசரிப் பகுதிகள் (தினம் ஒரு பதிவு) ---- */
