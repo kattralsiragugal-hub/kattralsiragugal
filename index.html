@@ -1183,7 +1183,7 @@ function nbPaint(items,date,st){
  if(newsOn){newsBtn(true);const l=b.querySelectorAll('.newsl li')[newsCur];if(l)l.classList.add('speaking')}
 }
 /* >>> விருப்பம்: News_Code.gs-ஐ Web App ஆக Deploy செய்து அதன் URL-ஐ இங்கே ஒட்டினால், செய்திகள் Google சர்வர் வழியாகப் பெறப்படும் (மிக நம்பகமான வழி). காலியாக விட்டால் மற்ற வழிகள் பயன்படும். <<< */
-const NEWS_GS='';
+const NEWS_GS='https://script.google.com/macros/s/AKfycbz0RBKXHeDRhFfdO6DO9U0fCraMZ4HpE1xdS4qG5XICooNdeR-aE9O1X_PrnBq2AjPKoA/exec';
 /* பள்ளிக் காலைப் பிரார்த்தனைக்குப் பொருந்தாத தலைப்புகள் (குற்றம், மரணம், அரசியல் மோதல், விமர்சனம், டிஜெஸ்ட்/வீடியோ தலைப்புகள்) நீக்கப்படும். தேவைப்பட்டால் இந்தப் பட்டியலில் சொற்களைச் சேர்க்கலாம்/நீக்கலாம். */
 const NEWS_BLOCK=/கொலை|கொல்|வெட்டி|குத்தி|கொ\*\*|பாலியல்|கடத்தல்|கடத்த|சடலம்|சடல|தற்கொலை|உயிரிழ|பலி(?![\u0B80-\u0BFF])|மரணம்|காலமானார்|மறைவு|கைது|போக்சோ|வழக்கு|நீதிமன்றக் காவல்|சாடல்|சாடும்|சாடி|விமர்சன|குற்றச்சாட்டு|காட்டம்|ஆவேச|பதிலடி|கண்டனம்|தாக்கு|அசிங்க|ராசி\s*பலன்|ராசிபலன்|பஞ்சாங்க|Top\s*10|Live|Review|Box Office|வசூல்|ரிலீஸ்|ட்விட்டர்|வதந்தி|ஊழல்/i;
 function nbShowCur(){
@@ -1527,6 +1527,7 @@ function vtStatus(h){const e=document.getElementById('histSt');if(e)e.innerHTML=
 function vtRace(why){
  const d=new Date(),dd=d.getDate(),mm=d.getMonth()+1,u=VT_URL+'?_='+todayStr().split('.').reverse().join(''),e=encodeURIComponent;
  const src=[['direct',u,0],['jina','https://r.jina.ai/'+u,0],['allorigins','https://api.allorigins.win/raw?url='+e(u),0],['corsproxy','https://corsproxy.io/?'+e(u),2000],['codetabs','https://api.codetabs.com/v1/proxy?quest='+e(u),2000]];
+ if(NEWS_GS)src.unshift(['google',NEWS_GS+(NEWS_GS.includes('?')?'&':'?')+'hist=1',0]);/* சொந்த Google Apps Script server (நம்பகமானது) */
  return raceFirst(src.map(([nm,url,dl])=>[nm,async sig=>{if(dl)await new Promise((ok,no)=>{const t=setTimeout(ok,dl);sig.addEventListener('abort',()=>{clearTimeout(t);no(new DOMException('a','AbortError'))},{once:true})});const r=await nbGet(url,8000,sig),v=vtParse(await r.text());
   if(!v)throw new Error('பக்கம் புரியவில்லை');
   if(v.dd!==dd||v.mm!==mm)throw new Error('பழைய தேதி '+v.dd+'.'+v.mm);
