@@ -12,6 +12,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="preconnect" href="https://api.rss2json.com" crossorigin>
+<link rel="preconnect" href="https://api.allorigins.win" crossorigin>
+<link rel="preconnect" href="https://corsproxy.io" crossorigin>
+<link rel="preconnect" href="https://api.codetabs.com" crossorigin>
+<link rel="preconnect" href="https://r.jina.ai" crossorigin>
 <style>
 :root{--gold:#ffc000;--navy:#1a2f8f;--rose:#e8294b;--blue:#2e75b6;--red:#e00000;--grey:#d0cece;--ink:#14213d}
 *{box-sizing:border-box}
@@ -433,6 +438,19 @@ button,.btn,.fold,.hm-i{touch-action:manipulation}
 .pr-only{display:none}
 .btn.prbtn{background:#1b7a2f}.btn.prbtn:hover{background:#15601f}
 @page{size:A4;margin:10mm}
+.mgrid .mhist{max-height:340px;overflow:auto}
+.vtl{list-style:none;margin:0;padding:0;text-align:left}
+.vtl li{position:relative;padding:6px 0 6px 18px;border-bottom:1px dashed #cfd6e6;font-weight:600;line-height:1.5;font-size:16px}
+.vtl li:last-child{border-bottom:0}
+.vtl li::before{content:'◆';position:absolute;left:0;top:9px;font-size:10px;color:#ff9f1c}
+.vtl .vy{color:#1b6ca8;white-space:nowrap}
+.vtn{margin-top:10px;padding:8px 10px;background:#fff7ec;border-left:4px solid #ff9f1c;border-radius:8px;text-align:left}
+.vtn b{color:var(--navy)}.mgrid .vtn p{font-size:14px;margin:4px 0 0}
+.newsl.nsk li{height:16px;margin:12px 0;padding:0;border:0;background:linear-gradient(90deg,#e8edf6 25%,#f6f8fc 50%,#e8edf6 75%);background-size:200% 100%;animation:nsh 1.1s linear infinite;border-radius:6px}
+.newsl.nsk li::before,.newsl.nsk li::after{content:none!important}
+@keyframes nsh{to{background-position:-200% 0}}
+@media print{.mgrid .mhist{max-height:none!important;overflow:visible!important}.vtl li{padding:2px 0 2px 14px!important;font-size:12.5px!important}.vtl li::before{top:5px!important}.mgrid .vtn p{font-size:12px!important}.nsk{display:none!important}}
+.pdfcap .mhist{max-height:none!important;overflow:visible!important}.pdfcap .vtl li{padding:3px 0 3px 14px;font-size:13px}.pdfcap .vtl li::before{top:6px}.pdfcap .vtn p{font-size:12.5px}.pdfcap .nsk{display:none}
 @media print{
  html,body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .ban,.clk,.tcr,#adBar,#modal,.crumb button,.newsbtn,.noprint,#app>.msg,.nmodal{display:none!important}
@@ -1161,7 +1179,7 @@ const NEWS_RETRY='<button type="button" class="btn sm" onclick="nbLoad(true)">�
 function nbPaint(items,date,st){
  const b=$('#newsBox');if(!b)return;
  const s=st?`<div class="newsst noprint">${st}</div>`:'';
- const body=items.length?'<button type="button" id="newsPlay" class="btn dk newsbtn" onclick="readAllNews()" aria-pressed="false">🔊 அனைத்துச் செய்திகளையும் கேளுங்கள்</button><ul class="newsl">'+items.map(i=>`<li>${esc(typeof i==='string'?i:i.t)}${typeof i!=='string'&&i.l&&i.l!=='#'?` <a class="nl" href="${esc(i.l)}" target="_blank" rel="noopener" title="மூலச் செய்தி">↗</a>`:''}</li>`).join('')+'</ul>':'';
+ const body=items.length?'<button type="button" id="newsPlay" class="btn dk newsbtn" onclick="readAllNews()" aria-pressed="false">🔊 அனைத்துச் செய்திகளையும் கேளுங்கள்</button><ul class="newsl">'+items.map(i=>`<li>${esc(typeof i==='string'?i:i.t)}${typeof i!=='string'&&i.l&&i.l!=='#'?` <a class="nl" href="${esc(i.l)}" target="_blank" rel="noopener" title="மூலச் செய்தி">↗</a>`:''}</li>`).join('')+'</ul>':(/^⏳/.test(st||'')?'<ul class="newsl nsk"><li></li><li></li><li></li><li></li><li></li></ul>':'');
  b.innerHTML=s+body;
  const d=$('#newsD');if(d)d.textContent='• '+date;
  if(newsOn){newsBtn(true);const l=b.querySelectorAll('.newsl li')[newsCur];if(l)l.classList.add('speaking')}
@@ -1183,7 +1201,22 @@ function nbShowCur(){
  NEWS_SHOWN=n;nbPaint(n.items,n.date,st);
 }
 let NEWS_WHY='',NEWS_FAILS=0;
-async function nbGet(url,ms){const ac=new AbortController(),to=setTimeout(()=>ac.abort(),ms);try{const r=await fetch(url,{signal:ac.signal});if(!r.ok)throw new Error('http '+r.status);return r}finally{clearTimeout(to)}}
+async function nbGet(url,ms,sig){const ac=new AbortController(),to=setTimeout(()=>ac.abort(),ms);if(sig){if(sig.aborted)ac.abort();else sig.addEventListener('abort',()=>ac.abort(),{once:true})}try{const r=await fetch(url,{signal:ac.signal});if(!r.ok)throw new Error('http '+r.status);return r}finally{clearTimeout(to)}}
+/* பல மூலங்களையும் ஒரே நேரத்தில் முயன்று, முதலில் சரியான பதில் தருவதை எடுத்துக்கொள்ளும்; மற்றவை நிறுத்தப்படும் (வரிசையாகக் காத்திருப்பதை விட மிக விரைவு) */
+function raceFirst(jobs,ok,why){
+ return new Promise(resolve=>{
+  const acs=[];let left=jobs.length,done=false;
+  if(!left)return resolve(null);
+  jobs.forEach(([nm,fn])=>{
+   const ac=new AbortController();acs.push(ac);
+   (async()=>{
+    try{const a=await fn(ac.signal);if(ok(a)){if(!done){done=true;acs.forEach(x=>{if(x!==ac)try{x.abort()}catch(e){}});resolve(a)}}else if(!done)why.push(nm+': பதில் சரியில்லை')}
+    catch(e){if(!done)why.push(nm+': '+((e&&e.name==='AbortError')?'நேரம் முடிந்தது':String((e&&e.message)||e).slice(0,40)))}
+    if(--left===0&&!done)resolve(null);
+   })();
+  });
+ });
+}
 function nbClean(list){
  const seen=new Set(),all=[];
  for(const it of list){
@@ -1194,22 +1227,16 @@ function nbClean(list){
  const recent=all.filter(x=>x.ts&&Date.now()-x.ts<30*36e5);/* கடந்த 30 மணி நேரச் செய்திகளுக்கு முன்புரிமை */
  return (recent.length>=5?recent:all).slice(0,12).map(x=>({t:x.t,l:x.l}));
 }
-async function nbTry(name,why,fn){
- try{const a=await fn();if(a&&a.length>=5)return a;why.push(name+': போதிய செய்திகள் இல்லை')}
- catch(e){why.push(name+': '+((e&&e.name==='AbortError')?'நேரம் முடிந்தது':String((e&&e.message)||e).slice(0,40)))}
- return null;
-}
-async function nbSource(feed,why){
- let a=await nbTry('rss2json',why,async()=>{const r=await nbGet('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed),9000),j=await r.json();
+function nbSource(feed,why,extra){
+ const T=7000,jobs=(extra||[]).slice();
+ const chk=a=>{if(!a||a.length<5)throw new Error('போதிய செய்திகள் இல்லை');return a};
+ jobs.push(['rss2json',async sig=>{const r=await nbGet('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed),T,sig),j=await r.json();
   if(j.status!=='ok'||!Array.isArray(j.items))throw new Error(j.message||'status');
-  return nbClean(j.items.map(i=>({title:i.title,link:i.link,ts:Date.parse(String(i.pubDate||'').replace(' ','T')+'Z')||0})))});
- if(a)return a;
- for(const [nm,px] of [['allorigins','https://api.allorigins.win/raw?url='],['corsproxy','https://corsproxy.io/?'],['codetabs','https://api.codetabs.com/v1/proxy?quest=']]){
-  a=await nbTry(nm,why,async()=>{const r=await nbGet(px+encodeURIComponent(feed),9000),x=new DOMParser().parseFromString(await r.text(),'text/xml');
-   return nbClean([...x.querySelectorAll('item')].map(i=>({title:(i.querySelector('title')||{}).textContent,link:(i.querySelector('link')||{}).textContent,ts:Date.parse((i.querySelector('pubDate')||{}).textContent||'')||0})))});
-  if(a)return a;
- }
- return null;
+  return chk(nbClean(j.items.map(i=>({title:i.title,link:i.link,ts:Date.parse(String(i.pubDate||'').replace(' ','T')+'Z')||0}))))}]);
+ for(const [nm,px] of [['allorigins','https://api.allorigins.win/raw?url='],['corsproxy','https://corsproxy.io/?'],['codetabs','https://api.codetabs.com/v1/proxy?quest=']])
+  jobs.push([nm,async sig=>{const r=await nbGet(px+encodeURIComponent(feed),T,sig),x=new DOMParser().parseFromString(await r.text(),'text/xml');
+   return chk(nbClean([...x.querySelectorAll('item')].map(i=>({title:(i.querySelector('title')||{}).textContent,link:(i.querySelector('link')||{}).textContent,ts:Date.parse((i.querySelector('pubDate')||{}).textContent||'')||0}))))}]);
+ return raceFirst(jobs,Boolean,why);
 }
 function nbLoad(force){
  const day=todayStr();
@@ -1221,10 +1248,10 @@ function nbLoad(force){
  }
  NEWS_P=(async()=>{
   const why=[];let items=null;
-  if(NEWS_GS)items=await nbTry('Google சர்வர்',why,async()=>{const r=await nbGet(NEWS_GS,15000),j=await r.json();if(!j||!j.ok||!Array.isArray(j.items))throw new Error((j&&j.err)||'பதில் சரியில்லை');return nbClean(j.items)});
-  for(const f of NEWS_FEEDS){if(items)break;items=await nbSource(f,why)}
+  const gs=NEWS_GS?[['Google சர்வர்',async sig=>{const r=await nbGet(NEWS_GS,12000,sig),j=await r.json();if(!j||!j.ok||!Array.isArray(j.items))throw new Error((j&&j.err)||'பதில் சரியில்லை');const a=nbClean(j.items);if(a.length<5)throw new Error('போதிய செய்திகள் இல்லை');return a}]]:[];
+  for(let k=0;k<NEWS_FEEDS.length&&!items;k++)items=await nbSource(NEWS_FEEDS[k],why,k?[]:gs);
   if(items){NEWS_FAILS=0;NEWS_WHY='';NEWS_LIVE={items,date:day,t:Date.now()};store.set('ks_headlines',JSON.stringify({day,t:NEWS_LIVE.t,items}))}
-  else{NEWS_WHY=why.slice(0,4).join(' | ');if(NEWS_FAILS++<2)setTimeout(()=>{if(cur[0]==='morning'&&!newsOn)nbLoad(true)},20000)}/* தோல்வியடைந்தால் 20 விநாடியில் தானாக மீண்டும் முயலும் (2 முறை) */
+  else{NEWS_WHY=why.slice(0,4).join(' | ');if(NEWS_FAILS++<3)setTimeout(()=>{if(cur[0]==='morning'&&!newsOn)nbLoad(true)},8000)}/* தோல்வியடைந்தால் 8 விநாடியில் தானாக மீண்டும் முயலும் (3 முறை) */
  })().catch(()=>{}).finally(()=>{NEWS_P=null;nbShowCur()});
  nbShowCur();
  return NEWS_P;
@@ -1404,7 +1431,9 @@ async function storyLive(){
   }
  }catch(e){/* இணையம் இல்லையெனில் உள்ளிணைந்த கதை தொடரும் */}
 }
-const sayH=el=>{const h=histToday();sayText(el,hLbl(h.key)+'. '+h.e[0]+' ஆம் ஆண்டு. '+h.e[1])};
+const sayH=el=>{const v=VT_LIVE&&VT_LIVE.day===todayStr()?VT_LIVE:null;
+ if(v){sayText(el,spk(vtLbl()+'. '+v.ev.map(e=>e.t+(e.y?'. '+e.y+' ஆம் ஆண்டு':'')).join('. ')+'. '+v.notes.map(n=>n.h+'. '+n.p).join('. ')));return}
+ const h=histToday();sayText(el,hLbl(h.key)+'. '+h.e[0]+' ஆம் ஆண்டு. '+h.e[1])};
 function sayEn(el,text){
  if(!window.speechSynthesis){alert('இந்த Browser-இல் வாசிக்கும் வசதி இல்லை.');return}
  const same=sayEl===el;sayStop();if(same)return;
@@ -1439,6 +1468,78 @@ async function histLive(){
  }catch(e){/* இணையம் இல்லையெனில் உள்ளிணைந்த பதிவு மட்டும் தெரியும் */}
 }
 
+/* ---------- வரலாற்றில் இன்று: valaitamil.com/occasions_today.php-இலிருந்து தினமும் தானாக ---------- */
+/* பக்கத்தின் தேதி இன்றைய தேதியுடன் பொருந்தினால் மட்டுமே காட்டும்; இல்லையெனில் உள்ளிணைந்த பதிவு + Wikipedia தொடரும். */
+const VT_URL='https://www.valaitamil.com/occasions_today.php';
+let VT_LIVE=null,VT_P=null,VT_NO=0;
+const MONRE=[/^ஜன/,/^பிப/,/^மார/,/^ஏப/,/^மே/,/^ஜூ?ன|^ஜுன/,/^ஜூ?ல|^ஜுல/,/^ஆக/,/^செப/,/^அக/,/^நவ/,/^டிச/];
+const VT_STOP=/©|copyright|all rights|privacy|disclaimer|contact us|about us|advertis|follow us|subscribe|newsletter|facebook|twitter|youtube|whatsapp|telegram|instagram|மேலும் படிக்க|பகிர்/i;
+const vtLbl=()=>{const d=new Date();return d.getDate()+' '+TAMON[d.getMonth()]};
+const vtCut=(t,n)=>{if(t.length<=n)return t;const c=t.slice(0,n),i=Math.max(c.lastIndexOf('.'),c.lastIndexOf('!'),c.lastIndexOf('?'));return i>n*.5?c.slice(0,i+1):c.replace(/\s+\S*$/,'')+'…'};
+function vtLines(src){
+ if(!/<\s*(?:html|body|div|table|p|br|li)\b/i.test(src))return src.split(/\r?\n/);/* HTML அல்லாத (text/markdown) பதில் */
+ const d=new DOMParser().parseFromString(src,'text/html');
+ d.querySelectorAll('script,style,noscript,iframe,svg,select,textarea,head').forEach(x=>x.remove());
+ const B=/^(ADDRESS|ARTICLE|ASIDE|BLOCKQUOTE|BR|CENTER|DD|DIV|DL|DT|FIELDSET|FIGCAPTION|FIGURE|FOOTER|FORM|H[1-6]|HEADER|HR|LI|MAIN|NAV|OL|P|PRE|SECTION|TABLE|TBODY|TD|TFOOT|TH|THEAD|TR|UL)$/;
+ let o='';
+ (function w(n){if(n.nodeType===3){o+=n.nodeValue.replace(/\s+/g,' ');return}if(n.nodeType!==1)return;const b=B.test(n.tagName);if(b)o+='\n';for(let c=n.firstChild;c;c=c.nextSibling)w(c);if(b)o+='\n'})(d.body||d.documentElement);
+ return o.split('\n');
+}
+function vtParse(src){
+ const L=vtLines(String(src)).map(x=>x.replace(/\\([\[\]()])/g,'$1').replace(/!\[[^\]]*\]\([^)]*\)/g,' ').replace(/\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/[*`]/g,'').replace(/^[#>\-•\s]+/,'').replace(/\s+/g,' ').trim()).filter(Boolean);
+ const DT=/வரலாற்றில்\s*இன்று[^\[\d]{0,12}\[\s*(\d{1,2})\s*([^\s\d\]]+)/;
+ let hi=-1,m=null;
+ for(let i=0;i<L.length&&!m;i++){if(!/வரலாற்றில்/.test(L[i]))continue;const x=L.slice(i,i+3).join(' ').match(DT);if(x){m=x;hi=i}}
+ if(!m)return null;
+ const mm=MONRE.findIndex(r=>r.test(m[2]))+1;if(!mm)return null;
+ let ei=hi;while(ei<hi+2&&ei<L.length-1&&!L[ei].includes(']'))ei++;
+ let R=L.slice(ei+1);const si=R.findIndex(x=>VT_STOP.test(x)&&x.length<120);if(si>=0)R=R.slice(0,si);
+ R=R.filter(x=>(x.match(/[\u0B80-\u0BFF]/g)||[]).length>=4);
+ const LG=130,k=R.findIndex(x=>x.length>=LG);/* நீண்ட வரி = விளக்கப் பத்தி; அதன் முன் உள்ள குறுகிய வரி = தலைப்பு */
+ const evl=(k<0?R:R.slice(0,Math.max(0,k-1))).slice(0,10),ev=[],seen=new Set();
+ evl.forEach(x=>{const y=x.match(/^(.*?)\s*[-–—]\s*(\d{3,4})\s*$/),t=(y?y[1]:x).trim();if(t&&!seen.has(t)){seen.add(t);ev.push({t,y:y?y[2]:''})}});
+ const notes=[];
+ if(k>=0){let t=k>0?R[k-1]:'',p=k;
+  while(p<R.length&&notes.length<2){let b='';while(p<R.length&&R[p].length>=LG){b+=(b?' ':'')+R[p];p++}
+   if(t&&b)notes.push({h:t,p:vtCut(b,260)});
+   let q=p;while(q<R.length&&R[q].length<LG)q++;if(q>=R.length||q===p)break;t=R[q-1];p=q}}
+ return ev.length||notes.length?{dd:+m[1],mm,ev,notes}:null;
+}
+const vtHTML=v=>(v.ev.length?'<ul class="vtl">'+v.ev.map(e=>`<li>${esc(e.t)}${e.y?` <b class="vy">(${esc(e.y)})</b>`:''}</li>`).join('')+'</ul>':'')+v.notes.map(n=>`<div class="vtn"><b>${esc(n.h)}</b><p>${esc(n.p)}</p></div>`).join('')+'<p class="src">மூலம்: valaitamil.com</p>';
+function vtCache(){const day=todayStr();if(VT_LIVE&&VT_LIVE.day===day)return true;
+ try{const c=JSON.parse(store.get('ks_vt')||'null');if(c&&c.day===day&&Array.isArray(c.ev)&&(c.ev.length||(c.notes||[]).length)){VT_LIVE=c;return true}}catch(e){}return false}
+function vtPaint(){
+ const b=document.getElementById('histVT');if(!b)return;
+ const v=VT_LIVE&&VT_LIVE.day===todayStr()?VT_LIVE:null,bi=document.getElementById('histBI'),hl=document.getElementById('histLive'),dd=document.getElementById('histD');
+ if(v){b.innerHTML=vtHTML(v);if(bi)bi.style.display='none';if(hl)hl.innerHTML='';if(dd)dd.textContent=vtLbl()}else b.innerHTML='';
+}
+function vtStatus(h){const e=document.getElementById('histSt');if(e)e.innerHTML=h?'<div class="newsst noprint">'+h+'</div>':''}
+function vtRace(why){
+ const d=new Date(),dd=d.getDate(),mm=d.getMonth()+1,u=VT_URL+'?_='+todayStr().split('.').reverse().join(''),e=encodeURIComponent;
+ const src=[['direct',u],['jina','https://r.jina.ai/'+u],['allorigins','https://api.allorigins.win/raw?url='+e(u)],['corsproxy','https://corsproxy.io/?'+e(u)],['codetabs','https://api.codetabs.com/v1/proxy?quest='+e(u)]];
+ return raceFirst(src.map(([nm,url])=>[nm,async sig=>{const r=await nbGet(url,8000,sig),v=vtParse(await r.text());
+  if(!v)throw new Error('பக்கம் புரியவில்லை');
+  if(v.dd!==dd||v.mm!==mm)throw new Error('பழைய தேதி '+v.dd+'.'+v.mm);
+  return v}]),Boolean,why);
+}
+function vtLoad(force){
+ if(VT_P)return VT_P;
+ if(!force){if(vtCache())return Promise.resolve(true);if(VT_NO&&Date.now()-VT_NO<12e4)return Promise.resolve(false)}
+ VT_P=(async()=>{const day=todayStr(),why=[],v=await vtRace(why);
+  if(v){VT_LIVE=Object.assign({day},v);store.set('ks_vt',JSON.stringify(VT_LIVE));VT_NO=0;return true}
+  VT_NO=Date.now();return false})().catch(()=>{VT_NO=Date.now();return false}).finally(()=>{VT_P=null});
+ return VT_P;
+}
+async function vtShow(force){
+ if(!force&&vtCache()){vtPaint();vtStatus('');return}
+ vtPaint();vtStatus('⏳ valaitamil.com-இலிருந்து இன்றைய பதிவு பெறப்படுகிறது…');
+ const ok=await vtLoad(force);vtPaint();
+ if(ok){vtStatus('');return}
+ vtStatus('ℹ valaitamil.com-இலிருந்து இன்றைய பதிவைப் பெற இயலவில்லை; உள்ளிணைந்த பதிவு காட்டப்படுகிறது. <button type="button" class="btn sm" onclick="vtShow(true)">↻ மீண்டும்</button>');
+ histLive();
+}
+async function pageWait(){const a=[];if(NEWS_P)a.push(NEWS_P);if(VT_P)a.push(VT_P);if(a.length){try{await Promise.race([Promise.all(a),new Promise(r=>setTimeout(r,10000))])}catch(e){}}}
+
 /* ---- Morning page -> PDF file -> Share (WhatsApp, Telegram, Mail...) ---- */
 const loadJs=u=>new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=()=>no(new Error(u));document.head.appendChild(s)});
 async function pdfLibs(){
@@ -1446,7 +1547,7 @@ async function pdfLibs(){
  if(!(window.jspdf&&window.jspdf.jsPDF))await loadJs('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
 }
 async function morningPdfBlob(){
- if(NEWS_P){try{await Promise.race([NEWS_P,new Promise(r=>setTimeout(r,10000))])}catch(e){}}
+ await pageWait();
  await pdfLibs();
  try{await document.fonts.ready}catch(e){}
  const src=document.querySelector('#app .mgrid'),head=document.querySelector('#app .pr-only');
@@ -1502,7 +1603,7 @@ async function shareMorningPdf(btn){
  }catch(e){alert('PDF உருவாக்க இயலவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.')}
  finally{btn.disabled=false;btn.innerHTML=lb}
 }
-async function printMorning(){try{sayStop()}catch(e){}try{newsStop()}catch(e){}if(NEWS_P){try{await Promise.race([NEWS_P,new Promise(r=>setTimeout(r,10000))])}catch(e){}}window.print()}
+async function printMorning(){try{sayStop()}catch(e){}try{newsStop()}catch(e){}await pageWait();window.print()}
 function morning(){
  nbLoad();
  const k=KURAL[dayN%KURAL.length],p=PROV[dayN%PROV.length],r=PUZ[dayN%PUZ.length],g=GK[dayN%GK.length],s=STORY[dayN%STORY.length],w=WORDS[dayN%WORDS.length],h=histToday();
@@ -1514,9 +1615,9 @@ function morning(){
   <section class="mc"><h3>தினம் ஒரு பொது அறிவு</h3><div class="box say" onclick="sayG(this)" ${tip}><div class="kural">${esc(g[0])}</div><p><b>விடை:</b> ${esc(g[1])}</p><p class="src">மூலம்: tamildiction.org, quiz.tamil.help</p></div></section>
   <section class="mc"><h3>தினம் ஒரு நீதிக்கதை</h3><div class="box say mstory" id="storyBox" onclick="sayS(this)" ${tip}>${storyHTML(storyCur())}</div></section>
   <section class="mc"><h3>தினம் ஒரு ஆங்கில வார்த்தை</h3><div class="box say" onclick="sayW(this)" ${tip}><div class="kural mw">${esc(w[0])}</div><p><b>பொருள்:</b> ${esc(w[1])}</p><p class="ex">உச்சரிப்பு: ${esc(w[2])}</p><p class="src">மூலம்: ilearntamil.com</p></div></section>
-  <section class="mc"><h3>வரலாற்றில் இன்று <small class="nd">${esc(hLbl(h.key))}</small></h3><div class="box say mhist" onclick="sayH(this)" ${tip}>${h.exact?'':'<p class="ex">இன்றைய நாளுக்கான பதிவு இல்லை; அண்மை முக்கிய நாள்:</p>'}<div class="kural hy">${h.e[0]}</div><p>${esc(h.e[1])}</p><div id="histLive"></div></div></section>
+  <section class="mc"><h3>வரலாற்றில் இன்று <small class="nd" id="histD">${esc(hLbl(h.key))}</small></h3><div class="box say mhist" onclick="sayH(this)" ${tip}><div id="histBI">${h.exact?'':'<p class="ex">இன்றைய நாளுக்கான பதிவு இல்லை; அண்மை முக்கிய நாள்:</p>'}<div class="kural hy">${h.e[0]}</div><p>${esc(h.e[1])}</p></div><div id="histVT"></div><div id="histLive"></div></div><div id="histSt"></div></section>
   <section class="mc mnews"><h3>📰 முக்கிய செய்திகள் <small class="nd" id="newsD"></small></h3><div class="box" id="newsBox"></div></section></div>`);
- nbShowCur();histLive();storyLive();
+ nbShowCur();vtShow();storyLive();
  requestAnimationFrame(fitKural);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitKural);
 }
 /* notifications: several messages kept in db.notif as one string (separator NS) so older saved data and the Drive script keep working */
@@ -1966,6 +2067,9 @@ function mount(){
 return{html,mount,show,stop,start,cap,save,del,tg,csv,rep:renderRep,log:renderLog}})();
 
 render();
+setTimeout(()=>{try{nbLoad()}catch(e){}try{vtLoad()}catch(e){}},0);/* செய்திகளையும் வரலாற்றையும் பக்கம் திறந்தவுடனே பின்னணியில் பெறும் → Morning Prayer பக்கம் உடனே தெரியும் */
+setInterval(()=>{if(cur[0]==="morning"&&!vtCache()&&!VT_P)vtShow()},3e5);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&cur[0]==="morning"&&!vtCache()&&!VT_P)vtShow()});
 if(REMOTE){pull().then(ok=>ok&&!authOpen&&render());
  setInterval(async()=>{if(dirty&&me&&me.admin&&!pushing)pushDb();/* retry a failed save */
   if(newsOn||document.querySelector('dialog[open]')||$('#modal').style.display==='flex'||cur[0]==='att')return;
