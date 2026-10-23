@@ -10,7 +10,7 @@
 <link rel="dns-prefetch" href="https://r.jina.ai">
 <link rel="dns-prefetch" href="https://api.allorigins.win">
 <link rel="dns-prefetch" href="https://api.rss2json.com">
-<link rel="dns-prefetch" href="https://corsproxy.io">
+<link rel="dns-prefetch" href="https://api.codetabs.com">
 <link rel="dns-prefetch" href="https://api.codetabs.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -1257,13 +1257,13 @@ async function nbEnrich(day){
  }catch(e){}
 }
 function nbJobs(feed,extra,min){
- const T=3500,jobs=(extra||[]).slice(),MIN=min||4;
+ const T=8000,jobs=(extra||[]).slice(),MIN=min||4;
  const chk=a=>{if(!a||a.length<MIN)throw new Error('போதிய செய்திகள் இல்லை');return a};
  jobs.push(['rss2json',async sig=>{const r=await nbGet('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed),T,sig),j=await r.json();
   if(j.status!=='ok'||!Array.isArray(j.items))throw new Error(j.message||'status');
   return chk(nbClean(j.items.map(i=>({title:i.title,link:i.link,ts:Date.parse(String(i.pubDate||'').replace(' ','T')+'Z')||0}))))}]);
- for(const [nm,px] of [['allorigins','https://api.allorigins.win/raw?url='],['corsproxy','https://corsproxy.io/?'],['codetabs','https://api.codetabs.com/v1/proxy?quest=']])
-  jobs.push([nm,async sig=>{const r=await nbGet(px+encodeURIComponent(feed),T,sig),x=new DOMParser().parseFromString(await r.text(),'text/xml');
+ for(const [nm,px,mode] of [['allorigins','https://api.allorigins.win/raw?url=',0],['allorigins-json','https://api.allorigins.win/get?url=',1],['codetabs','https://api.codetabs.com/v1/proxy?quest=',0],['thingproxy','https://thingproxy.freeboard.io/fetch/',2],['yacdn','https://yacdn.org/proxy/',2]])
+  jobs.push([nm,async sig=>{const r=await nbGet(px+(mode===2?feed:encodeURIComponent(feed)),T,sig);let tx=await r.text();if(mode===1){try{tx=JSON.parse(tx).contents||''}catch(e){tx=''}}const x=new DOMParser().parseFromString(tx,'text/xml');
    return chk(nbClean([...x.querySelectorAll('item')].map(i=>({title:(i.querySelector('title')||{}).textContent,link:(i.querySelector('link')||{}).textContent,ts:Date.parse((i.querySelector('pubDate')||{}).textContent||'')||0}))))}]);
  return jobs;
 }
@@ -1278,12 +1278,12 @@ function nbLoad(force){
  window.__nbT=Date.now();
  NEWS_P=(async()=>{
   const why=[];
-  const gs=NEWS_GS?[['Google சர்வர்',async sig=>{const r=await nbGet(NEWS_GS,5000,sig),j=await r.json();if(!j||!j.ok||!Array.isArray(j.items))throw new Error((j&&j.err)||'பதில் சரியில்லை');const a=nbClean(j.items);if(a.length<4)throw new Error('போதிய செய்திகள் இல்லை');return a}]]:[];
+  const gs=NEWS_GS?[['Google சர்வர்',async sig=>{const r=await nbGet(NEWS_GS,15000,sig),j=await r.json();if(!j||!j.ok||!Array.isArray(j.items))throw new Error((j&&j.err)||'பதில் சரியில்லை');const a=nbClean(j.items);if(a.length<4)throw new Error('போதிய செய்திகள் இல்லை');return a}]]:[];
   /* அனைத்து செய்தி மூலங்களும் ஒரே நேரத்தில் முயலப்படும்; முதலில் வரும் சரியான பதிலே உடனே காட்டப்படும் */
   let jobs=[];NEWS_FEEDS.forEach((f,k)=>{jobs=jobs.concat(nbJobs(f,k?[]:gs))});
   const items=await raceFirst(jobs,Boolean,why);
   if(items){NEWS_FAILS=0;NEWS_WHY='';NEWS_LIVE={items,date:day,t:Date.now()};NEWS_LAST={items,date:day,t:NEWS_LIVE.t};store.set('ks_headlines',JSON.stringify({day,t:NEWS_LIVE.t,items}));setTimeout(()=>nbEnrich(day),0)}
-  else{NEWS_WHY=why.slice(0,4).join(' | ');if(NEWS_FAILS++<5)setTimeout(()=>{if(cur[0]==='morning'&&!newsOn)nbLoad(true)},3000)}/* தோல்வியடைந்தால் 3 விநாடியில் தானாக மீண்டும் முயலும் (5 முறை) */
+  else{NEWS_WHY=why.slice(0,10).join(' | ');if(NEWS_FAILS++<8)setTimeout(()=>{if(cur[0]==='morning'&&!newsOn)nbLoad(true)},3000+NEWS_FAILS*2000)}/* தோல்வியடைந்தால் 3 விநாடியில் தானாக மீண்டும் முயலும் (5 முறை) */
  })().catch(()=>{}).finally(()=>{NEWS_P=null;nbShowCur()});
  nbShowCur();
  return NEWS_P;
@@ -1560,7 +1560,7 @@ function vtPaint(){
 function vtStatus(h){const e=document.getElementById('histSt');if(e)e.innerHTML=h?'<div class="newsst noprint">'+h+'</div>':''}
 function vtRace(why){
  const d=new Date(),dd=d.getDate(),mm=d.getMonth()+1,u=VT_URL+'?_='+todayStr().split('.').reverse().join(''),e=encodeURIComponent;
- const src=[['direct',u,0],['jina','https://r.jina.ai/'+u,0],['allorigins','https://api.allorigins.win/raw?url='+e(u),0],['corsproxy','https://corsproxy.io/?'+e(u),2000],['codetabs','https://api.codetabs.com/v1/proxy?quest='+e(u),2000]];
+ const src=[['direct',u,0],['jina','https://r.jina.ai/'+u,0],['allorigins','https://api.allorigins.win/raw?url='+e(u),0],['codetabs','https://api.codetabs.com/v1/proxy?quest='+e(u),2000]];
  if(NEWS_GS)src.unshift(['google',NEWS_GS+(NEWS_GS.includes('?')?'&':'?')+'hist=1',0]);/* சொந்த Google Apps Script server (நம்பகமானது) */
  return raceFirst(src.map(([nm,url,dl])=>[nm,async sig=>{if(dl)await new Promise((ok,no)=>{const t=setTimeout(ok,dl);sig.addEventListener('abort',()=>{clearTimeout(t);no(new DOMException('a','AbortError'))},{once:true})});const r=await nbGet(url,8000,sig),v=vtParse(await r.text());
   if(!v)throw new Error('பக்கம் புரியவில்லை');
