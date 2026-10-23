@@ -1229,19 +1229,36 @@ function raceFirst(jobs,ok,why){
   });
  });
 }
+/* மாணவர்களுக்கு ஏற்ற தலைப்புகளுக்கு முன்னுரிமை (கல்வி, அறிவியல், விளையாட்டு, வானிலை, சாதனை…) */
+const NEWS_GOOD=/கல்வி|பள்ளி|மாணவ|ஆசிரியர்|தேர்வு|உதவித்தொகை|இஸ்ரோ|விண்வெளி|ராக்கெட்|செயற்கைக்கோள்|அறிவியல்|விஞ்ஞான|கண்டுபிடி|ஆராய்ச்சி|தொழில்நுட்ப|விளையாட்டு|போட்டி|பதக்க|சாம்பியன்|வெற்றி|சாதனை|விருது|வானிலை|மழை|புயல்|சுற்றுச்சூழல்|மரம்|மருத்துவ|சுகாதார|புத்தக|அறிவிப்பு|திட்டம்/;
+const NEWS_BLOCK2=/விபத்து|வெடி|குண்டு|துப்பாக்கி|தாக்குதல்|போதை|கஞ்சா|டாஸ்மாக்|மதுபான|நடிகர்|நடிகை|திரைப்பட|சினிமா|ட்ரெய்லர்|கள்ளக்காதல்|ஆபாச|பயங்கரவாத|போர்\s*பதற்றம்/;
 function nbClean(list){
  const seen=new Set(),all=[];
  for(const it of list){
   let t=String(it.title||'').replace(/\s+/g,' ').trim();const k=t.lastIndexOf(' - ');if(k>10)t=t.slice(0,k);
-  if(!t||seen.has(t)||NEWS_BLOCK.test(t)||t.length<18)continue;seen.add(t);
-  all.push({t,l:/^https:\/\//.test(it.link||'')?it.link:'#',ts:it.ts||0});
+  if(!t||seen.has(t)||NEWS_BLOCK.test(t)||NEWS_BLOCK2.test(t)||t.length<18||t.length>170)continue;seen.add(t);
+  all.push({t,l:/^https:\/\//.test(it.link||'')?it.link:'#',ts:it.ts||0,sc:NEWS_GOOD.test(t)?1:0});
  }
  const recent=all.filter(x=>x.ts&&Date.now()-x.ts<30*36e5);/* கடந்த 30 மணி நேரச் செய்திகளுக்கு முன்புரிமை */
- return (recent.length>=5?recent:all).slice(0,12).map(x=>({t:x.t,l:x.l}));
+ const pool=recent.length>=5?recent:all;
+ return pool.sort((a,b)=>(b.sc-a.sc)||(b.ts-a.ts)).slice(0,10).map(x=>({t:x.t,l:x.l,ts:x.ts}));
 }
-function nbJobs(feed,extra){
- const T=5000,jobs=(extra||[]).slice();
- const chk=a=>{if(!a||a.length<4)throw new Error('போதிய செய்திகள் இல்லை');return a};
+/* முதல் செய்திகள் உடனே காட்டப்பட்ட பின், அறிவியல்/விளையாட்டு/தேசிய/உலகச் செய்தித் தலைப்புகளையும் பின்னணியில் சேர்த்துத் தரம் உயர்த்தும் */
+const NEWS_TOPICS=['SCIENCE','SPORTS','NATION','WORLD'].map(x=>'https://news.google.com/rss/headlines/section/topic/'+x+'?hl=ta&gl=IN&ceid=IN:ta');
+async function nbEnrich(day){
+ try{
+  const why=[],rs=await Promise.all(NEWS_TOPICS.map(f=>raceFirst(nbJobs(f,[],1),Boolean,why)));
+  const base=(NEWS_LIVE&&NEWS_LIVE.date===day)?NEWS_LIVE.items:[];let pool=base.map(x=>({title:x.t,link:x.l,ts:x.ts||0}));
+  rs.forEach(a=>{if(a)pool=pool.concat(a.slice(0,4).map(x=>({title:x.t,link:x.l,ts:x.ts||0})))});
+  const items=nbClean(pool);if(items.length<4||!NEWS_LIVE||NEWS_LIVE.date!==day)return;
+  NEWS_LIVE={items,date:day,t:NEWS_LIVE.t};NEWS_LAST={items,date:day,t:NEWS_LIVE.t};
+  store.set('ks_headlines',JSON.stringify({day,t:NEWS_LIVE.t,items}));
+  if(cur[0]==='morning'&&!newsOn)nbShowCur();
+ }catch(e){}
+}
+function nbJobs(feed,extra,min){
+ const T=3500,jobs=(extra||[]).slice(),MIN=min||4;
+ const chk=a=>{if(!a||a.length<MIN)throw new Error('போதிய செய்திகள் இல்லை');return a};
  jobs.push(['rss2json',async sig=>{const r=await nbGet('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed),T,sig),j=await r.json();
   if(j.status!=='ok'||!Array.isArray(j.items))throw new Error(j.message||'status');
   return chk(nbClean(j.items.map(i=>({title:i.title,link:i.link,ts:Date.parse(String(i.pubDate||'').replace(' ','T')+'Z')||0}))))}]);
@@ -1261,11 +1278,11 @@ function nbLoad(force){
  window.__nbT=Date.now();
  NEWS_P=(async()=>{
   const why=[];
-  const gs=NEWS_GS?[['Google சர்வர்',async sig=>{const r=await nbGet(NEWS_GS,8000,sig),j=await r.json();if(!j||!j.ok||!Array.isArray(j.items))throw new Error((j&&j.err)||'பதில் சரியில்லை');const a=nbClean(j.items);if(a.length<4)throw new Error('போதிய செய்திகள் இல்லை');return a}]]:[];
+  const gs=NEWS_GS?[['Google சர்வர்',async sig=>{const r=await nbGet(NEWS_GS,5000,sig),j=await r.json();if(!j||!j.ok||!Array.isArray(j.items))throw new Error((j&&j.err)||'பதில் சரியில்லை');const a=nbClean(j.items);if(a.length<4)throw new Error('போதிய செய்திகள் இல்லை');return a}]]:[];
   /* அனைத்து செய்தி மூலங்களும் ஒரே நேரத்தில் முயலப்படும்; முதலில் வரும் சரியான பதிலே உடனே காட்டப்படும் */
   let jobs=[];NEWS_FEEDS.forEach((f,k)=>{jobs=jobs.concat(nbJobs(f,k?[]:gs))});
   const items=await raceFirst(jobs,Boolean,why);
-  if(items){NEWS_FAILS=0;NEWS_WHY='';NEWS_LIVE={items,date:day,t:Date.now()};NEWS_LAST={items,date:day,t:NEWS_LIVE.t};store.set('ks_headlines',JSON.stringify({day,t:NEWS_LIVE.t,items}))}
+  if(items){NEWS_FAILS=0;NEWS_WHY='';NEWS_LIVE={items,date:day,t:Date.now()};NEWS_LAST={items,date:day,t:NEWS_LIVE.t};store.set('ks_headlines',JSON.stringify({day,t:NEWS_LIVE.t,items}));setTimeout(()=>nbEnrich(day),0)}
   else{NEWS_WHY=why.slice(0,4).join(' | ');if(NEWS_FAILS++<5)setTimeout(()=>{if(cur[0]==='morning'&&!newsOn)nbLoad(true)},3000)}/* தோல்வியடைந்தால் 3 விநாடியில் தானாக மீண்டும் முயலும் (5 முறை) */
  })().catch(()=>{}).finally(()=>{NEWS_P=null;nbShowCur()});
  nbShowCur();
@@ -1738,7 +1755,8 @@ function section(){
    if(t!=='cls'&&t!=='sg'&&isAdmin())body+=`<p><button class="btn" onclick="addFolder('${esc(key)}')">+ Add</button></p>`;
  }else{
   const its=db.items[key]||[];listCache=its;
-  body=its.map((it,i)=>(it.pend&&!isAdmin()&&!(me&&it.by===me.name))?'':`<div class="item"><strong>${icImg(it)}${esc(it.t)}${itTag(it)}${it.h5?' <span style="font-size:12px;color:#1b6ca8">◆ H5P</span>':''}${ytId(it.u)&&!it.f&&!it.d?' <span style="font-size:12px;color:#b3261e">▶ YouTube</span>':''}${VIEW_SECS.includes(sec)?`<span class="vw" id="vw${i}">${viewTxt(viewN(key,it))}</span>`:''}</strong><div class="sh">${it.pend&&isAdmin()?`<button class="btn sm" style="background:#1b7a2f" onclick="approveItem(${i})">✔ ஒப்புதல் வழங்கு</button>`:''}
+  const demoTot=sec==='demo'?its.reduce((a,x)=>a+viewN(key,x),0):0;
+  body=(sec==='demo'&&its.length?`<div class="item" style="font-weight:800">👁 மொத்தப் பார்வைகள் / Total views: ${demoTot}</div>`:'')+its.map((it,i)=>(it.pend&&!isAdmin()&&!(me&&it.by===me.name))?'':`<div class="item"><strong>${icImg(it)}${esc(it.t)}${itTag(it)}${it.h5?' <span style="font-size:12px;color:#1b6ca8">◆ H5P</span>':''}${ytId(it.u)&&!it.f&&!it.d?' <span style="font-size:12px;color:#b3261e">▶ YouTube</span>':''}${VIEW_SECS.includes(sec)?`<span class="vw" id="vw${i}">${viewTxt(viewN(key,it))}</span>`:''}</strong><div class="sh">${it.pend&&isAdmin()?`<button class="btn sm" style="background:#1b7a2f" onclick="approveItem(${i})">✔ ஒப்புதல் வழங்கு</button>`:''}
    <button class="btn sm" onclick="openItem(${i})">${abPdf(it)?'📖 படி / 🔊 கேள்':'View'}</button>${canDl(it)?`<button class="btn sm" onclick="dl(${i})">⬇ Download</button>`:''}
    <button class="btn sic" style="--c:#25D366" title="WhatsApp" aria-label="Share on WhatsApp" onclick="share('wa',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.8h-.01a9.9 9.9 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88zM20.52 3.45A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.42-8.46z"/></svg></button><button class="btn sic" style="--c:#1877F2" title="Facebook" aria-label="Share on Facebook" onclick="share('fb',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.69.24 2.69.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></button><button class="btn sic" style="--c:#E4405F" title="Instagram" aria-label="Share on Instagram" onclick="share('ig',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12c0-3.2.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg></button><button class="btn sic" style="--c:#000000" title="X" aria-label="Share on X" onclick="share('x',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.6l5.24 6.93zm-1.29 19.5h2.04L6.48 3.24H4.3z"/></svg></button><button class="btn sic" style="--c:#229ED9" title="Telegram" aria-label="Share on Telegram" onclick="share('tg',${i})"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M11.94 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.06 0zm4.96 7.2c.1 0 .32.02.46.14.12.1.15.23.17.33.01.1.04.3.02.47-.18 1.9-.96 6.5-1.36 8.62-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.12-2.68-1.8-1.18-.78-.42-1.2.26-1.89.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.11.02-1.78 1.13-5.02 3.32-.48.33-.9.49-1.29.48-.42-.01-1.24-.24-1.85-.44-.75-.24-1.34-.37-1.29-.78.03-.21.32-.43.89-.66 3.49-1.52 5.82-2.52 6.98-3 3.33-1.39 4.02-1.63 4.47-1.64z"/></svg></button>
    ${isAdmin()?`<button class="btn sm" onclick="editItem(${i})">Edit</button><button class="btn sm rd" onclick="delItem(${i})">Delete</button>`:''}</div></div>`).join('')||`<div class="empty">Nothing uploaded here yet.</div>`;
@@ -1904,7 +1922,7 @@ async function dl(i){
  if(it.u)saveAs(it.u,base,true);
 }
 /* ---- view counter: VIDEO LESSONS, LESSON INTRACTIVE CONTENT, EXAM VIDEOS, ONLINE WORK SHEET, WORK SHEET (Pdf) ---- */
-const VIEW_SECS=['video','inter','cvid','tet','conl','work','cwork'];
+const VIEW_SECS=['video','inter','cvid','tet','conl','work','cwork','demo'];
 const vId=(k,it)=>k+'|'+(it.d||it.f||it.u||it.t);
 const vLoc=()=>{try{return JSON.parse(store.get('ks_views')||'{}')||{}}catch(e){return {}}};
 const viewN=(k,it)=>Math.max(+it.v||0,+vLoc()[vId(k,it)]||0);
