@@ -648,7 +648,7 @@ const isAdmin=()=>me&&me.admin;
 
 const ROLES=['TEACHER'];
 /* STUDENT / PARENTS users do not see these menu buttons (CALENDAR is visible to all); TEACHER (and Admin) see everything */
-const STU_HIDE=['forms','tforms','itforms','emis','tet','att'];/* TEACHER login / Admin only */
+const STU_HIDE=['forms','tforms','itforms','emis','att'];/* TEACHER login / Admin only (TET is visible to everyone, no login needed) */
 /* Admin-added buttons: Admin chooses per button whether STUDENT / PARENTS users see it. Hidden keys are kept in db.folders['__stuhide'] (syncs like the other lists). */
 const stuHide=()=>{const a=(db.folders||{})['__stuhide'];return Array.isArray(a)?a:[]};
 const isCustomNav=k=>!NAV_DEF.some(n=>n[0]===k);
