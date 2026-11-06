@@ -32,5 +32,70 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1-home.png",
+      "sizes": "1500x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "முகப்புப் பக்கம்"
+    },
+    {
+      "src": "/screenshots/desktop-2-menu.png",
+      "sizes": "1500x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "அறிவிப்புகள் மற்றும் கற்பித்தல் வளங்கள்"
+    },
+    {
+      "src": "/screenshots/desktop-3-tools.png",
+      "sizes": "1500x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Editing Tool – PDF, Image, Audio கருவிகள்"
+    },
+    {
+      "src": "/screenshots/desktop-4-guide.png",
+      "sizes": "1500x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "பயன்பாட்டுக் காணொளிகள்"
+    },
+    {
+      "src": "/screenshots/desktop-5-login.png",
+      "sizes": "1500x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ஆசிரியர் உள்நுழைவு"
+    },
+    {
+      "src": "/screenshots/mobile-1-home.png",
+      "sizes": "720x1360",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "கைபேசியில் முகப்புப் பக்கம்"
+    },
+    {
+      "src": "/screenshots/mobile-2-guide.png",
+      "sizes": "720x1360",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "பயன்பாட்டுக் காணொளிகள்"
+    },
+    {
+      "src": "/screenshots/mobile-4-tools.png",
+      "sizes": "720x1360",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Editing Tool – PDF, Image, Audio கருவிகள்"
+    },
+    {
+      "src": "/screenshots/mobile-5-login.png",
+      "sizes": "720x1360",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ஆசிரியர் உள்நுழைவு"
+    }
   ]
 }
