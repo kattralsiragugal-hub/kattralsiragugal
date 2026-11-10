@@ -977,8 +977,8 @@ async function go(p){sayStop();if(cur[0]==='att'&&p[0]!=='att')FA.stop();cur=p;r
 /* ---- Google AdSense: banner shown on content pages for visitors / teachers; NEVER shown when Admin is logged in, and never on the Login / Sign up / Forgot password screens ---- */
 const AD_CLIENT='ca-pub-7319133066983795',AD_SLOT='8118613765'; /* <- replace with your AdSense publisher ID and ad-unit slot ID */
 let adInit=false;
-/* விளம்பரம்: உள்ளடக்கம் உள்ள பக்கங்களில் மட்டும் (Morning page / கோப்புகள் உள்ள folder). Home, Login, About, Contact, Privacy, Terms, Upload, Demo மற்றும் காலிப் பக்கங்களில் இல்லை */
-function adPage(){const s=cur[0];if(!s||s==='home'||['about','contact','privacy','terms','upl','demo'].includes(s))return false;
+/* விளம்பரம்: உள்ளடக்கம் உள்ள பக்கங்களில் மட்டும் (Morning page / கோப்புகள் உள்ள folder). Home, Login, About, Contact, Privacy, Terms, Upload மற்றும் காலிப் பக்கங்களில் இல்லை (Demo காணொளிப் பக்கத்தில் காணொளி இருந்தால் மட்டும் உண்டு) */
+function adPage(){const s=cur[0];if(!s||s==='home'||['about','contact','privacy','terms','upl'].includes(s))return false;
  if(s==='morning')return true;
  try{return((db.items||{})[cur.join('/')]||[]).some(it=>it&&!it.pend)}catch(e){return false}}
 function adSync(){
