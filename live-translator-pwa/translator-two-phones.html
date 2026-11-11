@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a1f9d">
+<title>Live Translator</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-48.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ff;--card:#fff;--text:#1d1a45;--muted:#6b6896;--accent:#5b4bff;--accent2:#ff5d8f;--mint:#19d3a7;--line:#e2defa;--hero:#2a1f9d;--me1:#5b4bff;--me2:#7a63ff;--them:#d6f6ec;--themT:#0f3d33;--ok:#12b886;--okT:#0b7a5c;--warn:#f5a623;--rec:#e5384f;--shadow:0 14px 30px -16px rgba(60,40,200,.45);
+--disp:"Baloo Thambi 2","Noto Sans Tamil","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Malayalam","Noto Sans Kannada",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0c24;--card:#1a1742;--text:#eeecff;--muted:#a5a2d0;--accent:#8a7dff;--line:#2f2b63;--hero:#1b1580;--them:#14382f;--themT:#d7fff0;--okT:#5ef0c4;--shadow:0 14px 30px -16px rgba(0,0,0,.7)}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans Tamil","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Malayalam","Noto Sans Kannada",sans-serif;line-height:1.55}
+:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.hide{display:none!important}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:var(--hero);color:#fff;padding:max(16px,env(safe-area-inset-top)) 16px 66px;border-radius:0 0 36px 36px}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50% 50% 50% 12px}
+.hero::before{width:124px;height:112px;background:var(--accent2);right:-30px;top:-34px;transform:rotate(12deg)}
+.hero::after{width:92px;height:84px;background:var(--mint);right:42px;top:32px;transform:rotate(-8deg);opacity:.9}
+.hero>*{position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:12px;padding-right:84px;max-width:560px;margin:0 auto}
+.logo{width:46px;height:46px;flex:none}
+h1{font:700 1.45rem/1.2 var(--disp);margin:0}
+.applang{display:flex;align-items:center;gap:10px;max-width:560px;margin:16px auto 0}
+.applang label{margin:0;color:rgba(255,255,255,.85);white-space:nowrap}
+.applang select{width:auto;flex:1;max-width:190px;background-color:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.32);padding:8px 34px 8px 12px;border-radius:999px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E")}
+.applang select option{color:#1d1a45;background:#fff}
+
+/* layout */
+main{position:relative;z-index:2;max-width:560px;margin:-44px auto 0;padding:0 12px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--muted);margin:0 0 6px}
+select,input{width:100%;min-width:0;font:inherit;font-size:16px;color:var(--text);background-color:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+select{appearance:none;-webkit-appearance:none;padding-right:36px;background-repeat:no-repeat;background-position:right 13px center;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236b6896' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E")}
+select:focus,input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+button{font:inherit;font-family:var(--disp);font-weight:600;font-size:1.05rem;border:0;border-radius:14px;padding:11px 18px;background:var(--accent);color:#fff;cursor:pointer;transition:transform .12s}
+button:active{transform:scale(.96)}
+.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+.row{display:flex;gap:8px;margin-top:10px}.row>*{flex:1}
+.row:first-child{margin-top:0}
+
+/* languages */
+.langs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+#swp{width:44px;height:44px;padding:0;border-radius:50%;display:grid;place-items:center;margin-bottom:2px}
+
+/* pairing */
+#join{font-size:18px;font-weight:600;letter-spacing:.14em;text-transform:lowercase}
+.code{font:700 2.5rem/1.2 var(--disp);letter-spacing:.35rem;text-align:center;color:var(--accent);background:var(--bg);border:2px dashed var(--accent);border-radius:18px;padding:6px 0 2px;margin:14px 0 10px}
+.hint{font-size:.85rem;color:var(--muted);margin-top:12px;text-align:center}
+.steps{margin:10px 0 0;padding-left:1.3rem;font-size:.93rem}
+.steps li{margin:6px 0}
+summary{cursor:pointer;font:600 1.05rem var(--disp)}
+
+/* status */
+#status{display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:600;padding:10px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);margin:0 0 12px}
+#status::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--muted)}
+#status.st-ok{color:var(--okT);border-color:var(--ok)}#status.st-ok::before{background:var(--ok)}
+#status.st-wait::before,#status.st-conn::before{background:var(--warn)}
+#status.st-neterr,#status.st-sendfail,#status.st-micden,#status.st-nosr{border-color:var(--accent2)}
+#status.st-neterr::before,#status.st-sendfail::before,#status.st-micden::before,#status.st-nosr::before{background:var(--accent2)}
+
+/* chat */
+#log{display:flex;flex-direction:column;gap:8px;padding:4px 0 12px}
+#log:empty{display:none}
+.m{padding:10px 14px;max-width:86%;font-size:1.05rem;word-break:break-word}
+.m.me{align-self:flex-end;background:linear-gradient(135deg,var(--me1),var(--me2));color:#fff;border-radius:20px 20px 6px 20px}
+.m.them{align-self:flex-start;background:var(--them);color:var(--themT);border-radius:20px 20px 20px 6px}
+.m small{display:block;font-size:.8rem;opacity:.75;margin-top:2px}
+
+/* dock */
+.dock{position:sticky;bottom:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:12px 12px max(12px,env(safe-area-inset-bottom))}
+.dock .in{max-width:560px;margin:0 auto}
+.micwrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:12px}
+#micL{font:600 .95rem var(--disp);color:var(--muted);text-align:center}
+#mic{position:relative;width:78px;height:78px;padding:0;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 26px -8px rgba(255,93,143,.7)}
+#mic::before,#mic::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--rec);opacity:0}
+#mic.on{background:var(--rec)}
+#mic.on::before{animation:rip 1.6s ease-out infinite}
+#mic.on::after{animation:rip 1.6s ease-out .8s infinite}
+@keyframes rip{from{transform:scale(1);opacity:.7}to{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){#mic.on::before,#mic.on::after{animation:none;opacity:.35;transform:scale(1.25)}}
+
+.foot{text-align:center;font-size:.85rem;margin:4px 0 16px}.foot a{color:var(--muted)}
+/* welcome */
+#welcome{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;flex-direction:column;justify-content:center;padding:20px;overflow:auto}
+#welcome .box{max-width:420px;width:100%;margin:0 auto;text-align:center}
+#welcome .logo{width:68px;height:68px;margin-bottom:10px}
+#welcome h2{font:700 1.2rem/1.4 var(--disp);margin:0 0 20px}
+#welBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#welBtns button{background:var(--card);color:var(--text);border:1.5px solid var(--line);border-radius:18px;padding:18px 8px;font-size:1.2rem;box-shadow:var(--shadow)}
+#welBtns button:hover,#welBtns button:focus-visible{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div id="welcome">
+  <div class="box">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M6 10a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H18l-7 6v-6a6 6 0 0 1-5-6z" fill="#ff5d8f"/><path d="M22 22a6 6 0 0 1 6-6h10a6 6 0 0 1 6 6v10a6 6 0 0 1-5 6v6l-7-6H28a6 6 0 0 1-6-6z" fill="#19d3a7"/></svg>
+    <h2>Choose language · மொழியைத் தேர்வு செய்யவும்</h2>
+    <div id="welBtns"></div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M6 10a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H18l-7 6v-6a6 6 0 0 1-5-6z" fill="#ff5d8f"/><path d="M22 22a6 6 0 0 1 6-6h10a6 6 0 0 1 6 6v10a6 6 0 0 1-5 6v6l-7-6H28a6 6 0 0 1-6-6z" fill="#19d3a7"/></svg>
+    <h1 data-i="h1"></h1>
+  </div>
+  <div class="applang"><label for="ui" data-i="ui"></label><select id="ui"></select></div>
+</header>
+
+<main>
+<div class="card langs">
+  <div><label for="src" data-i="src"></label><select id="src"></select></div>
+  <button id="swp" class="ghost" aria-label="swap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></button>
+  <div><label for="tgt" data-i="tgt"></label><select id="tgt"></select></div>
+</div>
+
+<div class="card" id="pair">
+  <div class="row"><input id="join" maxlength="6" data-ph="joinPh" autocapitalize="off" autocomplete="off"><button id="jn" data-i="join" style="flex:0 0 auto"></button></div>
+  <div class="row"><button id="mk" class="ghost" data-i="mk"></button></div>
+  <div id="codeBox" class="hide"><div class="code" id="code"></div><div class="row"><button id="shr" data-i="share"></button><button id="cpy" class="ghost" data-i="copy"></button></div></div>
+  <div class="hint" data-i="hint"></div>
+</div>
+
+<div id="status"></div>
+
+<div class="card" id="help">
+  <details open>
+    <summary data-i="stepsT"></summary>
+    <ol class="steps">
+      <li data-i="s1"></li><li data-i="s2"></li><li data-i="s3"></li><li data-i="s4"></li><li data-i="s5"></li>
+    </ol>
+  </details>
+</div>
+
+<div id="log"></div>
+<p class="foot"><a href="privacy.html">Privacy Policy · தனியுரிமைக் கொள்கை</a></p>
+</main>
+
+<div class="dock"><div class="in">
+  <div class="micwrap">
+    <button id="mic" aria-label="mic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3" fill="#fff"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <div id="micL"></div>
+  </div>
+  <div class="row"><input id="txt" data-ph="txtph"><button id="snd" style="flex:0 0 auto" data-i="send"></button></div>
+</div></div>
+
+<script>
+/* ---------- App (UI) languages ---------- */
+var UIL=[["ta","தமிழ்"],["en","English"],["hi","हिन्दी"],["te","తెలుగు"],["ml","മലയാളം"],["kn","ಕನ್ನಡ"]];
+var I18N={
+ta:{h1:"🌐 இரு மொபைல் நேரடி மொழிபெயர்ப்பாளர்",ui:"காட்சி மொழி (App Language)",src:"நான் பேசும் மொழி",tgt:"நான் கேட்க விரும்பும் மொழி",
+ stepsT:"📋 பயன்படுத்தும் படிகள்",
+ s1:"நீங்கள் பேசும் மொழி, கேட்க விரும்பும் மொழியைத் தேர்வு செய்யவும்.",
+ s2:"ஒரு மொபைலில் “புதிய குறியீடு உருவாக்கு” அழுத்தவும்.",
+ s3:"மற்ற மொபைலில் அதே குறியீட்டை உள்ளிட்டு “இணை” அழுத்தவும்.",
+ s4:"“இணைக்கப்பட்டது” வந்ததும் 🎤 அழுத்திப் பேசவும்; மொழிபெயர்ப்பு மற்ற மொபைலில் ஒலிக்கும்.",
+ joinPh:"எ.கா. abc123",join:"இணை",mk:"🎲 புதிய குறியீடு உருவாக்கு",hint:"இரண்டு மொபைலிலும் ஒரே குறியீட்டை உள்ளிடவும்.",
+ st0:"இணைக்கப்படவில்லை",wait:"⏳ மற்ற மொபைலில் இதே குறியீட்டை உள்ளிட்டு 'இணை' அழுத்தவும்…",conn:"இணைக்கப்படுகிறது…",
+ ok:"✅ இணைக்கப்பட்டது! 🎤 அழுத்திப் பேசலாம்.",enter:"குறியீட்டை உள்ளிடவும்",notyet:"இன்னும் இணைக்கப்படவில்லை",
+ sendfail:"⚠️ அனுப்ப முடியவில்லை, மீண்டும் முயலவும்",neterr:"இணைய இணைப்பு சரிபார்க்கப்படுகிறது… மீண்டும் முயல்கிறது",
+ nosr:"இந்த உலாவியில் குரல் உள்ளீடு இல்லை. Android Chrome பயன்படுத்தவும் அல்லது தட்டச்சு செய்யவும்.",
+ micden:"மைக் அனுமதி இல்லை. https இணைப்பில் திறந்து மைக்கை Allow செய்யவும்.",tfail:"(மொழிபெயர்க்க முடியவில்லை)",
+ micon:"🎤 பேசத் தொடங்கு",micoff:"⏹ நிறுத்து (கேட்டுக்கொண்டிருக்கிறது…)",txtph:"அல்லது இங்கே தட்டச்சு செய்யுங்கள்",send:"அனுப்பு"},
+en:{h1:"🌐 Two-Phone Live Translator",ui:"App language",src:"Language I speak",tgt:"Language I want to hear",
+ stepsT:"📋 How to use",
+ s1:"Choose the language you speak and the language you want to hear.",
+ s2:"On one phone, tap “Generate new code”.",
+ s3:"On the other phone, enter the same code and tap “Connect”.",
+ s4:"When “Connected” appears, tap 🎤 and speak; the translation plays on the other phone.",
+ joinPh:"e.g. abc123",join:"Connect",mk:"🎲 Generate new code",hint:"Enter the same code on both phones.",
+ st0:"Not connected",wait:"⏳ Enter this same code on the other phone and tap 'Connect'…",conn:"Connecting…",
+ ok:"✅ Connected! Tap 🎤 to speak.",enter:"Enter the code",notyet:"Not connected yet",
+ sendfail:"⚠️ Could not send, please try again",neterr:"Checking internet… retrying",
+ nosr:"Voice input is not available in this browser. Use Android Chrome or type instead.",
+ micden:"Microphone permission denied. Open over https and Allow the mic.",tfail:"(could not translate)",
+ micon:"🎤 Start speaking",micoff:"⏹ Stop (listening…)",txtph:"Or type here",send:"Send"},
+hi:{h1:"🌐 दो मोबाइल लाइव अनुवादक",ui:"ऐप की भाषा",src:"मैं जो भाषा बोलता/बोलती हूँ",tgt:"मैं जिस भाषा में सुनना चाहता/चाहती हूँ",
+ stepsT:"📋 उपयोग के चरण",
+ s1:"अपनी बोलने की और सुनने की भाषा चुनें।",
+ s2:"एक मोबाइल पर “नया कोड बनाएँ” दबाएँ।",
+ s3:"दूसरे मोबाइल पर वही कोड डालकर “जुड़ें” दबाएँ।",
+ s4:"“जुड़ गया” दिखे तो 🎤 दबाकर बोलें; अनुवाद दूसरे मोबाइल पर सुनाई देगा।",
+ joinPh:"जैसे abc123",join:"जुड़ें",mk:"🎲 नया कोड बनाएँ",hint:"दोनों मोबाइल पर एक ही कोड डालें।",
+ st0:"जुड़ा नहीं है",wait:"⏳ दूसरे मोबाइल पर यही कोड डालकर ‘जुड़ें’ दबाएँ…",conn:"जुड़ रहा है…",
+ ok:"✅ जुड़ गया! 🎤 दबाकर बोलें।",enter:"कोड डालें",notyet:"अभी जुड़ा नहीं है",
+ sendfail:"⚠️ भेज नहीं सका, फिर कोशिश करें",neterr:"इंटरनेट जाँचा जा रहा है… फिर कोशिश कर रहा है",
+ nosr:"इस ब्राउज़र में वॉइस इनपुट नहीं है। Android Chrome इस्तेमाल करें या टाइप करें।",
+ micden:"माइक की अनुमति नहीं है। https लिंक पर खोलकर माइक Allow करें।",tfail:"(अनुवाद नहीं हो सका)",
+ micon:"🎤 बोलना शुरू करें",micoff:"⏹ रोकें (सुन रहा है…)",txtph:"या यहाँ टाइप करें",send:"भेजें"},
+te:{h1:"🌐 రెండు మొబైళ్ల లైవ్ అనువాదకుడు",ui:"యాప్ భాష",src:"నేను మాట్లాడే భాష",tgt:"నేను వినాలనుకునే భాష",
+ stepsT:"📋 ఉపయోగించే విధానం",
+ s1:"మీరు మాట్లాడే భాష, వినాలనుకునే భాషను ఎంచుకోండి.",
+ s2:"ఒక మొబైల్‌లో “కొత్త కోడ్ సృష్టించు” నొక్కండి.",
+ s3:"మరో మొబైల్‌లో అదే కోడ్ నమోదు చేసి “కనెక్ట్” నొక్కండి.",
+ s4:"“కనెక్ట్ అయింది” వచ్చాక 🎤 నొక్కి మాట్లాడండి; అనువాదం మరో మొబైల్‌లో వినిపిస్తుంది.",
+ joinPh:"ఉదా. abc123",join:"కనెక్ట్",mk:"🎲 కొత్త కోడ్ సృష్టించు",hint:"రెండు మొబైళ్లలో ఒకే కోడ్ నమోదు చేయండి.",
+ st0:"కనెక్ట్ కాలేదు",wait:"⏳ మరో మొబైల్‌లో ఇదే కోడ్ నమోదు చేసి ‘కనెక్ట్’ నొక్కండి…",conn:"కనెక్ట్ అవుతోంది…",
+ ok:"✅ కనెక్ట్ అయింది! 🎤 నొక్కి మాట్లాడండి.",enter:"కోడ్ నమోదు చేయండి",notyet:"ఇంకా కనెక్ట్ కాలేదు",
+ sendfail:"⚠️ పంపలేకపోయాం, మళ్లీ ప్రయత్నించండి",neterr:"ఇంటర్నెట్ తనిఖీ చేస్తోంది… మళ్లీ ప్రయత్నిస్తోంది",
+ nosr:"ఈ బ్రౌజర్‌లో వాయిస్ ఇన్‌పుట్ లేదు. Android Chrome వాడండి లేదా టైప్ చేయండి.",
+ micden:"మైక్ అనుమతి లేదు. https లింక్‌లో తెరిచి మైక్‌ను Allow చేయండి.",tfail:"(అనువదించలేకపోయాం)",
+ micon:"🎤 మాట్లాడటం ప్రారంభించు",micoff:"⏹ ఆపు (వింటోంది…)",txtph:"లేదా ఇక్కడ టైప్ చేయండి",send:"పంపు"},
+ml:{h1:"🌐 രണ്ട് മൊബൈൽ ലൈവ് പരിഭാഷകൻ",ui:"ആപ്പ് ഭാഷ",src:"ഞാൻ സംസാരിക്കുന്ന ഭാഷ",tgt:"എനിക്ക് കേൾക്കേണ്ട ഭാഷ",
+ stepsT:"📋 ഉപയോഗിക്കേണ്ട വിധം",
+ s1:"നിങ്ങൾ സംസാരിക്കുന്ന ഭാഷയും കേൾക്കാൻ ആഗ്രഹിക്കുന്ന ഭാഷയും തിരഞ്ഞെടുക്കുക.",
+ s2:"ഒരു മൊബൈലിൽ “പുതിയ കോഡ് ഉണ്ടാക്കുക” അമർത്തുക.",
+ s3:"മറ്റേ മൊബൈലിൽ അതേ കോഡ് നൽകി “കണക്റ്റ്” അമർത്തുക.",
+ s4:"“കണക്റ്റ് ആയി” വന്നാൽ 🎤 അമർത്തി സംസാരിക്കുക; പരിഭാഷ മറ്റേ മൊബൈലിൽ കേൾക്കാം.",
+ joinPh:"ഉദാ. abc123",join:"കണക്റ്റ്",mk:"🎲 പുതിയ കോഡ് ഉണ്ടാക്കുക",hint:"രണ്ട് മൊബൈലിലും ഒരേ കോഡ് നൽകുക.",
+ st0:"കണക്റ്റ് ആയിട്ടില്ല",wait:"⏳ മറ്റേ മൊബൈലിൽ ഇതേ കോഡ് നൽകി ‘കണക്റ്റ്’ അമർത്തുക…",conn:"കണക്റ്റ് ചെയ്യുന്നു…",
+ ok:"✅ കണക്റ്റ് ആയി! 🎤 അമർത്തി സംസാരിക്കാം.",enter:"കോഡ് നൽകുക",notyet:"ഇതുവരെ കണക്റ്റ് ആയിട്ടില്ല",
+ sendfail:"⚠️ അയയ്ക്കാനായില്ല, വീണ്ടും ശ്രമിക്കുക",neterr:"ഇന്റർനെറ്റ് പരിശോധിക്കുന്നു… വീണ്ടും ശ്രമിക്കുന്നു",
+ nosr:"ഈ ബ്രൗസറിൽ വോയ്സ് ഇൻപുട്ട് ഇല്ല. Android Chrome ഉപയോഗിക്കുക അല്ലെങ്കിൽ ടൈപ്പ് ചെയ്യുക.",
+ micden:"മൈക്ക് അനുമതിയില്ല. https ലിങ്കിൽ തുറന്ന് മൈക്ക് Allow ചെയ്യുക.",tfail:"(പരിഭാഷപ്പെടുത്താനായില്ല)",
+ micon:"🎤 സംസാരിക്കാൻ തുടങ്ങുക",micoff:"⏹ നിർത്തുക (കേൾക്കുന്നു…)",txtph:"അല്ലെങ്കിൽ ഇവിടെ ടൈപ്പ് ചെയ്യുക",send:"അയയ്ക്കുക"},
+kn:{h1:"🌐 ಎರಡು ಮೊಬೈಲ್ ಲೈವ್ ಅನುವಾದಕ",ui:"ಆ್ಯಪ್ ಭಾಷೆ",src:"ನಾನು ಮಾತನಾಡುವ ಭಾಷೆ",tgt:"ನಾನು ಕೇಳಲು ಬಯಸುವ ಭಾಷೆ",
+ stepsT:"📋 ಬಳಸುವ ಹಂತಗಳು",
+ s1:"ನೀವು ಮಾತನಾಡುವ ಮತ್ತು ಕೇಳಲು ಬಯಸುವ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.",
+ s2:"ಒಂದು ಮೊಬೈಲ್‌ನಲ್ಲಿ “ಹೊಸ ಕೋಡ್ ರಚಿಸಿ” ಒತ್ತಿ.",
+ s3:"ಇನ್ನೊಂದು ಮೊಬೈಲ್‌ನಲ್ಲಿ ಅದೇ ಕೋಡ್ ನಮೂದಿಸಿ “ಸಂಪರ್ಕಿಸಿ” ಒತ್ತಿ.",
+ s4:"“ಸಂಪರ್ಕವಾಯಿತು” ಬಂದ ಮೇಲೆ 🎤 ಒತ್ತಿ ಮಾತನಾಡಿ; ಅನುವಾದ ಇನ್ನೊಂದು ಮೊಬೈಲ್‌ನಲ್ಲಿ ಕೇಳಿಸುತ್ತದೆ.",
+ joinPh:"ಉದಾ. abc123",join:"ಸಂಪರ್ಕಿಸಿ",mk:"🎲 ಹೊಸ ಕೋಡ್ ರಚಿಸಿ",hint:"ಎರಡೂ ಮೊಬೈಲ್‌ನಲ್ಲಿ ಒಂದೇ ಕೋಡ್ ನಮೂದಿಸಿ.",
+ st0:"ಸಂಪರ್ಕವಾಗಿಲ್ಲ",wait:"⏳ ಇನ್ನೊಂದು ಮೊಬೈಲ್‌ನಲ್ಲಿ ಇದೇ ಕೋಡ್ ನಮೂದಿಸಿ ‘ಸಂಪರ್ಕಿಸಿ’ ಒತ್ತಿ…",conn:"ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…",
+ ok:"✅ ಸಂಪರ್ಕವಾಯಿತು! 🎤 ಒತ್ತಿ ಮಾತನಾಡಿ.",enter:"ಕೋಡ್ ನಮೂದಿಸಿ",notyet:"ಇನ್ನೂ ಸಂಪರ್ಕವಾಗಿಲ್ಲ",
+ sendfail:"⚠️ ಕಳುಹಿಸಲಾಗಲಿಲ್ಲ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",neterr:"ಇಂಟರ್ನೆಟ್ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ… ಮತ್ತೆ ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ",
+ nosr:"ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಇನ್‌ಪುಟ್ ಇಲ್ಲ. Android Chrome ಬಳಸಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.",
+ micden:"ಮೈಕ್ ಅನುಮತಿ ಇಲ್ಲ. https ಲಿಂಕ್‌ನಲ್ಲಿ ತೆರೆದು ಮೈಕ್ Allow ಮಾಡಿ.",tfail:"(ಅನುವಾದಿಸಲಾಗಲಿಲ್ಲ)",
+ micon:"🎤 ಮಾತನಾಡಲು ಪ್ರಾರಂಭಿಸಿ",micoff:"⏹ ನಿಲ್ಲಿಸಿ (ಕೇಳುತ್ತಿದೆ…)",txtph:"ಅಥವಾ ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ",send:"ಕಳುಹಿಸಿ"}
+};
+
+var EXTRA={
+ta:{share:"📤 இணைப்பைப் பகிர்",copy:"📋 நகலெடு",copied:"✅ இணைப்பு நகலெடுக்கப்பட்டது",
+ s2:"ஒரு மொபைலில் “புதிய குறியீடு உருவாக்கு” அழுத்தி, வரும் இணைப்பை மற்ற மொபைலுக்குப் பகிரவும்.",
+ s3:"மற்ற மொபைலில் அந்த இணைப்பைத் திறந்தால் தானாக இணைந்துவிடும் (அல்லது குறியீட்டை உள்ளிட்டு “இணை” அழுத்தவும்).",
+ s5:"ஒவ்வொருவரும் தங்கள் மொழியை எப்போது வேண்டுமானாலும் மாற்றலாம்."},
+en:{share:"📤 Share link",copy:"📋 Copy",copied:"✅ Link copied",
+ s2:"On one phone tap “Generate new code”, then share the link with the other phone.",
+ s3:"Open that link on the other phone and it connects automatically (or enter the code and tap “Connect”).",
+ s5:"Each person can change their own languages anytime."},
+hi:{share:"📤 लिंक शेयर करें",copy:"📋 कॉपी",copied:"✅ लिंक कॉपी हुआ",
+ s2:"एक मोबाइल पर “नया कोड बनाएँ” दबाएँ और लिंक दूसरे मोबाइल पर भेजें।",
+ s3:"दूसरे मोबाइल पर वह लिंक खोलते ही अपने आप जुड़ जाएगा (या कोड डालकर “जुड़ें” दबाएँ)।",
+ s5:"हर व्यक्ति अपनी भाषा कभी भी बदल सकता है।"},
+te:{share:"📤 లింక్ షేర్ చేయండి",copy:"📋 కాపీ",copied:"✅ లింక్ కాపీ అయింది",
+ s2:"ఒక మొబైల్‌లో “కొత్త కోడ్ సృష్టించు” నొక్కి, లింక్‌ను మరో మొబైల్‌కు షేర్ చేయండి.",
+ s3:"మరో మొబైల్‌లో ఆ లింక్ తెరిస్తే ఆటోమేటిక్‌గా కనెక్ట్ అవుతుంది (లేదా కోడ్ నమోదు చేసి “కనెక్ట్” నొక్కండి).",
+ s5:"ప్రతి ఒక్కరూ తమ భాషను ఎప్పుడైనా మార్చుకోవచ్చు."},
+ml:{share:"📤 ലിങ്ക് പങ്കിടുക",copy:"📋 പകർത്തുക",copied:"✅ ലിങ്ക് പകർത്തി",
+ s2:"ഒരു മൊബൈലിൽ “പുതിയ കോഡ് ഉണ്ടാക്കുക” അമർത്തി ലിങ്ക് മറ്റേ മൊബൈലിലേക്ക് പങ്കിടുക.",
+ s3:"മറ്റേ മൊബൈലിൽ ആ ലിങ്ക് തുറന്നാൽ തനിയെ കണക്റ്റ് ആകും (അല്ലെങ്കിൽ കോഡ് നൽകി “കണക്റ്റ്” അമർത്തുക).",
+ s5:"ഓരോരുത്തർക്കും അവരവരുടെ ഭാഷ എപ്പോൾ വേണമെങ്കിലും മാറ്റാം."},
+kn:{share:"📤 ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ",copy:"📋 ನಕಲಿಸಿ",copied:"✅ ಲಿಂಕ್ ನಕಲಾಯಿತು",
+ s2:"ಒಂದು ಮೊಬೈಲ್‌ನಲ್ಲಿ “ಹೊಸ ಕೋಡ್ ರಚಿಸಿ” ಒತ್ತಿ, ಲಿಂಕ್ ಅನ್ನು ಇನ್ನೊಂದು ಮೊಬೈಲ್‌ಗೆ ಹಂಚಿಕೊಳ್ಳಿ.",
+ s3:"ಇನ್ನೊಂದು ಮೊಬೈಲ್‌ನಲ್ಲಿ ಆ ಲಿಂಕ್ ತೆರೆದರೆ ತಾನಾಗಿ ಸಂಪರ್ಕವಾಗುತ್ತದೆ (ಅಥವಾ ಕೋಡ್ ನಮೂದಿಸಿ “ಸಂಪರ್ಕಿಸಿ” ಒತ್ತಿ).",
+ s5:"ಪ್ರತಿಯೊಬ್ಬರೂ ತಮ್ಮ ಭಾಷೆಯನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು."}
+};
+Object.keys(EXTRA).forEach(function(k){Object.keys(EXTRA[k]).forEach(function(j){I18N[k][j]=EXTRA[k][j]})});
+
+var LANGS=[["தமிழ்","ta-IN","ta"],["English","en-US","en"],["हिन्दी","hi-IN","hi"],["తెలుగు","te-IN","te"],["മലയാളം","ml-IN","ml"],["ಕನ್ನಡ","kn-IN","kn"],["Español","es-ES","es"],["Français","fr-FR","fr"],["Deutsch","de-DE","de"],["日本語","ja-JP","ja"],["中文","zh-CN","zh-CN"],["العربية","ar-SA","ar"],["Русский","ru-RU","ru"]];
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var $=function(i){return document.getElementById(i)};
+var es=null,connected=false,me=Math.random().toString(36).slice(2,8),pinger=null,rec=null,listening=false,speaking=false,session=0;
+var ui="ta",curStatus="st0",needWelcome=false;
+
+function T(k){return (I18N[ui]&&I18N[ui][k])||I18N.en[k]||k}
+function status(k){curStatus=k;$("status").className="st-"+k;$("status").textContent=T(k)}
+function micLabel(){var t=(listening?T("micoff"):T("micon")).replace(/^(?:🎤|⏹)\s*/u,"");$("micL").textContent=t;$("mic").setAttribute("aria-label",t)}
+function applyUI(){
+  document.documentElement.lang=ui;
+  document.title=T("h1").replace(/^🌐\s*/,"");
+  document.querySelectorAll("[data-i]").forEach(function(e){e.textContent=T(e.getAttribute("data-i")).replace(/^(?:🌐|📋|🎲|📤)\s*/u,"")});
+  document.querySelectorAll("[data-ph]").forEach(function(e){e.placeholder=T(e.getAttribute("data-ph"))});
+  $("ui").value=ui;
+  status(curStatus);micLabel();
+}
+function setUI(c){
+  if(!I18N[c])c="ta";
+  ui=c;
+  try{localStorage.setItem("tmr-ui",c)}catch(e){}
+  applyUI();
+}
+(function initUI(){
+  UIL.forEach(function(l){
+    $("ui").add(new Option(l[1],l[0]));
+    var b=document.createElement("button");b.textContent=l[1];
+    b.onclick=function(){setUI(l[0]);$("welcome").classList.add("hide");setDefaults(l[0]);autoJoin()};
+    $("welBtns").appendChild(b);
+  });
+  $("ui").onchange=function(){setUI($("ui").value)};
+  var saved=null;try{saved=localStorage.getItem("tmr-ui")}catch(e){}
+  if(saved&&I18N[saved]){ui=saved;$("welcome").classList.add("hide")}else{needWelcome=true}
+  applyUI();
+})();
+
+LANGS.forEach(function(l,i){$("src").add(new Option(l[0],i));$("tgt").add(new Option(l[0],i))});
+$("src").value=0;$("tgt").value=1;
+function idxOf(c){for(var i=0;i<LANGS.length;i++)if(LANGS[i][2]===c)return i;return 0}
+function saveLangs(){try{localStorage.setItem("tmr-src",$("src").value);localStorage.setItem("tmr-tgt",$("tgt").value)}catch(e){}}
+function setDefaults(c){$("src").value=idxOf(c);$("tgt").value=idxOf(c==="en"?"ta":"en");saveLangs()}
+(function(){var a=null,b=null;try{a=localStorage.getItem("tmr-src");b=localStorage.getItem("tmr-tgt")}catch(e){}
+ if(a!==null&&LANGS[a])$("src").value=a;if(b!==null&&LANGS[b])$("tgt").value=b})();
+$("tgt").onchange=saveLangs;
+function src(){return LANGS[$("src").value]}
+function tgt(){return LANGS[$("tgt").value]}
+
+/* ---------- speech out ---------- */
+function unlock(){try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}}
+function speak(text,lang){
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);u.lang=lang;
+    var vs=speechSynthesis.getVoices();
+    var v=vs.find(function(v){return v.lang.replace("_","-")===lang})||vs.find(function(v){return v.lang.slice(0,2)===lang.slice(0,2)});
+    if(v)u.voice=v;
+    speaking=true;
+    u.onend=u.onerror=function(){setTimeout(function(){speaking=false},400)};
+    speechSynthesis.speak(u);
+  }catch(e){speaking=false}
+}
+
+/* ---------- translation ---------- */
+function withTimeout(p,ms){return new Promise(function(res,rej){var t=setTimeout(function(){rej(new Error("timeout"))},ms);p.then(function(v){clearTimeout(t);res(v)},function(e){clearTimeout(t);rej(e)})})}
+function tGoogle(text,from,to){
+  var url="https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl="+encodeURIComponent(from)+"&tl="+encodeURIComponent(to)+"&q="+encodeURIComponent(text);
+  return fetch(url).then(function(r){return r.json()}).then(function(j){
+    var s=(j[0]||[]).map(function(x){return x[0]}).join("");
+    if(!s)throw new Error("empty");return s;
+  });
+}
+function tMyMemory(text,from,to){
+  var url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(text)+"&langpair="+encodeURIComponent(from+"|"+to);
+  return fetch(url).then(function(r){return r.json()}).then(function(j){
+    if(!j.responseData||!j.responseData.translatedText)throw new Error("empty");
+    return j.responseData.translatedText;
+  });
+}
+function translate(text,from,to){
+  if(from===to)return Promise.resolve(text);
+  return withTimeout(tGoogle(text,from,to),4000).catch(function(){return withTimeout(tMyMemory(text,from,to),6000)});
+}
+function addMsg(who,orig,trans){
+  var d=document.createElement("div");d.className="m "+who;
+  d.textContent=trans||orig;
+  if(trans){var s=document.createElement("small");s.textContent=orig;d.appendChild(s)}
+  $("log").appendChild(d);$("log").scrollTop=1e9;window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+
+/* ---------- pairing (ntfy.sh - works across any network) ---------- */
+var BASE="https://ntfy.sh/";
+var topic="";
+function rid(){var c="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+function post(obj){return fetch(BASE+topic,{method:"POST",body:JSON.stringify(obj)})}
+function reset(){
+  session++;clearInterval(pinger);connected=false;
+  try{es&&es.close()}catch(e){}
+  es=null;
+}
+function setConnected(){
+  if(connected)return;
+  connected=true;clearInterval(pinger);
+  status("ok");
+  $("pair").classList.add("hide");$("help").classList.add("hide");
+}
+function begin(id){
+  reset();var my=session;
+  topic="tmr-v2-"+id;
+  $("join").value=id;
+  try{history.replaceState(null,"","#"+id)}catch(e){}
+  $("code").textContent=id.toUpperCase();$("codeBox").classList.remove("hide");
+  status("conn");
+  es=new EventSource(BASE+topic+"/sse");
+  es.onopen=function(){
+    if(my!==session)return;
+    if(!connected)status("wait");
+    post({t:"hi",id:me,r:0}).catch(function(){});
+    clearInterval(pinger);
+    if(!connected)pinger=setInterval(function(){if(my===session&&!connected)post({t:"hi",id:me,r:0}).catch(function(){})},6000);
+  };
+  es.onmessage=function(ev){
+    if(my!==session)return;
+    var j;try{j=JSON.parse(ev.data)}catch(e){return}
+    if(j.event!=="message")return;
+    var m;try{m=JSON.parse(j.message)}catch(e){return}
+    if(!m||m.id===me)return;
+    if(m.t==="hi"){
+      if(m.r===0)post({t:"hi",id:me,r:1}).catch(function(){});
+      setConnected();
+    }else if(m.t==="say"){
+      setConnected();onData(m);
+    }
+  };
+  es.onerror=function(){
+    if(my!==session)return;
+    status("neterr");
+  };
+}
+$("mk").onclick=function(){begin(rid())};
+function roomLink(){return location.href.split("#")[0]+"#"+$("join").value.trim().toLowerCase()}
+$("shr").onclick=function(){
+  var l=roomLink(),t=T("h1");
+  if(navigator.share){navigator.share({title:t,text:t,url:l}).catch(function(){})}
+  else window.open("https://wa.me/?text="+encodeURIComponent(t+"\n"+l),"_blank");
+};
+$("cpy").onclick=function(){
+  var l=roomLink(),prev=curStatus;
+  function done(){status("copied");setTimeout(function(){if(curStatus==="copied")status(prev)},2000)}
+  try{navigator.clipboard.writeText(l).then(done,function(){prompt("Link",l)})}catch(e){prompt("Link",l)}
+};
+function autoJoin(){
+  var h=(location.hash||"").replace("#","").toLowerCase();
+  if(/^[a-z0-9]{4,6}$/.test(h))begin(h);
+}
+$("jn").onclick=function(){
+  var id=$("join").value.trim().toLowerCase();
+  if(id.length<4){status("enter");return}
+  begin(id);
+};
+
+/* ---------- messages ---------- */
+function onData(m){
+  if(!m||m.t!=="say")return;
+  var to=tgt();
+  translate(m.text,m.from,to[2]).then(function(res){
+    addMsg("them",m.text,res);speak(res,to[1]);
+  }).catch(function(){addMsg("them",m.text,T("tfail"))});
+}
+function send(text){
+  text=(text||"").trim();if(!text)return;
+  if(!connected){status("notyet");return}
+  post({t:"say",id:me,text:text,from:src()[2]}).then(function(r){if(!r.ok)throw 0}).catch(function(){status("sendfail")});
+  addMsg("me",text);
+}
+$("snd").onclick=function(){unlock();send($("txt").value);$("txt").value=""};
+$("txt").onkeydown=function(e){if(e.key==="Enter")$("snd").onclick()};
+
+/* ---------- native speech recognition (Capacitor Android/iOS app) ---------- */
+var NSR=(function(){try{var C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform())return (C.Plugins&&C.Plugins.SpeechRecognition)||(C.registerPlugin&&C.registerPlugin("SpeechRecognition"))||null}catch(e){}return null})();
+var recSession=0;
+function nativeStart(){
+  var my=++recSession;
+  function go(){if(listening&&my===recSession)nativeLoop(my,0)}
+  NSR.available().then(function(a){
+    if(a&&a.available===false){status("nosr");stopRec();return}
+    return NSR.checkPermissions().then(function(p){
+      return p&&p.speechRecognition==="granted"?p:NSR.requestPermissions();
+    }).then(function(p){
+      if(p&&p.speechRecognition&&p.speechRecognition!=="granted"){status("micden");stopRec();return}
+      go();
+    });
+  }).catch(go);
+}
+function nativeLoop(my,fails){
+  if(!listening||my!==recSession)return;
+  if(speaking){setTimeout(function(){nativeLoop(my,fails)},400);return}
+  var t0=Date.now();
+  NSR.start({language:src()[1],maxResults:1,partialResults:false,popup:false}).then(function(r){
+    if(!listening||my!==recSession)return;
+    var t=r&&r.matches&&r.matches[0];
+    if(t&&!speaking)send(t);
+    setTimeout(function(){nativeLoop(my,0)},250);
+  }).catch(function(e){
+    if(!listening||my!==recSession)return;
+    var m=String((e&&(e.message||e))||"");
+    if(/permission|denied|not.?allowed/i.test(m)){status("micden");stopRec();return}
+    var f=(Date.now()-t0<700)?fails+1:0;
+    if(f>=6){status("nosr");stopRec();return}
+    setTimeout(function(){nativeLoop(my,f)},500);
+  });
+}
+function restartRec(){try{if(NSR)NSR.stop().catch(function(){});else rec.stop()}catch(e){}}
+
+/* ---------- microphone ---------- */
+function startRec(){
+  if(NSR){nativeStart();return}
+  rec=new SR();rec.lang=src()[1];rec.interimResults=false;rec.continuous=true;
+  rec.onresult=function(e){
+    if(speaking)return;
+    for(var i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)send(e.results[i][0].transcript);
+  };
+  rec.onerror=function(e){
+    if(e.error==="not-allowed"||e.error==="service-not-allowed"){status("micden");stopRec()}
+  };
+  rec.onend=function(){if(listening){setTimeout(function(){try{rec.lang=src()[1];rec.start()}catch(e){}},150)}};
+  try{rec.start()}catch(e){}
+}
+function stopRec(){listening=false;recSession++;try{NSR&&NSR.stop().catch(function(){})}catch(e){}$("mic").classList.remove("on");micLabel();try{rec&&rec.stop()}catch(e){}}
+$("mic").onclick=function(){
+  unlock();
+  if(!SR&&!NSR){status("nosr");return}
+  if(listening){stopRec();return}
+  listening=true;$("mic").classList.add("on");micLabel();startRec();
+};
+$("src").onchange=function(){saveLangs();if(listening)restartRec();};
+$("swp").onclick=function(){var a=$("src").value;$("src").value=$("tgt").value;$("tgt").value=a;saveLangs();if(listening)restartRec();};
+if("serviceWorker" in navigator&&!NSR)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+if(!needWelcome)autoJoin();
+</script>
+</body>
+</html>
