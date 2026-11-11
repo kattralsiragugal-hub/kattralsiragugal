@@ -1,9 +1,2 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "in.co.kattralsiragugal.translator.www.twa",
-        "sha256_cert_fingerprints": ["5A:CF:F9:BD:00:65:EA:24:DF:DF:AB:65:37:27:23:BE:75:05:A6:C7:4F:79:C0:46:F2:F0:E6:3E:F5:26:25:F6"]
-      }
-    }]
+
 
