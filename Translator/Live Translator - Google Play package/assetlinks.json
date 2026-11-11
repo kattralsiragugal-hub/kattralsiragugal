@@ -5,4 +5,14 @@
       "package_name": "in.co.kattralsiragugal.translator.www.twa",
       "sha256_cert_fingerprints": [
         "5A:CF:F9:BD:00:65:EA:24:DF:DF:AB:65:37:27:23:BE:75:05:A6:C7:4F:79:C0:46:F2:F0:E6:3E:F5:26:25:F6"
-      ]
+      ], 
+Keep this file and signing.keystore in a safe place. You'll need these files if you want to upload future versions of your PWA to the Google Play Store.
+
+Key store file: signing.keystore
+Key store password: R_fYB0TntU68
+Key alias: my-key-alias
+Key password: R_fYB0TntU68
+Signer's full name: Live Translator Admin
+Signer's organization: இரு மொபைல் நேரடி மொழிபெயர்ப்பாளர்
+Signer's organizational unit: Engineering
+Signer's country code: US ]
