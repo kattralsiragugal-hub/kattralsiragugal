@@ -1,2 +1,18 @@
-
-
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.co.kattralsiragugal.www.twa",
+      "sha256_cert_fingerprints": ["D7:47:E2:C1:68:C9:3B:19:3D:9B:3B:AA:95:43:A5:2A:71:A9:02:7C:BA:B1:66:91:55:13:02:7A:09:D3:AB:1E"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.co.kattralsiragugal.www.twa2",
+      "sha256_cert_fingerprints": ["D7:47:E2:C1:68:C9:3B:19:3D:9B:3B:AA:95:43:A5:2A:71:A9:02:7C:BA:B1:66:91:55:13:02:7A:09:D3:AB:1E"]
+    }
+  }
+]
