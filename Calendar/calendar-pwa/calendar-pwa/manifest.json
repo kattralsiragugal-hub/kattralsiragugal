@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "நாட்காட்டி வடிவமைப்பாளர்",
+  "short_name": "நாட்காட்டி",
+  "description": "எந்த ஆண்டுக்கும் A4 landscape நாட்காட்டி – உங்கள் படங்களுடன், தமிழில், ஆஃப்லைனிலும்.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#25223d",
+  "theme_color": "#25223d",
+  "lang": "ta",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
