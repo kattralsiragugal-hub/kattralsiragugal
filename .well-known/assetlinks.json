@@ -14,5 +14,13 @@
       "package_name": "in.co.kattralsiragugal.www.twa2",
       "sha256_cert_fingerprints": ["5A:CF:F9:BD:00:65:EA:24:DF:DF:AB:65:37:27:23:BE:75:05:A6:C7:4F:79:C0:46:F2:F0:E6:3E:F5:26:25:F6"]
     }
-  }
+  }, [{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "in.co.kattralsiragugal.calendar",
+        "sha256_cert_fingerprints": ["AE:6D:5C:96:4C:7F:8E:15:D8:C4:11:9D:8E:26:2A:69:68:14:92:61:F9:06:46:B5:8B:35:56:95:4A:5C:84:99"]
+      }
+    }]
+
 ]
