@@ -99,6 +99,31 @@ summary{cursor:pointer;font:600 1.05rem var(--disp)}
 #welBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 #welBtns button{background:var(--card);color:var(--text);border:1.5px solid var(--line);border-radius:18px;padding:18px 8px;font-size:1.2rem;box-shadow:var(--shadow)}
 #welBtns button:hover,#welBtns button:focus-visible{border-color:var(--accent);color:var(--accent)}
+/* ===== v2 modern UI ===== */
+:root{--hero:linear-gradient(155deg,#2a1f9d 0%,#5b3df0 58%,#ff5d8f 135%);--shadow:0 18px 40px -20px rgba(42,31,157,.38)}
+@media (prefers-color-scheme:dark){:root{--hero:linear-gradient(155deg,#17105f 0%,#3b2bb8 60%,#a3326b 135%);--shadow:0 18px 40px -20px #000b}}
+body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Tamil","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Malayalam","Noto Sans Kannada","Nirmala UI",sans-serif;background:radial-gradient(900px 420px at 100% -5%,color-mix(in srgb,var(--accent2) 14%,transparent),transparent 60%),radial-gradient(800px 400px at -10% 25%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 60%),var(--bg);background-attachment:fixed}
+.hero{background:var(--hero);border-radius:0 0 40px 40px;padding-bottom:72px;box-shadow:0 22px 50px -26px #2a1f9daa}
+.card{border-radius:26px;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.langs select{border-radius:999px;font-weight:600}
+#swp{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:0;box-shadow:0 10px 22px -8px var(--accent);transition:transform .35s}
+#swp:active{transform:rotate(180deg) scale(.94)}
+.legend{font-size:.76rem;color:var(--muted);text-align:center;margin:-2px 10px 12px;line-height:1.55}
+button{box-shadow:0 8px 18px -10px var(--accent)}
+.ghost,#welBtns button{box-shadow:none}
+.m{animation:pop .28s cubic-bezier(.2,.9,.3,1.2) both;box-shadow:0 6px 16px -10px #0007}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+.dock{border-radius:28px 28px 0 0;box-shadow:0 -14px 34px -24px #000}
+#mic{width:84px;height:84px;box-shadow:0 16px 34px -10px color-mix(in srgb,var(--accent2) 80%,transparent),0 0 0 8px color-mix(in srgb,var(--accent) 14%,transparent)}
+#welcome{background:radial-gradient(700px 420px at 90% 0,color-mix(in srgb,var(--accent2) 22%,transparent),transparent 60%),radial-gradient(700px 420px at 0 100%,color-mix(in srgb,var(--accent) 24%,transparent),transparent 60%),var(--bg)}
+#welcome .box{max-width:540px}
+#welBtns{grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px}
+#welBtns button{font-size:1.02rem;padding:14px 8px;border-radius:16px;transition:.15s}
+#welBtns button:hover,#welBtns button:focus-visible{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;transform:translateY(-2px)}
+.welnote{font-size:.78rem;color:var(--muted);margin:16px 4px 6px;line-height:1.6}
+#status.st-nolang{border-color:var(--accent2)}#status.st-nolang::before{background:var(--accent2)}
+@media (prefers-reduced-motion:reduce){.m{animation:none}#swp{transition:none}}
+
 </style>
 </head>
 <body>
@@ -108,6 +133,7 @@ summary{cursor:pointer;font:600 1.05rem var(--disp)}
     <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M6 10a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H18l-7 6v-6a6 6 0 0 1-5-6z" fill="#ff5d8f"/><path d="M22 22a6 6 0 0 1 6-6h10a6 6 0 0 1 6 6v10a6 6 0 0 1-5 6v6l-7-6H28a6 6 0 0 1-6-6z" fill="#19d3a7"/></svg>
     <h2>Choose language · மொழியைத் தேர்வு செய்யவும்</h2>
     <div id="welBtns"></div>
+    <p class="welnote">செயலியின் எழுத்துகள் தமிழ், English, हिन्दी, తెలుగు, മലയാളം, ಕನ್ನಡ மொழிகளில் உள்ளன. மற்ற மொழிகளில் பேசவும் கேட்கவும் முடியும்; எழுத்துகள் ஆங்கிலத்தில் தெரியும்.<br>App text is available in the six languages above; in other languages you can still speak and listen (text shows in English).</p>
   </div>
 </div>
 
@@ -125,6 +151,7 @@ summary{cursor:pointer;font:600 1.05rem var(--disp)}
   <button id="swp" class="ghost" aria-label="swap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></button>
   <div><label for="tgt" data-i="tgt"></label><select id="tgt"></select></div>
 </div>
+<p class="legend" data-i="legend"></p>
 
 <div class="card" id="pair">
   <div class="row"><input id="join" maxlength="6" data-ph="joinPh" autocapitalize="off" autocomplete="off"><button id="jn" data-i="join" style="flex:0 0 auto"></button></div>
@@ -268,7 +295,16 @@ kn:{share:"📤 ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ",copy:"📋 ನ�
 };
 Object.keys(EXTRA).forEach(function(k){Object.keys(EXTRA[k]).forEach(function(j){I18N[k][j]=EXTRA[k][j]})});
 
-var LANGS=[["தமிழ்","ta-IN","ta"],["English","en-US","en"],["हिन्दी","hi-IN","hi"],["తెలుగు","te-IN","te"],["മലയാളം","ml-IN","ml"],["ಕನ್ನಡ","kn-IN","kn"],["Español","es-ES","es"],["Français","fr-FR","fr"],["Deutsch","de-DE","de"],["日本語","ja-JP","ja"],["中文","zh-CN","zh-CN"],["العربية","ar-SA","ar"],["Русский","ru-RU","ru"]];
+var LANGS=[["தமிழ்","ta-IN","ta"],["English","en-US","en"],["हिन्दी","hi-IN","hi"],["తెలుగు","te-IN","te"],["മലയാളം","ml-IN","ml"],["ಕನ್ನಡ","kn-IN","kn"],["Español","es-ES","es"],["Français","fr-FR","fr"],["Deutsch","de-DE","de"],["日本語","ja-JP","ja"],["中文","zh-CN","zh-CN"],["العربية","ar-SA","ar"],["Русский","ru-RU","ru"],["বাংলা","bn-IN","bn"],["ગુજરાતી","gu-IN","gu"],["मराठी","mr-IN","mr"],["ਪੰਜਾਬੀ","pa-Guru-IN","pa","pa-IN"],["ଓଡ଼ିଆ","or-IN","or"],["অসমীয়া","as-IN","as","as-IN|bn-IN"],["اردو","ur-IN","ur","ur-IN|ur-PK"],["नेपाली","ne-NP","ne","ne-NP|hi-IN"],["संस्कृतम्","sa-IN","sa","sa-IN|hi-IN","k"],["سنڌي","sd-IN","sd","sd-IN|ur-IN","k"],["कोंकणी","kok-IN","gom","hi-IN|mr-IN","k"],["मैथिली","mai-IN","mai","hi-IN","k"],["डोगरी","doi-IN","doi","hi-IN","k"],["کٲشُر","ks-IN","ks","ks-IN|ur-IN","kw"],["ꯃꯤꯇꯩꯂꯣꯟ","mni-IN","mni-Mtei","-","k"],["ᱥᱟᱱᱛᱟᱲᱤ","sat-IN","sat","-","kw"],["बड़ो","brx-IN","brx","hi-IN","kw"]];
+var ORDER=["ta","en","hi","te","ml","kn","bn","gu","mr","pa","or","as","ur","ne","sa","sd","gom","mai","doi","ks","mni-Mtei","sat","brx"];
+var ENM={ta:"Tamil",en:"English",hi:"Hindi",te:"Telugu",ml:"Malayalam",kn:"Kannada",es:"Spanish",fr:"French",de:"German",ja:"Japanese","zh-CN":"Chinese",ar:"Arabic",ru:"Russian",bn:"Bengali",gu:"Gujarati",mr:"Marathi",pa:"Punjabi",or:"Odia",as:"Assamese",ur:"Urdu",ne:"Nepali",sa:"Sanskrit",sd:"Sindhi",gom:"Konkani",mai:"Maithili",doi:"Dogri",ks:"Kashmiri","mni-Mtei":"Manipuri (Meitei)",sat:"Santali",brx:"Bodo"};
+function lbl(l){var f=l[4]||"";return l[0]+(ENM[l[2]]&&ENM[l[2]]!==l[0]?" \u00b7 "+ENM[l[2]]:"")+(f.indexOf("k")>=0?" \u2328":"")+(f.indexOf("w")>=0?" \u26a0":"")+(l[3]==="-"?" \ud83d\udd07":"")}
+I18N.ta.nolang="இந்த மொழிக்கு உங்கள் சாதனத்தில் குரல் உள்ளீடு இல்லை. தட்டச்சு செய்து அனுப்புங்கள்.";
+I18N.en.nolang="Voice input isn't available for this language on your device. Please type instead.";
+I18N.hi.nolang="इस भाषा के लिए आपके डिवाइस पर आवाज़ से इनपुट उपलब्ध नहीं है। कृपया टाइप करें।";
+I18N.ta.legend="⌨ தட்டச்சு மட்டும் (குரல் உள்ளீடு இல்லாமல் போகலாம்) · 🔇 எழுத்து மட்டும் (குரல் வெளியீடு இல்லை) · ⚠ சோதனை நிலை மொழிபெயர்ப்பு";
+I18N.en.legend="⌨ typing only (voice input may be unavailable) · 🔇 text only (no voice output) · ⚠ experimental translation";
+I18N.hi.legend="⌨ केवल टाइपिंग (आवाज़ इनपुट उपलब्ध न हो) · 🔇 केवल टेक्स्ट (आवाज़ आउटपुट नहीं) · ⚠ प्रायोगिक अनुवाद";
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 var $=function(i){return document.getElementById(i)};
 var es=null,connected=false,me=Math.random().toString(36).slice(2,8),pinger=null,rec=null,listening=false,speaking=false,session=0;
@@ -292,10 +328,10 @@ function setUI(c){
   applyUI();
 }
 (function initUI(){
-  UIL.forEach(function(l){
-    $("ui").add(new Option(l[1],l[0]));
-    var b=document.createElement("button");b.textContent=l[1];
-    b.onclick=function(){setUI(l[0]);$("welcome").classList.add("hide");setDefaults(l[0]);autoJoin()};
+  UIL.forEach(function(l){$("ui").add(new Option(l[1],l[0]))});
+  ORDER.forEach(function(c){
+    var l=LANGS[idxOf(c)],b=document.createElement("button");b.textContent=l[0];
+    b.onclick=function(){setUI(I18N[l[2]]?l[2]:"en");$("welcome").classList.add("hide");setDefaults(l[2]);autoJoin()};
     $("welBtns").appendChild(b);
   });
   $("ui").onchange=function(){setUI($("ui").value)};
@@ -304,7 +340,13 @@ function setUI(c){
   applyUI();
 })();
 
-LANGS.forEach(function(l,i){$("src").add(new Option(l[0],i));$("tgt").add(new Option(l[0],i))});
+["src","tgt"].forEach(function(id){
+  var sel=$(id),g1=document.createElement("optgroup"),g2=document.createElement("optgroup");
+  g1.label="இந்திய மொழிகள் · Indian languages";g2.label="பிற மொழிகள் · Other languages";
+  ORDER.forEach(function(c){var i=idxOf(c);g1.appendChild(new Option(lbl(LANGS[i]),i))});
+  LANGS.forEach(function(l,i){if(ORDER.indexOf(l[2])<0)g2.appendChild(new Option(lbl(l),i))});
+  sel.appendChild(g1);sel.appendChild(g2);
+});
 $("src").value=0;$("tgt").value=1;
 function idxOf(c){for(var i=0;i<LANGS.length;i++)if(LANGS[i][2]===c)return i;return 0}
 function saveLangs(){try{localStorage.setItem("tmr-src",$("src").value);localStorage.setItem("tmr-tgt",$("tgt").value)}catch(e){}}
@@ -320,10 +362,13 @@ function unlock(){try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;speechS
 function speak(text,lang){
   try{
     speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(text);u.lang=lang;
-    var vs=speechSynthesis.getVoices();
-    var v=vs.find(function(v){return v.lang.replace("_","-")===lang})||vs.find(function(v){return v.lang.slice(0,2)===lang.slice(0,2)});
-    if(v)u.voice=v;
+    var vs=speechSynthesis.getVoices(),L=String(lang).split("|"),v=null,use=L[0];
+    for(var k=0;k<L.length&&!v;k++){
+      var c=L[k].replace("_","-");
+      v=vs.find(function(x){return x.lang.replace("_","-")===c})||vs.find(function(x){return x.lang.slice(0,2)===c.slice(0,2)});
+      if(v)use=c;
+    }
+    var u=new SpeechSynthesisUtterance(text);u.lang=use;if(v)u.voice=v;
     speaking=true;
     u.onend=u.onerror=function(){setTimeout(function(){speaking=false},400)};
     speechSynthesis.speak(u);
@@ -433,7 +478,7 @@ function onData(m){
   if(!m||m.t!=="say")return;
   var to=tgt();
   translate(m.text,m.from,to[2]).then(function(res){
-    addMsg("them",m.text,res);speak(res,to[1]);
+    addMsg("them",m.text,res);if(to[3]!=="-")speak(res,to[3]||to[1]);
   }).catch(function(){addMsg("them",m.text,T("tfail"))});
 }
 function send(text){
@@ -491,6 +536,7 @@ function startRec(){
   };
   rec.onerror=function(e){
     if(e.error==="not-allowed"||e.error==="service-not-allowed"){status("micden");stopRec()}
+    else if(e.error==="language-not-supported"){status("nolang");stopRec()}
   };
   rec.onend=function(){if(listening){setTimeout(function(){try{rec.lang=src()[1];rec.start()}catch(e){}},150)}};
   try{rec.start()}catch(e){}
