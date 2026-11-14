@@ -224,98 +224,144 @@ dialog a{color:#ffb84d}
   .pw{width:auto}
   .pw:last-child .page{break-after:auto}
 }
+/* ads: control panel bottom only (never in the calendar pages / print) */
+#adCard{margin:26px 0 6px;padding:10px 10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04)}
+#adCard.adWait{height:0;overflow:hidden;padding:0;margin:0;border:0;opacity:0;pointer-events:none}
+#adCard.adOff{display:none!important}
+.adLbl{font-size:11px;color:#9d99c4;text-align:center;margin:0 0 6px;letter-spacing:.04em}
+#adBox{display:block;max-width:100%;overflow:hidden}
+@media print{#adCard{display:none!important}}
+/* ===== modern UI (v2): glass panel, gradient accents, language splash ===== */
+:root{--panel:#16142b;--line:#2f2b52;--hi:#ffb84d;--tx:#eceaff;--g1:#ff5f8f;--g2:#ffb84d;--lf:"Noto Sans Tamil","Nirmala UI",system-ui,sans-serif}
+body{grid-template-columns:372px 1fr;background:radial-gradient(1100px 520px at 85% -8%,#fff 0,transparent 62%),#e6e4f3}
+html:not([lang=ta]) body,html:not([lang=ta]) .page{font-family:var(--lf)}
+.ctrl{background:linear-gradient(180deg,#1b1838,#110e25);padding:0 16px 36px;scrollbar-width:thin;scrollbar-color:#4a4580 transparent;box-shadow:6px 0 30px #0003}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;margin:0 -16px 8px;padding:14px 16px 11px;background:rgba(22,20,43,.84);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:22px;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 6px 18px #ff5f8f55;flex:none}
+.tt{flex:1;min-width:0}
+.ctrl h1{font-size:18px;margin:0;background:linear-gradient(90deg,#fff,var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ctrl p.sub{margin:2px 0 0;font-size:11px;line-height:1.4}
+.lb{flex:none;border:1px solid #5b55a0;background:#2a2650;color:#fff;border-radius:999px;padding:7px 12px;font:600 12px var(--lf);cursor:pointer;transition:.15s}
+.lb:hover{background:var(--g2);color:#1c1a2e;border-color:var(--g2)}
+.ctrl h2{background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin:22px 0 10px;font-size:14px}
+.drop{border-radius:16px;background:linear-gradient(135deg,#2a2650,#221e44)}
+select,input[type=text],input[type=number],textarea{border-radius:11px;padding:9px 11px;background:#221f43;border:1px solid #3d3868;transition:border-color .15s,box-shadow .15s}
+select:focus,input:focus,textarea:focus{outline:0;border-color:var(--g2);box-shadow:0 0 0 3px #ffb84d33}
+.presets button,.btn2{border-radius:999px}
+.print{position:sticky;bottom:12px;z-index:15;border-radius:14px;box-shadow:0 10px 26px #ff5f8f55}
+main{padding:26px 0}
+.lp{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;overflow:auto;color:#fff;background:radial-gradient(900px 500px at 12% 0,#5b3b9a 0,transparent 60%),radial-gradient(800px 500px at 100% 100%,#ff5f8f55 0,transparent 55%),#14122a}
+.lp[hidden]{display:none}
+.lpc{width:min(760px,100%);text-align:center}
+.lpl{width:68px;height:68px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;font-size:34px;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 12px 34px #ff5f8f66}
+.lpc h1{font:800 30px/1.2 system-ui,sans-serif;margin-bottom:6px}
+.lpc p{color:#b9b4e6;margin-bottom:22px;font-size:14px}
+.lpg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.lpg button{border:1px solid #4b4690;background:rgba(255,255,255,.07);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border-radius:16px;padding:16px 8px;cursor:pointer;transition:.18s;font-family:system-ui,"Noto Sans Tamil",sans-serif}
+.lpg button b{display:block;font-size:20px;margin-bottom:3px}
+.lpg button small{color:#b9b4e6;font-size:12px}
+.lpg button:hover,.lpg button:focus-visible{transform:translateY(-3px);background:linear-gradient(135deg,var(--g1),var(--g2));border-color:transparent;outline:0}
+.lpg button:hover small,.lpg button:focus-visible small{color:#2a1a30}
+.lpg button.cur{border-color:var(--g2)}
+@media (max-width:900px){body{grid-template-columns:1fr}.ctrl{padding:0 14px 30px}.top{margin:0 -14px 8px;padding:12px 14px 10px}}
+@media print{.lp,.top{display:none!important}}
+
 </style>
 </head>
 <body>
+<div id="lp" class="lp" hidden><div class="lpc"><div class="lpl">🗓️</div><h1>Calendar Designer</h1><p>Choose your language · மொழியைத் தேர்வு செய்க · भाषा चुनें</p><div class="lpg" id="lpg"></div></div></div>
 
 <svg width="0" height="0" style="position:absolute"><filter id="sharp"><feConvolveMatrix id="km" order="3" preserveAlpha="true" kernelMatrix="0 0 0 0 1 0 0 0 0"/></filter></svg>
 
 <aside class="ctrl">
-  <h1>நாட்காட்டி வடிவமைப்பாளர்</h1>
-  <p class="sub">A4 Landscape • உங்கள் படம் • வண்ணமயமான டிசைன்</p>
+  <div class="top"><div class="logo">🗓️</div><div class="tt"><h1 data-t="0">நாட்காட்டி வடிவமைப்பாளர்</h1><p class="sub" data-t="1">A4 Landscape • உங்கள் படம் • வண்ணமயமான டிசைன்</p></div><button class="lb" id="langBtn" type="button">🌐 <span id="lbn"></span></button></div>
 
   <label class="drop" id="drop">
-    📷 படங்களைத் தேர்வு செய்க / இங்கே இழுத்து விடுக<br><small>ஒன்று அல்லது பல படங்கள் – மாதங்களுக்கு மாறி மாறி வரும்</small>
+    <span data-t="2">📷 படங்களைத் தேர்வு செய்க / இங்கே இழுத்து விடுக</span><br><small data-t="3">ஒன்று அல்லது பல படங்கள் – மாதங்களுக்கு மாறி மாறி வரும்</small>
     <input type="file" id="file" accept="image/*" multiple>
   </label>
   <div class="thumbs" id="thumbs"></div>
-  <label class="r">ஒரு பக்கத்தில் தானாகப் பொருத்தும் படங்கள்</label>
-  <select id="cnt"><option value="1">1 படம்</option><option value="2">2 படங்கள்</option><option value="3">3 படங்கள்</option><option value="4">4 படங்கள்</option><option value="5">5 படங்கள்</option><option value="6">6 படங்கள்</option></select>
-  <p class="tip">ஒவ்வொரு பக்கத்திலும் இத்தனை படங்கள் தானாக அழகாக அடுக்கப்படும். ஒவ்வொரு பக்கத்தின் கருவிப்பட்டையிலும் <b>📁 பதிவேற்று</b> / <b>➕ படம்</b> மூலம் அந்தப் பக்கத்துக்கு மட்டும் எத்தனை படங்களும் சேர்க்கலாம்.</p>
+  <label class="r" data-t="4">ஒரு பக்கத்தில் தானாகப் பொருத்தும் படங்கள்</label>
+  <select id="cnt"><option value="1" data-t="5">1 படம்</option><option value="2" data-t="6">2 படங்கள்</option><option value="3" data-t="7">3 படங்கள்</option><option value="4" data-t="8">4 படங்கள்</option><option value="5" data-t="9">5 படங்கள்</option><option value="6" data-t="10">6 படங்கள்</option></select>
+  <p class="tip" data-t="11">ஒவ்வொரு பக்கத்திலும் இத்தனை படங்கள் தானாக அழகாக அடுக்கப்படும். ஒவ்வொரு பக்கத்தின் கருவிப்பட்டையிலும் <b>📁 பதிவேற்று</b> / <b>➕ படம்</b> மூலம் அந்தப் பக்கத்துக்கு மட்டும் எத்தனை படங்களும் சேர்க்கலாம்.</p>
 
-  <h2>🎨 டிசைன்</h2>
-  <label class="r">ஆண்டு (Year) – எந்த ஆண்டும் தேர்வு செய்யலாம்</label>
+  <h2 data-t="12">🎨 டிசைன்</h2>
+  <label class="r" data-t="13">ஆண்டு (Year) – எந்த ஆண்டும் தேர்வு செய்யலாம்</label>
   <input type="number" id="year" min="1900" max="2200" value="2027">
-  <label class="r">அமைப்பு</label>
-  <select id="mode"><option value="combo">முதல் பக்கம்: முழு ஆண்டு + அடுத்து 12 மாதப் பக்கங்கள்</option><option value="month">12 மாதப் பக்கங்கள் மட்டும்</option><option value="year">முழு ஆண்டு ஒரே பக்கம் மட்டும்</option></select>
-  <label class="r">வண்ணத் தொகுப்பு</label>
+  <label class="r" data-t="14">அமைப்பு</label>
+  <select id="mode"><option value="combo" data-t="15">முதல் பக்கம்: முழு ஆண்டு + அடுத்து 12 மாதப் பக்கங்கள்</option><option value="month" data-t="16">12 மாதப் பக்கங்கள் மட்டும்</option><option value="year" data-t="17">முழு ஆண்டு ஒரே பக்கம் மட்டும்</option></select>
+  <label class="r" data-t="18">வண்ணத் தொகுப்பு</label>
   <select id="theme">
-    <option value="rainbow">வானவில் (ஒவ்வொரு மாதமும் வேறு நிறம்)</option>
-    <option value="sunset">மாலை வானம்</option>
-    <option value="ocean">கடல் நீலம்</option>
-    <option value="forest">பசுமை</option>
-    <option value="royal">ராயல் ஊதா</option>
-    <option value="rose">ரோஜா</option>
+    <option value="rainbow" data-t="19">வானவில் (ஒவ்வொரு மாதமும் வேறு நிறம்)</option>
+    <option value="sunset" data-t="20">மாலை வானம்</option>
+    <option value="ocean" data-t="21">கடல் நீலம்</option>
+    <option value="forest" data-t="22">பசுமை</option>
+    <option value="royal" data-t="23">ராயல் ஊதா</option>
+    <option value="rose" data-t="24">ரோஜா</option>
   </select>
-  <label class="r">படத்தின் வடிவம்</label>
-  <select id="shape"><option value="s-round">வளைந்த முனை</option><option value="s-arch">வளைவு (Arch)</option><option value="s-slant">சாய்வு</option><option value="s-ell">நீள்வட்டம்</option><option value="s-leaf">இலை வடிவம்</option></select>
-  <div class="chk"><input type="checkbox" id="cover"><label for="cover">முகப்புப் பக்கம் சேர் (ஆண்டுப் பக்கத்துக்கு முன்)</label></div>
-  <div class="chk"><input type="checkbox" id="swap"><label for="swap">படம் வலது பக்கம் (பக்கவாட்டு அமைப்பில்)</label></div>
-  <label class="r">பக்க அமைப்பு</label>
-  <select id="lay"><option value="side">பக்கவாட்டுப் படம்</option><option value="top">மேலே அகலப் படம்</option><option value="full">முழுப் படம் + கண்ணாடி அட்டை</option></select>
-  <label class="r">முகப்புப் பக்க பாணி</label>
-  <select id="cv"><option value="full">முழுப் படம்</option><option value="split">பாதி படம் + வண்ணப் பலகை</option><option value="frame">சட்டகப் படம்</option></select>
-  <label class="r">தேதி கட்ட பாணி</label>
-  <select id="cell"><option value="box">பெட்டி</option><option value="circle">வட்டம்</option><option value="line">கோடு</option><option value="solid">வண்ணப் பெட்டி</option></select>
-  <label class="r">பின்னணி வடிவம்</label>
-  <select id="bgp"><option value="none">இல்லை</option><option value="dots">புள்ளிகள்</option><option value="stripes">சாய் கோடுகள்</option><option value="grid">கட்டம்</option><option value="rings">வளையங்கள்</option></select>
-  <label class="r">தலைப்பு எழுத்துரு</label>
-  <select id="hf"><option value='"Baloo Thambi 2","Noto Sans Tamil",sans-serif'>வட்டமான (Baloo)</option><option value='"Noto Serif Tamil","Latha",serif'>பாரம்பரிய (Serif)</option><option value='"Mukta Malar","Noto Sans Tamil",sans-serif'>நவீன (Mukta Malar)</option></select>
+  <label class="r" data-t="25">படத்தின் வடிவம்</label>
+  <select id="shape"><option value="s-round" data-t="26">வளைந்த முனை</option><option value="s-arch" data-t="27">வளைவு (Arch)</option><option value="s-slant" data-t="28">சாய்வு</option><option value="s-ell" data-t="29">நீள்வட்டம்</option><option value="s-leaf" data-t="30">இலை வடிவம்</option></select>
+  <div class="chk"><input type="checkbox" id="cover"><label for="cover" data-t="31">முகப்புப் பக்கம் சேர் (ஆண்டுப் பக்கத்துக்கு முன்)</label></div>
+  <div class="chk"><input type="checkbox" id="swap"><label for="swap" data-t="32">படம் வலது பக்கம் (பக்கவாட்டு அமைப்பில்)</label></div>
+  <label class="r" data-t="33">பக்க அமைப்பு</label>
+  <select id="lay"><option value="side" data-t="34">பக்கவாட்டுப் படம்</option><option value="top" data-t="35">மேலே அகலப் படம்</option><option value="full" data-t="36">முழுப் படம் + கண்ணாடி அட்டை</option></select>
+  <label class="r" data-t="37">முகப்புப் பக்க பாணி</label>
+  <select id="cv"><option value="full" data-t="38">முழுப் படம்</option><option value="split" data-t="39">பாதி படம் + வண்ணப் பலகை</option><option value="frame" data-t="40">சட்டகப் படம்</option></select>
+  <label class="r" data-t="41">தேதி கட்ட பாணி</label>
+  <select id="cell"><option value="box" data-t="42">பெட்டி</option><option value="circle" data-t="43">வட்டம்</option><option value="line" data-t="44">கோடு</option><option value="solid" data-t="45">வண்ணப் பெட்டி</option></select>
+  <label class="r" data-t="46">பின்னணி வடிவம்</label>
+  <select id="bgp"><option value="none" data-t="47">இல்லை</option><option value="dots" data-t="48">புள்ளிகள்</option><option value="stripes" data-t="49">சாய் கோடுகள்</option><option value="grid" data-t="50">கட்டம்</option><option value="rings" data-t="51">வளையங்கள்</option></select>
+  <label class="r" data-t="52">தலைப்பு எழுத்துரு</label>
+  <select id="hf"><option value='"Baloo Thambi 2","Noto Sans Tamil",sans-serif' data-t="53">வட்டமான (Baloo)</option><option value='"Noto Serif Tamil","Latha",serif' data-t="54">பாரம்பரிய (Serif)</option><option value='"Mukta Malar","Noto Sans Tamil",sans-serif' data-t="55">நவீன (Mukta Malar)</option></select>
 
-  <h2>✨ படம் மெருகூட்டல்</h2>
+  <h2 data-t="56">✨ படம் மெருகூட்டல்</h2>
   <div class="presets" id="presets"></div>
-  <p style="margin-top:8px"><button class="btn2 auto" id="auto">⚡ தானியங்கி மெருகூட்டு</button></p>
-  <label class="r">ஒளி <output></output></label><input type="range" id="br" min="70" max="140" value="100">
-  <label class="r">கான்ட்ராஸ்ட் <output></output></label><input type="range" id="ct" min="70" max="150" value="100">
-  <label class="r">வண்ண அடர்த்தி <output></output></label><input type="range" id="sa" min="0" max="220" value="100">
-  <label class="r">கூர்மை (Sharpen) <output></output></label><input type="range" id="sh" min="0" max="100" value="0">
-  <label class="r">கதகதப்பு <output></output></label><input type="range" id="wa" min="0" max="50" value="0">
-  <label class="r">வண்ண ஒளிர்வு <output></output></label><input type="range" id="ti" min="0" max="80" value="0">
+  <p style="margin-top:8px"><button class="btn2 auto" id="auto" data-t="57">⚡ தானியங்கி மெருகூட்டு</button></p>
+  <label class="r"><span data-t="58">ஒளி</span> <output></output></label><input type="range" id="br" min="70" max="140" value="100">
+  <label class="r"><span data-t="59">கான்ட்ராஸ்ட்</span> <output></output></label><input type="range" id="ct" min="70" max="150" value="100">
+  <label class="r"><span data-t="60">வண்ண அடர்த்தி</span> <output></output></label><input type="range" id="sa" min="0" max="220" value="100">
+  <label class="r"><span data-t="61">கூர்மை (Sharpen)</span> <output></output></label><input type="range" id="sh" min="0" max="100" value="0">
+  <label class="r"><span data-t="62">கதகதப்பு</span> <output></output></label><input type="range" id="wa" min="0" max="50" value="0">
+  <label class="r"><span data-t="63">வண்ண ஒளிர்வு</span> <output></output></label><input type="range" id="ti" min="0" max="80" value="0">
 
-  <h2>🖼️ படம் பொருத்துதல் (எல்லா பக்கங்களுக்கும்)</h2>
-  <p class="tip" style="margin:0 0 4px">ஒவ்வொரு பக்கத்துக்கும் மேலுள்ள கருவிப்பட்டையில் அந்தப் பக்கத்தின் படத்தைத் தனியாக மாற்றலாம்: படத்தை <b>இழுத்து நகர்த்தவும்</b>, <b>மவுஸ் சக்கரம்</b> / ＋ − / ஸ்லைடரால் பெரிதாக்கவும், ◀ ▶ மூலம் வேறு படம் தேர்வு செய்யவும். கீழே உள்ளவை தனியாக மாற்றாத பக்கங்களுக்கு மட்டும்.</p>
-  <button class="btn2" id="resetall">↺ பக்கம் வாரி மாற்றங்களை நீக்கு</button>
-  <label class="r">பெரிதாக்கு <output></output></label><input type="range" id="zm" min="100" max="250" value="100">
-  <label class="r">இடம் ← → <output></output></label><input type="range" id="px" min="0" max="100" value="50">
-  <label class="r">இடம் ↑ ↓ <output></output></label><input type="range" id="py" min="0" max="100" value="50">
+  <h2 data-t="64">🖼️ படம் பொருத்துதல் (எல்லா பக்கங்களுக்கும்)</h2>
+  <p class="tip" style="margin:0 0 4px" data-t="65">ஒவ்வொரு பக்கத்துக்கும் மேலுள்ள கருவிப்பட்டையில் அந்தப் பக்கத்தின் படத்தைத் தனியாக மாற்றலாம்: படத்தை <b>இழுத்து நகர்த்தவும்</b>, <b>மவுஸ் சக்கரம்</b> / ＋ − / ஸ்லைடரால் பெரிதாக்கவும், ◀ ▶ மூலம் வேறு படம் தேர்வு செய்யவும். கீழே உள்ளவை தனியாக மாற்றாத பக்கங்களுக்கு மட்டும்.</p>
+  <button class="btn2" id="resetall" data-t="66">↺ பக்கம் வாரி மாற்றங்களை நீக்கு</button>
+  <label class="r"><span data-t="67">பெரிதாக்கு</span> <output></output></label><input type="range" id="zm" min="100" max="250" value="100">
+  <label class="r"><span data-t="68">இடம் ← →</span> <output></output></label><input type="range" id="px" min="0" max="100" value="50">
+  <label class="r"><span data-t="69">இடம் ↑ ↓</span> <output></output></label><input type="range" id="py" min="0" max="100" value="50">
 
-  <h2>✍️ எழுத்து</h2>
-  <label class="r">பெயர் / நிறுவனம் / தொலைபேசி</label>
-  <input type="text" id="title" placeholder="எ.கா: குடும்பம் • 98400 12345">
-  <h2>📌 நிகழ்வுகள்</h2>
-  <label class="r">எவற்றைக் காட்ட வேண்டும்?</label>
+  <h2 data-t="70">✍️ எழுத்து</h2>
+  <label class="r" data-t="71">பெயர் / நிறுவனம் / தொலைபேசி</label>
+  <input type="text" id="title" data-tp="0" placeholder="எ.கா: குடும்பம் • 98400 12345">
+  <h2 data-t="72">📌 நிகழ்வுகள்</h2>
+  <label class="r" data-t="73">எவற்றைக் காட்ட வேண்டும்?</label>
   <div id="cats"></div>
-  <label class="r">விரத நாட்கள் வகைகள்</label>
+  <label class="r" data-t="74">விரத நாட்கள் வகைகள்</label>
   <div id="vrs"></div>
-  <label class="r">உங்கள் சொந்த நாட்கள் / நிகழ்வுகள்</label>
-  <textarea id="hol" placeholder="10-29 தீபாவளி&#10;2027-03-10 ரம்ஜான் (இந்த ஆண்டுக்கு மட்டும்)&#10;05-20 எங்கள் திருமண நாள்"></textarea>
-  <p class="tip">வடிவம்: <b>மாதம்-நாள் பெயர்</b> (எல்லா ஆண்டுகளுக்கும்) அல்லது <b>ஆண்டு-மாதம்-நாள் பெயர்</b> (அந்த ஆண்டுக்கு மட்டும்). தீபாவளி, ரம்ஜான், பக்ரீத், விநாயகர் சதுர்த்தி போன்ற மாறும் தேதிகளை பஞ்சாங்கம் பார்த்து இங்கே சேர்க்கவும்.</p>
-  <p class="tip">⚠️ அமாவாசை, பௌர்ணமி, ஏகாதசி, பிரதோஷம் போன்ற விரத நாட்கள் வானியல் கணக்கீட்டில் தானாக வருகின்றன; பஞ்சாங்கத்துடன் ஒரு நாள் வரை வேறுபடலாம். அச்சிடும் முன் சரிபார்க்கவும்.</p>
+  <label class="r" data-t="75">உங்கள் சொந்த நாட்கள் / நிகழ்வுகள்</label>
+  <textarea id="hol" data-tp="1" placeholder="10-29 தீபாவளி&#10;2027-03-10 ரம்ஜான் (இந்த ஆண்டுக்கு மட்டும்)&#10;05-20 எங்கள் திருமண நாள்"></textarea>
+  <p class="tip" data-t="76">வடிவம்: <b>மாதம்-நாள் பெயர்</b> (எல்லா ஆண்டுகளுக்கும்) அல்லது <b>ஆண்டு-மாதம்-நாள் பெயர்</b> (அந்த ஆண்டுக்கு மட்டும்). தீபாவளி, ரம்ஜான், பக்ரீத், விநாயகர் சதுர்த்தி போன்ற மாறும் தேதிகளை பஞ்சாங்கம் பார்த்து இங்கே சேர்க்கவும்.</p>
+  <p class="tip" data-t="77">⚠️ அமாவாசை, பௌர்ணமி, ஏகாதசி, பிரதோஷம் போன்ற விரத நாட்கள் வானியல் கணக்கீட்டில் தானாக வருகின்றன; பஞ்சாங்கத்துடன் ஒரு நாள் வரை வேறுபடலாம். அச்சிடும் முன் சரிபார்க்கவும்.</p>
 
-  <button class="print" id="print">🖨️ PDF ஆக சேமி / அச்சிடு</button>
-  <p class="tip">அச்சு சாளரத்தில்: Destination → <b>Save as PDF</b>, Layout → <b>Landscape</b>, Paper → <b>A4</b>, Margins → <b>None</b>, <b>Background graphics</b> ✔ தேர்வு செய்யவும்.</p>
-<button class="btn2" id="install" hidden style="margin-top:14px;width:100%">📲 செயலியாக நிறுவு</button>
-  <p class="tip"><a href="#" id="ppl" style="color:var(--hi)">🔒 தனியுரிமைக் கொள்கை</a> • முதல் முறை திறந்த பின் ஆஃப்லைனிலும் வேலை செய்யும்.</p>
+  <button class="print" id="print" data-t="78">🖨️ PDF ஆக சேமி / அச்சிடு</button>
+  <p class="tip" data-t="79">அச்சு சாளரத்தில்: Destination → <b>Save as PDF</b>, Layout → <b>Landscape</b>, Paper → <b>A4</b>, Margins → <b>None</b>, <b>Background graphics</b> ✔ தேர்வு செய்யவும்.</p>
+<button class="btn2" id="install" hidden style="margin-top:14px;width:100%" data-t="80">📲 செயலியாக நிறுவு</button>
+  <p class="tip"><a href="#" id="ppl" style="color:var(--hi)" data-t="81">🔒 தனியுரிமைக் கொள்கை</a> <span data-t="82">• முதல் முறை திறந்த பின் ஆஃப்லைனிலும் வேலை செய்யும்.</span></p>
+  <div id="adCard" class="adWait adOff" role="complementary" aria-label="Advertisement">
+    <div class="adLbl">Advertisement · விளம்பரம்</div>
+    <div id="adBox"></div>
+  </div>
   <dialog id="pp">
-    <h3>🔒 தனியுரிமைக் கொள்கை (சுருக்கம்)</h3>
+    <h3 data-t="83">🔒 தனியுரிமைக் கொள்கை (சுருக்கம்)</h3>
     <ul>
-      <li>நீங்கள் தேர்வு செய்யும் படங்கள் <b>உங்கள் சாதனத்திலேயே</b> செயல்படுத்தப்படுகின்றன; எந்த சர்வருக்கும் அனுப்பப்படுவதில்லை.</li>
-      <li>கணக்கு, உள்நுழைவு, விளம்பரங்கள், பகுப்பாய்வு (analytics) கருவிகள் இல்லை.</li>
-      <li>பக்கத்தை மூடினால் படங்களும் மாற்றங்களும் நீங்கும்; நாங்கள் எதையும் சேமிப்பதில்லை.</li>
-      <li>தமிழ் எழுத்துருக்களுக்காக Google Fonts ஏற்றப்படலாம் (உங்கள் IP முகவரி Google-க்குத் தெரியும்); பின்னர் ஆஃப்லைனில் சேமிக்கப்படும்.</li>
+      <li data-t="84">நீங்கள் தேர்வு செய்யும் படங்கள் <b>உங்கள் சாதனத்திலேயே</b> செயல்படுத்தப்படுகின்றன; எந்த சர்வருக்கும் அனுப்பப்படுவதில்லை.</li>
+      <li id="ppAds" data-t="85">கணக்கு, உள்நுழைவு, விளம்பரங்கள், பகுப்பாய்வு (analytics) கருவிகள் இல்லை.</li>
+      <li data-t="86">பக்கத்தை மூடினால் படங்களும் மாற்றங்களும் நீங்கும்; நாங்கள் எதையும் சேமிப்பதில்லை.</li>
+      <li data-t="87">தமிழ் எழுத்துருக்களுக்காக Google Fonts ஏற்றப்படலாம் (உங்கள் IP முகவரி Google-க்குத் தெரியும்); பின்னர் ஆஃப்லைனில் சேமிக்கப்படும்.</li>
     </ul>
-    <p style="margin-top:8px"><a href="privacy-policy.html" target="_blank" rel="noopener">முழுக் கொள்கையைப் படிக்க</a></p>
-    <p style="margin-top:12px"><button class="btn2" id="ppx">மூடு</button></p>
+    <p style="margin-top:8px"><a href="privacy-policy.html" target="_blank" rel="noopener" data-t="88">முழுக் கொள்கையைப் படிக்க</a></p>
+    <p style="margin-top:12px"><button class="btn2" id="ppx" data-t="89">மூடு</button></p>
   </dialog>
 </aside>
 
@@ -323,10 +369,10 @@ dialog a{color:#ffb84d}
 <main><div id="pages"></div></main>
 
 <script>
-const TM=["ஜனவரி","பிப்ரவரி","மார்ச்","ஏப்ரல்","மே","ஜூன்","ஜூலை","ஆகஸ்ட்","செப்டம்பர்","அக்டோபர்","நவம்பர்","டிசம்பர்"];
+let TM=["ஜனவரி","பிப்ரவரி","மார்ச்","ஏப்ரல்","மே","ஜூன்","ஜூலை","ஆகஸ்ட்","செப்டம்பர்","அக்டோபர்","நவம்பர்","டிசம்பர்"];
 const EM=["January","February","March","April","May","June","July","August","September","October","November","December"];
-const WF=["ஞாயிறு","திங்கள்","செவ்வாய்","புதன்","வியாழன்","வெள்ளி","சனி"];
-const WS=["ஞா","தி","செ","பு","வி","வெ","ச"];
+let WF=["ஞாயிறு","திங்கள்","செவ்வாய்","புதன்","வியாழன்","வெள்ளி","சனி"];
+let WS=["ஞா","தி","செ","பு","வி","வெ","ச"];
 let YEAR=2027;
 const THEMES={rainbow:[345,30],sunset:[340,6],ocean:[185,5],forest:[100,6],royal:[260,7],rose:[320,4]};
 const PRESETS={"இயல்பு":[100,100,100,0,0,0],"வண்ணமயம்":[103,112,130,30,0,0],"கதகதப்பு":[103,105,115,20,20,12],"மென்மை":[108,92,110,0,0,8],"கருப்பு-வெள்ளை":[100,115,0,25,0,0]};
@@ -435,8 +481,8 @@ function easter(y){
 function events(){
   const o={}, on=k=>$("c-"+k).checked;
   const add=(m,d,t,c)=>{(o[m+"-"+d]=o[m+"-"+d]||[]).push({t,c})};
-  FIX.forEach(([c,md,t])=>{if(!on(c))return;const [m,d]=md.split("-");add(+m,+d,c==="b"?t+" பிறந்தநாள்":t,c)});
-  if(on("f")){const e=easter(YEAR),g=new Date(YEAR,e[0]-1,e[1]-2);add(e[0],e[1],"ஈஸ்டர்","f");add(g.getMonth()+1,g.getDate(),"புனித வெள்ளி","f");}
+  FIX.forEach(([c,md,t],i)=>{if(!on(c))return;const [m,d]=md.split("-"),n=D.fix?D.fix[i]:t;add(+m,+d,c==="b"?n+D.bd:n,c)});
+  if(on("f")){const e=easter(YEAR),g=new Date(YEAR,e[0]-1,e[1]-2);add(e[0],e[1],D.easter,"f");add(g.getMonth()+1,g.getDate(),D.gf,"f");}
   if(on("v"))vrata(YEAR).forEach(([m,d,k])=>{if($("v-"+k).checked)add(m,d,VR[k],"v")});
   $("hol").value.split("\n").forEach(l=>{const r=l.trim().match(/^(?:(\d{4})[-\/.])?(\d{1,2})[-\/.](\d{1,2})\s+(.+)$/);if(r&&(!r[1]||+r[1]===YEAR))add(+r[2],+r[3],r[4],"f")});
   const P={f:0,v:1,b:2,e:3};Object.values(o).forEach(a=>a.sort((x,y)=>P[x.c]-P[y.c]));
@@ -456,7 +502,7 @@ function rects(n,w,h){
 }
 function collage(k,w,h){
   const n=imgs.length,c=tcount(k);
-  if(!n)return `<div class="empty">📷<br>உங்கள் படத்தை<br>இங்கே சேர்க்கவும்</div>`;
+  if(!n)return `<div class="empty">${D.empty}</div>`;
   return rects(c,w,h).map((r,j)=>{
     const s=pst(k,j),o=imgs[((s.i%n)+n)%n],g=c>1?1.6:0;
     return `<div class="tl ph-i ${c>1?"multi":""} ${c>1&&j===(SEL[k]||0)?"sel":""}" data-k="${k}" data-j="${j}" data-w="${(w*r[2]/100-g).toFixed(2)}" data-h="${(h*r[3]/100-g).toFixed(2)}" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"><img src="${o.url}" data-a="${o.a}" alt=""></div>`;
@@ -468,7 +514,7 @@ function layout(el){const img=el.querySelector("img");if(!img)return;const s=pst
 function layoutAll(){document.querySelectorAll(".ph-i").forEach(layout)}
 function tb(k,label){
   const j=SEL[k]||0,s=pst(k,j),n=tcount(k),B=(a,t,ti="")=>`<button data-a="${a}" data-k="${k}" title="${ti}">${t}</button>`;
-  return `<div class="tb" data-k="${k}" data-l="${label}"><b>${label}</b>${B("up","📁 பதிவேற்று","இந்தப் பக்கத்துக்கு படங்களைச் சேர்")}${B("add","➕ படம்","இன்னொரு படம் சேர்")}${B("del","🗑","தேர்ந்த படத்தை நீக்கு")}<span class="ti">படம் ${j+1}/${n}</span>${B("prev","◀","வேறு படம்")}${B("next","▶","வேறு படம்")}${B("zo","−","சிறிதாக்கு")}<input class="pz" type="range" min="100" max="400" value="${Math.round(s.zm*100)}" data-k="${k}">${B("zi","＋","பெரிதாக்கு")}${B("rs","↺","இந்தப் பக்கத்தை மீட்டமை")}<em>படத்தை இழுத்து நகர்த்தலாம்</em></div>`;
+  return `<div class="tb" data-k="${k}" data-l="${label}"><b>${label}</b>${B("up",D.up,D.upT)}${B("add",D.add,D.addT)}${B("del","🗑",D.delT)}<span class="ti">${D.img} ${j+1}/${n}</span>${B("prev","◀",D.oth)}${B("next","▶",D.oth)}${B("zo","−",D.zo)}<input class="pz" type="range" min="100" max="400" value="${Math.round(s.zm*100)}" data-k="${k}">${B("zi","＋",D.zi)}${B("rs","↺",D.rs)}<em>${D.drag}</em></div>`;
 }
 const wrap=(k,label,html)=>`<div class="pw">${tb(k,label)}${html}</div>`;
 function monthPage(m,H){
@@ -484,7 +530,7 @@ function monthPage(m,H){
     <b class="dc d1"></b><b class="dc d2"></b>
     ${photo(k,$("shape").value,dm[0],dm[1])}
     <div class="rt">
-      <div class="mh hd"><div><span class="mt">${TM[m]}</span><span class="me">${EM[m].toUpperCase()}</span></div><div class="yr">${YEAR}</div></div>
+      <div class="mh hd"><div><span class="mt">${TM[m]}</span><span class="me">${LANG[0]==="en"?"":EM[m].toUpperCase()}</span></div><div class="yr">${YEAR}</div></div>
       <div class="wk">${WF.map(w=>`<span>${w}</span>`).join("")}</div>
       <div class="gr">${cells}</div>
       <div class="ft hd"><span class="lg">${legend()}</span><span>${$("title").value}</span></div>
@@ -498,23 +544,23 @@ function miniMonth(m,H){
     const L=H[(m+1)+"-"+d]||[], sun=(first+d-1)%7===0, f=L.some(x=>x.c==="f"), o=L.find(x=>x.c!=="f"&&x.c!=="v")||L.find(x=>x.c==="v");
     g+=`<span class="${f?"h":sun?"s":""} ${!f&&o?"u":""}" style="${!f&&o?`border-color:${CATS[o.c][1]}`:""}" ${L.length?`title="${L.map(x=>x.t).join(", ")}"`:""}>${d}</span>`;
   }
-  return `<div class="mc" style="${pv(m)}"><h4>${TM[m]}<em>${EM[m]}</em></h4><div class="mg">${g}</div></div>`;
+  return `<div class="mc" style="${pv(m)}"><h4>${TM[m]}<em>${LANG[0]==="en"?"":EM[m]}</em></h4><div class="mg">${g}</div></div>`;
 }
 function yearPage(H){
   const lay=$("lay").value, dm=lay==="side"?[78,126]:lay==="top"?[181,44]:[297,210];
-  return wrap("y",`${YEAR} முழு ஆண்டு`,`<section class="page py L-${lay} bg-${$("bgp").value}" style="${pv(0)}"><div class="lf">${photo("y",$("shape").value,dm[0],dm[1])}
-    <div class="tx2"><div class="hd"><div class="big">${YEAR}</div><div class="nm">நாட்காட்டி</div></div><div class="ttl hd">${$("title").value}</div><div class="lg lg2">${legend()}</div></div></div>
+  return wrap("y",`${YEAR} ${D.full}`,`<section class="page py L-${lay} bg-${$("bgp").value}" style="${pv(0)}"><div class="lf">${photo("y",$("shape").value,dm[0],dm[1])}
+    <div class="tx2"><div class="hd"><div class="big">${YEAR}</div><div class="nm">${D.cal}</div></div><div class="ttl hd">${$("title").value}</div><div class="lg lg2">${legend()}</div></div></div>
     <div class="ym">${Array.from({length:12},(_,m)=>miniMonth(m,H)).join("")}</div></section>`);
 }
 function coverPage(){
   const cv=$("cv").value, dm=cv==="full"?[297,210]:cv==="split"?[185,210]:[277,148];
-  return wrap("c","முகப்புப் பக்கம்",`<section class="page cover cv-${cv}" style="${pv(0)}"><div class="cvi">${collage("c",dm[0],dm[1])}</div><div class="ov"></div>
-    <div class="tx hd"><div class="big">${YEAR}</div><div class="nm">நாட்காட்டி</div><div class="ttl">${$("title").value}</div></div>
+  return wrap("c",D.cover,`<section class="page cover cv-${cv}" style="${pv(0)}"><div class="cvi">${collage("c",dm[0],dm[1])}</div><div class="ov"></div>
+    <div class="tx hd"><div class="big">${YEAR}</div><div class="nm">${D.cal}</div><div class="ttl">${$("title").value}</div></div>
     <div class="dots">${Array.from({length:12},(_,m)=>`<i style="background:${pv(m).match(/--a:([^;]+)/)[1]}"></i>`).join("")}</div></section>`);
 }
 function render(){
-  YEAR=Math.min(2200,Math.max(1900,+$("year").value||2027)); document.title=YEAR+" நாட்காட்டி";
-  document.documentElement.style.setProperty("--hf",$("hf").value);
+  YEAR=Math.min(2200,Math.max(1900,+$("year").value||2027)); document.title=YEAR+" "+D.cal;
+  document.documentElement.style.setProperty("--hf",LANG[0]==="ta"?$("hf").value:$("hf").value.replace(/"Noto (?:Sans|Serif) Tamil"|"Mukta Malar"|"Latha"/g,`"${LANG[4]}"`));
   const H=events(),md=$("mode").value; let h=$("cover").checked?coverPage():"";
   if(md!=="month")h+=yearPage(H);
   if(md!=="year")h+=Array.from({length:12},(_,m)=>monthPage(m,H)).join("");
@@ -527,7 +573,7 @@ function vars(){
   s.setProperty("--zm",v("zm")/100); s.setProperty("--px",v("px")+"%"); s.setProperty("--py",v("py")+"%"); s.setProperty("--tint",v("ti")/100);
   document.querySelectorAll(".ctrl input[type=range]").forEach(r=>r.previousElementSibling.querySelector("output").textContent=r.value+(["zm","br","ct","sa","px","py","sh","wa","ti"].includes(r.id)?"%":""));
 }
-function fit(){ const w=innerWidth>900?innerWidth-340-30:innerWidth-24; document.documentElement.style.setProperty("--z",Math.min(1,Math.max(.3,w/1125))); }
+function fit(){ const w=innerWidth>900?innerWidth-372-30:innerWidth-24; document.documentElement.style.setProperty("--z",Math.min(1,Math.max(.3,w/1125))); }
 function setVals(a){["br","ct","sa","sh","wa","ti"].forEach((id,i)=>{});const map=["br","ct","sa","sh","ti","wa"];a.forEach((x,i)=>$(map[i]).value=x);vars();}
 
 /* images */
@@ -537,7 +583,7 @@ function addFiles(fl,cb){
   arr.forEach(f=>{const o={url:URL.createObjectURL(f),a:1.5},im=new Image();imgs.push(o);im.onload=()=>{o.a=im.naturalWidth/im.naturalHeight;done()};im.onerror=done;im.src=o.url;});
 }
 function thumbs(){
-  $("thumbs").innerHTML=imgs.map((o,i)=>`<div><img src="${o.url}" alt=""><button data-i="${i}" title="நீக்கு">×</button></div>`).join("");
+  $("thumbs").innerHTML=imgs.map((o,i)=>`<div><img src="${o.url}" alt=""><button data-i="${i}" title="${D.rm}">×</button></div>`).join("");
 }
 $("thumbs").onclick=e=>{const i=e.target.dataset.i;if(i!==undefined){imgs.splice(+i,1);Object.values(P).forEach(p=>p.tiles&&p.tiles.forEach(t=>delete t.i));thumbs();render();}};
 $("file").onchange=e=>{addFiles(e.target.files);e.target.value=""};
@@ -547,7 +593,7 @@ $("drop").addEventListener("drop",e=>addFiles(e.dataTransfer.files));
 
 /* auto enhance: measure first image, derive levels */
 $("auto").onclick=()=>{
-  if(!imgs.length){alert("முதலில் ஒரு படத்தைச் சேர்க்கவும்.");return;}
+  if(!imgs.length){alert(D.a1);return;}
   const im=new Image(); im.onload=()=>{
     const c=document.createElement("canvas"),w=c.width=160,h=c.height=Math.max(1,Math.round(160*im.height/im.width));
     const x=c.getContext("2d"); x.drawImage(im,0,0,w,h);
@@ -559,8 +605,49 @@ $("auto").onclick=()=>{
   }; im.src=imgs[0].url;
 };
 
+const TA_N={TM:TM.slice(),WF:WF.slice(),WS:WS.slice()};
+/* ===== languages: choose first, then the calendar + panel follow ===== */
+const LANGS=[["ta","தமிழ்","Tamil","ta-IN","Noto Sans Tamil"],["en","English","English","en","Noto Sans"],["hi","हिन्दी","Hindi","hi-IN","Noto Sans Devanagari"],["te","తెలుగు","Telugu","te-IN","Noto Sans Telugu"],["kn","ಕನ್ನಡ","Kannada","kn-IN","Noto Sans Kannada"],["ml","മലയാളം","Malayalam","ml-IN","Noto Sans Malayalam"],["mr","मराठी","Marathi","mr-IN","Noto Sans Devanagari"],["bn","বাংলা","Bengali","bn-IN","Noto Sans Bengali"],["gu","ગુજરાતી","Gujarati","gu-IN","Noto Sans Gujarati"],["pa","ਪੰਜਾਬੀ","Punjabi","pa-IN","Noto Sans Gurmukhi"],["or","ଓଡ଼ିଆ","Odia","or-IN","Noto Sans Oriya"],["fr","Français","French","fr","Noto Sans"],["es","Español","Spanish","es","Noto Sans"],["de","Deutsch","German","de","Noto Sans"]];
+const UI={en:["Calendar Designer", "A4 Landscape • Your photos • Colourful designs", "📷 Choose photos / drag them here", "One or many photos – they alternate across the months", "Photos auto-arranged per page", "1 photo", "2 photos", "3 photos", "4 photos", "5 photos", "6 photos", "Photos are neatly arranged on each page automatically. Use <b>📁 Upload</b> / <b>➕ Photo</b> on each page's toolbar to add any number of photos to just that page.", "🎨 Design", "Year – choose any year", "Layout", "First page: full year + next 12 month pages", "12 month pages only", "Full year on a single page only", "Colour theme", "Rainbow (a different colour each month)", "Sunset", "Ocean blue", "Forest green", "Royal purple", "Rose", "Photo shape", "Rounded corners", "Arch", "Slanted", "Oval", "Leaf", "Add a cover page (before the year page)", "Photo on the right (side layout)", "Page layout", "Side photo", "Wide photo on top", "Full photo + glass card", "Cover style", "Full photo", "Half photo + colour panel", "Framed photo", "Date cell style", "Box", "Circle", "Line", "Filled box", "Background pattern", "None", "Dots", "Diagonal stripes", "Grid", "Rings", "Heading font", "Rounded (Baloo)", "Classic (Serif)", "Modern (Mukta)", "✨ Photo enhancement", "⚡ Auto enhance", "Brightness", "Contrast", "Saturation", "Sharpen", "Warmth", "Glow tint", "🖼️ Photo fitting (all pages)", "Each page has its own toolbar on top to adjust that page's photo: <b>drag to move</b>, zoom with the <b>mouse wheel</b> / ＋ − / slider, and pick another photo with ◀ ▶. The controls below apply only to pages you haven't adjusted individually.", "↺ Clear per-page changes", "Zoom", "Position ← →", "Position ↑ ↓", "✍️ Text", "Name / business / phone", "📌 Events", "What to show?", "Fasting-day types", "Your own days / events", "Format: <b>month-day name</b> (every year) or <b>year-month-day name</b> (that year only). Add moving dates such as Diwali, Eid, Bakrid or Vinayagar Chathurthi here after checking a panchang.", "⚠️ Amavasya, Pournami, Ekadashi, Pradosham and other fasting days are computed astronomically and may differ from the panchang by up to a day. Please verify before printing.", "🖨️ Save as PDF / Print", "In the print window: Destination → <b>Save as PDF</b>, Layout → <b>Landscape</b>, Paper → <b>A4</b>, Margins → <b>None</b>, tick <b>Background graphics</b>.", "📲 Install as app", "🔒 Privacy policy", "• Works offline after the first load.", "🔒 Privacy policy (summary)", "The photos you choose are processed <b>on your device only</b>; they are never sent to any server.", "No accounts, sign-in, ads or analytics tools.", "Closing the page discards your photos and changes; we store nothing.", "Google Fonts may be loaded for language fonts (your IP address is visible to Google); they are then cached for offline use.", "Read the full policy", "Close"],hi:["कैलेंडर डिज़ाइनर", "A4 लैंडस्केप • आपकी तस्वीरें • रंगीन डिज़ाइन", "📷 तस्वीरें चुनें / यहाँ खींचकर छोड़ें", "एक या कई तस्वीरें – महीनों में बारी-बारी से आएँगी", "प्रति पृष्ठ स्वतः लगने वाली तस्वीरें", "1 तस्वीर", "2 तस्वीरें", "3 तस्वीरें", "4 तस्वीरें", "5 तस्वीरें", "6 तस्वीरें", "हर पृष्ठ पर इतनी तस्वीरें अपने-आप सुंदर ढंग से लगेंगी। हर पृष्ठ के टूलबार में <b>📁 अपलोड</b> / <b>➕ तस्वीर</b> से उस पृष्ठ पर कितनी भी तस्वीरें जोड़ें।", "🎨 डिज़ाइन", "वर्ष (Year) – कोई भी वर्ष चुनें", "लेआउट", "पहला पृष्ठ: पूरा वर्ष + अगले 12 माह के पृष्ठ", "केवल 12 माह के पृष्ठ", "केवल एक पृष्ठ पर पूरा वर्ष", "रंग थीम", "इंद्रधनुष (हर माह अलग रंग)", "सूर्यास्त", "समुद्री नीला", "हरियाली", "शाही बैंगनी", "गुलाबी", "तस्वीर का आकार", "गोल कोने", "मेहराब", "तिरछा", "अंडाकार", "पत्ती", "मुखपृष्ठ जोड़ें (वर्ष पृष्ठ से पहले)", "तस्वीर दाईं ओर (साइड लेआउट में)", "पृष्ठ लेआउट", "साइड तस्वीर", "ऊपर चौड़ी तस्वीर", "पूरी तस्वीर + काँच कार्ड", "मुखपृष्ठ शैली", "पूरी तस्वीर", "आधी तस्वीर + रंग पट्टी", "फ्रेम वाली तस्वीर", "तारीख खाने की शैली", "डिब्बा", "गोला", "रेखा", "रंगीन डिब्बा", "पृष्ठभूमि पैटर्न", "कोई नहीं", "बिंदु", "तिरछी रेखाएँ", "ग्रिड", "छल्ले", "शीर्षक फ़ॉन्ट", "गोलाकार (Baloo)", "पारंपरिक (Serif)", "आधुनिक (Mukta)", "✨ तस्वीर सुधार", "⚡ स्वतः सुधारें", "चमक", "कॉन्ट्रास्ट", "रंग की गहराई", "शार्पनेस", "गर्माहट", "रंगीन आभा", "🖼️ तस्वीर बैठाना (सभी पृष्ठ)", "हर पृष्ठ के ऊपर टूलबार से उसकी तस्वीर अलग से बदलें: <b>खींचकर खिसकाएँ</b>, <b>माउस व्हील</b> / ＋ − / स्लाइडर से ज़ूम करें, ◀ ▶ से दूसरी तस्वीर चुनें। नीचे की सेटिंग केवल उन पृष्ठों पर लागू होती हैं जिन्हें अलग से नहीं बदला गया।", "↺ पृष्ठवार बदलाव हटाएँ", "ज़ूम", "स्थान ← →", "स्थान ↑ ↓", "✍️ पाठ", "नाम / संस्था / फ़ोन", "📌 आयोजन", "क्या दिखाना है?", "व्रत दिनों के प्रकार", "आपके अपने दिन / आयोजन", "प्रारूप: <b>माह-दिन नाम</b> (हर वर्ष) या <b>वर्ष-माह-दिन नाम</b> (केवल उसी वर्ष)। दीपावली, ईद, बकरीद, गणेश चतुर्थी जैसी बदलने वाली तारीखें पंचांग देखकर यहाँ जोड़ें।", "⚠️ अमावस्या, पूर्णिमा, एकादशी, प्रदोष जैसे व्रत-दिन खगोलीय गणना से अपने-आप आते हैं; पंचांग से एक दिन तक अंतर हो सकता है। छापने से पहले जाँच लें।", "🖨️ PDF सहेजें / प्रिंट करें", "प्रिंट विंडो में: Destination → <b>Save as PDF</b>, Layout → <b>Landscape</b>, Paper → <b>A4</b>, Margins → <b>None</b>, <b>Background graphics</b> ✔ चुनें।", "📲 ऐप की तरह इंस्टॉल करें", "🔒 गोपनीयता नीति", "• पहली बार खुलने के बाद ऑफ़लाइन भी चलता है।", "🔒 गोपनीयता नीति (सारांश)", "आपकी चुनी तस्वीरें <b>केवल आपके डिवाइस पर</b> प्रोसेस होती हैं; किसी सर्वर को नहीं भेजी जातीं।", "कोई खाता, लॉगिन, विज्ञापन या एनालिटिक्स टूल नहीं।", "पृष्ठ बंद करने पर तस्वीरें और बदलाव मिट जाते हैं; हम कुछ भी सहेजते नहीं।", "भाषा के फ़ॉन्ट के लिए Google Fonts लोड हो सकते हैं (आपका IP पता Google को दिख सकता है); बाद में वे ऑफ़लाइन के लिए सहेजे जाते हैं।", "पूरी नीति पढ़ें", "बंद करें"]};
+const PH={"en": ["e.g. Family • 98400 12345", "10-29 Diwali\n2027-03-10 Eid (this year only)\n05-20 Our anniversary"], "hi": ["जैसे: परिवार • 98400 12345", "10-29 दीपावली\n2027-03-10 ईद (केवल इस वर्ष)\n05-20 हमारी सालगिरह"]};
+const DD={"ta": {"cal": "நாட்காட்டி", "full": "முழு ஆண்டு", "cover": "முகப்புப் பக்கம்", "up": "📁 பதிவேற்று", "upT": "இந்தப் பக்கத்துக்கு படங்களைச் சேர்", "add": "➕ படம்", "addT": "இன்னொரு படம் சேர்", "delT": "தேர்ந்த படத்தை நீக்கு", "img": "படம்", "oth": "வேறு படம்", "zo": "சிறிதாக்கு", "zi": "பெரிதாக்கு", "rs": "இந்தப் பக்கத்தை மீட்டமை", "drag": "படத்தை இழுத்து நகர்த்தலாம்", "empty": "📷<br>உங்கள் படத்தை<br>இங்கே சேர்க்கவும்", "rm": "நீக்கு", "a1": "முதலில் ஒரு படத்தைச் சேர்க்கவும்.", "a2": "முதலில் படங்களைப் பதிவேற்றவும்.", "bd": " பிறந்தநாள்", "easter": "ஈஸ்டர்", "gf": "புனித வெள்ளி", "fix": null, "cat": {"f": "விடுமுறை / விசேஷம்", "v": "விரதம்", "b": "தலைவர்கள் பிறந்தநாள்", "e": "முக்கிய தினங்கள்"}, "vr": {"am": "அமாவாசை", "po": "பௌர்ணமி", "ek": "ஏகாதசி", "pr": "பிரதோஷம்", "sa": "சங்கடஹர சதுர்த்தி", "sh": "சஷ்டி", "ka": "கார்த்திகை"}, "pre": ["இயல்பு", "வண்ணமயம்", "கதகதப்பு", "மென்மை", "கருப்பு-வெள்ளை"]}, "en": {"cal": "Calendar", "full": "Full year", "cover": "Cover page", "up": "📁 Upload", "upT": "Add photos to this page", "add": "➕ Photo", "addT": "Add another photo", "delT": "Remove selected photo", "img": "Photo", "oth": "Another photo", "zo": "Zoom out", "zi": "Zoom in", "rs": "Reset this page", "drag": "Drag the photo to move it", "empty": "📷<br>Add your photo<br>here", "rm": "Remove", "a1": "Add a photo first.", "a2": "Upload photos first.", "bd": " Birthday", "easter": "Easter", "gf": "Good Friday", "fix": ["New Year's Day", "Pongal", "Mattu Pongal", "Thiruvalluvar Day", "Uzhavar Thirunal", "Republic Day", "Tamil New Year", "May Day", "Independence Day", "Gandhi Jayanti", "Christmas", "National Youth Day", "Martyrs' Day", "Intl. Mother Language Day", "Intl. Women's Day", "World Water Day", "Earth Day", "World Environment Day", "Intl. Yoga Day", "National Sports Day", "Teachers' Day", "World Students' Day", "National Unity Day", "Children's Day", "Human Rights Day", "National Mathematics Day", "Velu Nachiyar", "Savitribai Phule", "Swami Vivekananda", "M.G.R.", "Netaji", "Chhatrapati Shivaji", "Jayalalithaa", "Ambedkar", "Bharathidasan", "Tagore", "Kalaignar Karunanidhi", "Kannadasan", "Kamarajar", "Bal Gangadhar Tilak", "Muthulakshmi Reddy", "Rajiv Gandhi", "Mother Teresa", "V.O. Chidambaranar", "Arignar Anna", "Periyar", "Bhagat Singh", "Lal Bahadur Shastri", "Vallalar", "Abdul Kalam", "Muthuramalinga Thevar", "Sardar Patel", "Sir C.V. Raman", "Jawaharlal Nehru", "Indira Gandhi", "Rajaji", "Subramania Bharati", "Ramanujan"], "cat": {"f": "Holidays / Festivals", "v": "Fasting days", "b": "Leaders' birthdays", "e": "Important days"}, "vr": {"am": "Amavasya", "po": "Pournami", "ek": "Ekadashi", "pr": "Pradosham", "sa": "Sankatahara Chaturthi", "sh": "Shashti", "ka": "Karthigai"}, "pre": ["Default", "Vivid", "Warm", "Soft", "Black & white"]}, "hi": {"cal": "कैलेंडर", "full": "पूरा वर्ष", "cover": "मुखपृष्ठ", "up": "📁 अपलोड", "upT": "इस पृष्ठ पर तस्वीरें जोड़ें", "add": "➕ तस्वीर", "addT": "एक और तस्वीर जोड़ें", "delT": "चुनी तस्वीर हटाएँ", "img": "तस्वीर", "oth": "दूसरी तस्वीर", "zo": "छोटा करें", "zi": "बड़ा करें", "rs": "इस पृष्ठ को रीसेट करें", "drag": "तस्वीर को खींचकर खिसका सकते हैं", "empty": "📷<br>अपनी तस्वीर<br>यहाँ जोड़ें", "rm": "हटाएँ", "a1": "पहले एक तस्वीर जोड़ें।", "a2": "पहले तस्वीरें अपलोड करें।", "bd": " जयंती", "easter": "ईस्टर", "gf": "गुड फ्राइडे", "fix": ["New Year's Day", "Pongal", "Mattu Pongal", "Thiruvalluvar Day", "Uzhavar Thirunal", "Republic Day", "Tamil New Year", "May Day", "Independence Day", "Gandhi Jayanti", "Christmas", "National Youth Day", "Martyrs' Day", "Intl. Mother Language Day", "Intl. Women's Day", "World Water Day", "Earth Day", "World Environment Day", "Intl. Yoga Day", "National Sports Day", "Teachers' Day", "World Students' Day", "National Unity Day", "Children's Day", "Human Rights Day", "National Mathematics Day", "Velu Nachiyar", "Savitribai Phule", "Swami Vivekananda", "M.G.R.", "Netaji", "Chhatrapati Shivaji", "Jayalalithaa", "Ambedkar", "Bharathidasan", "Tagore", "Kalaignar Karunanidhi", "Kannadasan", "Kamarajar", "Bal Gangadhar Tilak", "Muthulakshmi Reddy", "Rajiv Gandhi", "Mother Teresa", "V.O. Chidambaranar", "Arignar Anna", "Periyar", "Bhagat Singh", "Lal Bahadur Shastri", "Vallalar", "Abdul Kalam", "Muthuramalinga Thevar", "Sardar Patel", "Sir C.V. Raman", "Jawaharlal Nehru", "Indira Gandhi", "Rajaji", "Subramania Bharati", "Ramanujan"], "cat": {"f": "छुट्टियाँ / त्योहार", "v": "व्रत", "b": "महापुरुषों की जयंती", "e": "महत्वपूर्ण दिवस"}, "vr": {"am": "अमावस्या", "po": "पूर्णिमा", "ek": "एकादशी", "pr": "प्रदोष", "sa": "संकष्टी चतुर्थी", "sh": "षष्ठी", "ka": "कार्तिकै"}, "pre": ["सामान्य", "चटकीला", "गर्म", "मुलायम", "श्वेत-श्याम"]}};
+let LANG=LANGS[0],D=DD.ta,ui="ta";
+const ORIG=[],ORIGP=[];
+document.querySelectorAll("[data-t]").forEach(e=>ORIG[+e.dataset.t]=e.innerHTML);
+document.querySelectorAll("[data-tp]").forEach(e=>ORIGP[+e.dataset.tp]=e.placeholder);
+function applyUI(){
+  const T=ui==="ta"?ORIG:UI[ui],P=ui==="ta"?ORIGP:PH[ui];
+  document.querySelectorAll("[data-t]").forEach(e=>{if(e.id==="ppAds"&&window.__adsOn)return;e.innerHTML=T[+e.dataset.t]});
+  document.querySelectorAll("[data-tp]").forEach(e=>e.placeholder=P[+e.dataset.tp]);
+}
+function setLang(c){
+  LANG=LANGS.find(l=>l[0]===c)||LANGS[0]; ui=DD[LANG[0]]?LANG[0]:"en"; D=DD[ui];
+  document.documentElement.lang=LANG[0];
+  const L=LANG[3],f=(t,o)=>new Intl.DateTimeFormat(L,{...o,timeZone:"UTC"}).format(t);
+  if(LANG[0]==="ta"){TM=TA_N.TM;WF=TA_N.WF;WS=TA_N.WS}
+  else{TM=Array.from({length:12},(_,m)=>f(Date.UTC(2021,m,15),{month:"long"}));
+    WF=Array.from({length:7},(_,i)=>f(Date.UTC(2023,0,1+i),{weekday:"long"}));
+    WS=Array.from({length:7},(_,i)=>f(Date.UTC(2023,0,1+i),{weekday:"short"}))}
+  Object.keys(CATS).forEach(k=>{CATS[k][0]=D.cat[k];const l=document.querySelector(`label[for="c-${k}"]`);if(l)l.textContent=D.cat[k]});
+  Object.assign(VR,D.vr);Object.keys(VR).forEach(k=>{const l=document.querySelector(`label[for="v-${k}"]`);if(l)l.textContent=VR[k]});
+  $("presets").innerHTML=Object.keys(PRESETS).map((k,i)=>`<button data-k="${k}">${D.pre[i]}</button>`).join("");
+  applyUI(); $("lbn").textContent=LANG[1];
+  const id="f-"+LANG[4].replace(/ /g,"_");
+  if(!document.getElementById(id)){const k=document.createElement("link");k.id=id;k.rel="stylesheet";k.href="https://fonts.googleapis.com/css2?family="+LANG[4].replace(/ /g,"+")+":wght@400;600;700;800&display=swap";document.head.appendChild(k)}
+  document.documentElement.style.setProperty("--lf",`"${LANG[4]}","Noto Sans Tamil","Nirmala UI",system-ui,sans-serif`);
+  document.querySelectorAll("#lpg button").forEach(b=>b.classList.toggle("cur",b.dataset.c===LANG[0]));
+  render();
+}
+function showSplash(){$("lp").hidden=false;document.body.style.overflow="hidden"}
+function initLang(){
+  $("lpg").innerHTML=LANGS.map(l=>`<button type="button" data-c="${l[0]}"><b>${l[1]}</b><small>${l[2]}</small></button>`).join("");
+  $("lpg").onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("lang",b.dataset.c)}catch(x){}setLang(b.dataset.c);$("lp").hidden=true;document.body.style.overflow=""};
+  $("langBtn").onclick=showSplash;
+  let c=new URLSearchParams(location.search).get("lang"),st=null;try{st=localStorage.getItem("lang")}catch(x){}
+  c=c||st; if(c&&LANGS.some(l=>l[0]===c))setLang(c);else{setLang("ta");showSplash()}
+}
 /* init */
-$("presets").innerHTML=Object.keys(PRESETS).map(k=>`<button data-k="${k}">${k}</button>`).join("");
+
 $("presets").onclick=e=>{const k=e.target.dataset.k;if(k)setVals(PRESETS[k])};
 $("cats").innerHTML=Object.entries(CATS).map(([k,v])=>`<div class="chk"><input type="checkbox" id="c-${k}" checked><label for="c-${k}" style="border-left:4px solid ${v[1]};padding-left:6px">${v[0]}</label></div>`).join("");
 $("vrs").innerHTML=Object.entries(VR).map(([k,v])=>`<div class="chk"><input type="checkbox" id="v-${k}" checked><label for="v-${k}">${v}</label></div>`).join("");
@@ -580,7 +667,7 @@ pg.addEventListener("click",e=>{
   if(a==="zi"||a==="zo"){T(k,j).zm=cl(pst(k,j).zm+(a==="zi"?.1:-.1),1,4);sync(k)}
   else if(a==="rs"){delete P[k];delete SEL[k];render()}
   else if(a==="up"){pk=k;$("pfile").click()}
-  else if(!n){alert("முதலில் படங்களைப் பதிவேற்றவும்.")}
+  else if(!n){alert(D.a2)}
   else if(a==="prev"||a==="next"){T(k,j).i=(((pst(k,j).i+(a==="next"?1:-1))%n)+n)%n;render()}
   else if(a==="add"){if(c>=9)return;T(k,0);P[k].tiles.push({i:(pst(k,c-1).i+1)%n});SEL[k]=c;render()}
   else if(a==="del"){if(c<2)return;T(k,0);P[k].tiles.splice(j,1);SEL[k]=0;render()}
@@ -606,7 +693,7 @@ pg.addEventListener("wheel",e=>{
   const el=e.target.closest(".ph-i");if(!el)return;
   e.preventDefault();const k=el.dataset.k,j=+el.dataset.j;T(k,j).zm=cl(pst(k,j).zm-e.deltaY/600,1,4);SEL[k]=j;sync(k);
 },{passive:false});
-addEventListener("resize",fit); fit(); render();
+addEventListener("resize",fit); fit(); initLang();
 
 /* PWA: நிறுவல் பொத்தான், தனியுரிமை, ஆஃப்லைன் சேவை */
 let dip=null;
@@ -616,6 +703,57 @@ addEventListener("appinstalled",()=>{$("install").hidden=true});
 $("ppl").onclick=e=>{e.preventDefault();$("pp").showModal()};
 $("ppx").onclick=()=>$("pp").close();
 if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+<script>
+/* ===== Ads (Google AdSense) — OFF until you fill client + slot =====
+   - Only in the control panel (bottom), never inside the calendar pages; hidden when printing.
+   - Not loaded offline or in a background tab. Stays collapsed (no empty box) until an ad is filled.
+   - Add ?noads=1 to the URL to switch ads off for testing.
+   - When ads are ON, the in-app privacy summary line is corrected automatically. */
+var AD_CONFIG={
+  client:"",   /* e.g. "ca-pub-1234567890123456" */
+  slot:"",     /* e.g. "1234567890"  (ad unit ID from AdSense) */
+  test:false,  /* true = AdSense test mode while you set things up */
+  npa:true     /* true = non-personalized ads (safer until consent messaging is set up) */
+};
+(function(){
+  var C=AD_CONFIG,card=document.getElementById("adCard"),box=document.getElementById("adBox");
+  if(!card||!box||!/^ca-pub-\d{10,}$/.test(C.client)||!/^\d{5,}$/.test(C.slot))return;
+  try{if(/[?&]noads=1/.test(location.search)||localStorage.getItem("noads")==="1")return}catch(e){}
+  window.__adsOn=1;var li=document.getElementById("ppAds");
+  if(li)li.textContent="இந்தச் செயலியில் Google AdSense விளம்பரங்கள் காட்டப்படும்; Google குக்கீகள்/சாதன அடையாளங்காட்டிகளைப் பயன்படுத்தலாம். உங்கள் படங்களும் உரையும் விளம்பரங்களுக்குப் பகிரப்படுவதில்லை; கணக்கு, உள்நுழைவு, சொந்த analytics இல்லை.";
+  var loaded=false;
+  function load(){
+    if(loaded)return;
+    if(!navigator.onLine||document.hidden)return;
+    loaded=true;
+    var ins=document.createElement("ins");
+    ins.className="adsbygoogle";ins.style.display="block";
+    ins.setAttribute("data-ad-client",C.client);ins.setAttribute("data-ad-slot",C.slot);
+    ins.setAttribute("data-ad-format","auto");ins.setAttribute("data-full-width-responsive","true");
+    if(C.test)ins.setAttribute("data-adtest","on");
+    box.appendChild(ins);
+    new MutationObserver(function(){
+      var st=ins.getAttribute("data-ad-status");
+      if(st==="filled")card.classList.remove("adWait");
+      else if(st==="unfilled")card.classList.add("adWait");
+    }).observe(ins,{attributes:true,attributeFilter:["data-ad-status"]});
+    try{
+      window.adsbygoogle=window.adsbygoogle||[];
+      if(C.npa)window.adsbygoogle.requestNonPersonalizedAds=1;
+      window.adsbygoogle.push({});
+    }catch(e){}
+    var sc=document.createElement("script");
+    sc.async=true;sc.crossOrigin="anonymous";
+    sc.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+C.client;
+    document.head.appendChild(sc);
+  }
+  card.classList.remove("adOff");
+  var tries=0,timer=setInterval(function(){
+    if(loaded||++tries>120){clearInterval(timer);return}
+    load();
+  },1500);
+})();
 </script>
 </body>
 </html>
