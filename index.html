@@ -658,6 +658,14 @@ html body:not(#b3d) #toolsX{--b1:#ff9a8b;--b2:#ff3d6e;--bd:#b81d3f;--tx:#fff;--t
 /* view count pill (visible to everyone) */
 .vw{display:inline-block;background:#e8f1ff;border:1px solid #b9d3f5;border-radius:999px;padding:1px 10px;font-size:13px!important;font-weight:700!important;color:#1b6ca8;margin-left:8px;white-space:nowrap}
 .hmenu .hm-i.hm-w small{font-weight:600}
+html body:not(#b3d) .hm-i.hm-f.hm-w{--b1:#e0a8ff;--b2:#8a2be2;--bd:#4b1496;--tx:#fff;--glow:rgba(190,120,255,.95)}
+.hmenu .hm-i.hm-f.hm-w{background:linear-gradient(135deg,#7b2ff7 0%,#f107a3 100%)!important;color:#fff!important;border:3px solid #ffe45e;box-shadow:0 0 0 2px #7b2ff7,0 4px 12px rgba(241,7,163,.5);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.hmenu .hm-i.hm-f.hm-w:hover,.hmenu .hm-i.hm-f.hm-w:active{background:linear-gradient(135deg,#9553ff 0%,#ff3cc0 100%)!important;filter:none}
+/* hover blink in the button's own purple-pink colour (same style as the other three buttons) */
+@keyframes blkWl{0%,49%{border-color:#f107a3;box-shadow:0 0 10px 3px rgba(241,7,163,.85),0 0 18px 6px rgba(123,47,247,.6)}50%,100%{border-color:#ffe45e;box-shadow:0 2px 6px rgba(0,0,0,.25)}}
+html body:not(#b3d) .hmenu .hm-i.hm-f.hm-w{animation:none!important}
+html body:not(#b3d) .hmenu .hm-i.hm-f.hm-w:hover,html body:not(#b3d) .hmenu .hm-i.hm-f.hm-w:active{animation:blkWl 1s linear infinite!important}
+@media(prefers-reduced-motion:reduce){html body:not(#b3d) .hmenu .hm-i.hm-f.hm-w:hover{animation:none!important;box-shadow:0 0 10px 3px rgba(241,7,163,.85)}}
 </style>
 </head>
 <body>
@@ -3697,7 +3705,7 @@ const VIEW_SECS=['video','inter','cvid','tet','conl','work','cwork','demo'];
 const VIEW_NO=['home','cal','att','morning','upl','about','contact','privacy','terms','wlinks'];
 const viewSec=s=>!!s&&!VIEW_NO.includes(s);
 /* Paste the Web App URL of ViewCounter_Code.gs here so that ALL visitors see one shared count per file / video */
-const VIEW_API='https://script.google.com/macros/s/AKfycbz0RBKXHeDRhFfdO6DO9U0fCraMZ4HpE1xdS4qG5XICooNdeR-aE9O1X_PrnBq2AjPKoA/exec';
+const VIEW_API='';
 let VG={},vgLast=0;
 const vgKey=id=>{let a=0x811c9dc5,b=5381;for(let i=0;i<id.length;i++){const c=id.charCodeAt(i);a^=c;a=Math.imul(a,16777619)>>>0;b=(Math.imul(b,33)+c)>>>0}return a.toString(36)+b.toString(36)};
 async function vgCall(q){if(!VIEW_API)return null;const ac=new AbortController(),to=setTimeout(()=>ac.abort(),15000);
