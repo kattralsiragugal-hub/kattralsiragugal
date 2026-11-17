@@ -266,6 +266,80 @@ main{padding:26px 0}
 @media (max-width:900px){body{grid-template-columns:1fr}.ctrl{padding:0 14px 30px}.top{margin:0 -14px 8px;padding:12px 14px 10px}}
 @media print{.lp,.top{display:none!important}}
 
+
+/* ---------- regional months ---------- */
+.d{position:relative}
+.rd{position:absolute;top:1mm;right:1.3mm;font:600 2.5mm/1 var(--lf,"Noto Sans Tamil"),sans-serif;font-style:normal;color:#777}
+.rd.rs{top:.9mm;right:1mm;background:var(--a);color:#fff;border-radius:1mm;padding:.5mm 1.1mm;max-width:none;white-space:nowrap;font-size:2.1mm;font-weight:700}
+.rm{display:block;font:800 5.6mm/1.25 var(--lf,"Noto Sans Tamil"),sans-serif;color:var(--d);margin-top:1mm}
+.pm:not(.L-top) .mh.hr{height:41mm}
+.L-top .rm{display:inline;margin-left:3mm;font-size:4.6mm}
+.rmm{font:700 2.7mm/1.2 var(--lf,"Noto Sans Tamil"),sans-serif;color:var(--d);margin-top:.2mm}
+
+/* ---------- Tamil panchangam ---------- */
+.tt{font-size:2.2mm;font-weight:700;line-height:1.2;margin-top:.5mm}
+.tt.wx{color:#a8740a}.tt.wn{color:#555}
+.tt .f{display:none}.L-top .tt .f{display:inline}.L-top .tt .s{display:none}
+.nk{font-size:2.1mm;color:#666;line-height:1.2}
+.bg2{display:flex;flex-wrap:wrap;gap:.6mm;margin-top:.4mm}
+u.b1,u.b2,u.b3,.bg2 u{text-decoration:none;font-size:2mm;font-weight:700;color:#fff;border-radius:.8mm;padding:.1mm .8mm;line-height:1.35;white-space:nowrap}
+.b1{background:#1a8f4a}.b2{background:#1558b0}.b3{background:#c1121f}
+.pc .d b{font-size:5.2mm}
+.pc.L-top .d{display:grid;grid-template-columns:auto 1fr;column-gap:1.4mm;align-content:start;align-items:start}
+.pc.L-top .d b{grid-row:1/span 4;font-size:4.6mm}
+.pc.L-top .tt{margin-top:0;padding-right:6mm}
+.pc.L-top .nk{padding-right:4mm}
+.pc.L-top .rd{top:.8mm}
+.pg{display:flex;flex-direction:column;padding:8mm 10mm;background:linear-gradient(135deg,var(--l),#fff 60%)}
+.pgh{display:flex;justify-content:space-between;align-items:baseline;height:12mm;position:relative}
+.pgh span{font-size:9mm;font-weight:800;color:var(--d)}
+.pgh em{font:700 5mm var(--lf,"Noto Sans Tamil"),sans-serif;font-style:normal;color:var(--a)}
+.pgt{width:100%;border-collapse:collapse;font-size:3mm;position:relative;background:#ffffffd9}
+.pgt th{background:var(--a);color:#fff;font-weight:700;padding:.9mm 1.2mm;text-align:left;font-size:3mm}
+.pgt td{padding:.25mm 1.2mm;border-bottom:.2mm solid var(--m);line-height:1.15;height:5.15mm}
+.pgt td:first-child{font-weight:800;text-align:center;width:9mm}
+.pgt tr.sn td:first-child,.pgt tr.sn td:nth-child(2){color:#d6283a}
+.pgt td.wx{color:#a8740a;font-weight:700}.pgt td.wn{color:#555;font-weight:700}
+.pgt tr.kr td{background:#ffe3e6}.pgt tr.sb td{background:#e1f5e8}.pgt tr.vs td{background:#e0ebfb}
+.pgt .sp{font-size:2.6mm;font-weight:600}
+.pgt .sp u{text-decoration:none;color:#fff;border-radius:.8mm;padding:.1mm 1mm;margin-right:1mm;font-weight:700}
+.pgf{font-size:2.5mm;color:#555;line-height:1.35;margin-top:1.6mm;position:relative}
+
+/* ---------- fit whole month on one page ---------- */
+.pm{overflow:hidden}
+.pm .rt{min-height:0;height:100%}
+.pm .gr{min-height:0;grid-auto-rows:minmax(0,1fr)}
+.pm .d{min-height:0;overflow:hidden}
+.pm .gr .d>*:not(.rd):not(b){zoom:var(--k,1)}
+.pm .gr .d>b{zoom:var(--kn,1)}
+.pm:not(.L-top) .mh.hr{height:30mm}
+.pm:not(.L-top) .mt{font-size:17mm}
+.pm:not(.L-top) .rm{font-size:5mm;margin-top:.5mm}
+.pm:not(.L-top) .yr{font-size:11mm}
+.pm .ft{height:6mm;padding-top:1mm}
+
+/* ---------- side layout: header above a small photo, full-height calendar on the right ---------- */
+.pm.L-side .lc{width:82mm;flex:none;display:flex;flex-direction:column;position:relative;z-index:1;gap:4mm}
+.pm.L-side .lc .mh,.pm.L-side .lc .mh.hr{height:auto;display:flex;flex-direction:column;align-items:flex-start;gap:1.5mm;padding:0}
+.pm.L-side .lc .mt{font-size:19mm;line-height:1.25;white-space:nowrap;display:block}
+.pm.L-side .lc .me{display:block;font-size:5.5mm;margin-top:1mm}
+.pm.L-side .lc .rm{display:block;font-size:6mm;margin-top:1mm}
+.pm.L-side .lc .yr{font-size:13mm;align-self:flex-start;margin-top:1.5mm}
+.pm.L-side .lc .ph{width:100%;height:78mm;flex:none}
+.pm.L-side .lc .ft{height:auto;margin-top:auto;flex-direction:column;align-items:flex-start;gap:1.5mm;padding-top:0;font-size:3.4mm}
+.pm.L-side .lc .lg{font-size:2.6mm;line-height:1.7}
+.pm.L-side .rt{flex:1;min-width:0}
+.pm .wk span{font-size:4.4mm;padding:1.6mm 0}
+.pm .gr .rd{font-size:calc(2.5mm*var(--k,1))}
+.pm .gr .rd.rs{font-size:calc(2.1mm*var(--k,1))}
+.pm.L-side .lc .mh>div:first-child{display:flex;flex-direction:column;align-items:flex-start;gap:1.5mm;max-width:100%}
+.pm.L-side .lc .mt,.pm.L-side .lc .me,.pm.L-side .lc .rm{display:block;white-space:nowrap;width:max-content;max-width:none}
+.pm.L-side .lc .me{letter-spacing:.4mm;line-height:1.3}
+.pm.L-side .lc .rm{line-height:1.35}
+.pm.L-side .lc .ft{width:100%;box-sizing:border-box}
+.pm.L-side .lc .lg{width:100%;white-space:normal}
+.pm.L-side .lc .lg span{white-space:normal;display:inline-block;margin-right:2.5mm}
+.pm.L-side .lc .ft>span:last-child{max-width:100%}
 </style>
 </head>
 <body>
@@ -339,6 +413,12 @@ main{padding:26px 0}
   <div id="cats"></div>
   <label class="r" data-t="74">விரத நாட்கள் வகைகள்</label>
   <div id="vrs"></div>
+  <div id="pgBox" hidden>
+    <label class="r">🪔 தமிழ் பஞ்சாங்க விவரங்கள்</label>
+    <div class="chk"><input type="checkbox" id="pgc" checked><label for="pgc">கட்டங்களில்: வளர்/தேய்பிறை திதி, நட்சத்திரம், சுபம் / வாஸ்து / கரிநாள்</label></div>
+    <div class="chk"><input type="checkbox" id="pgp" checked><label for="pgp">ஒவ்வொரு மாதத்துக்கும் பஞ்சாங்க விவரப் பக்கம் சேர் (நோக்கு, சந்திராஷ்டமம் உட்பட)</label></div>
+    <p class="tip">⚠️ இவை வானியல் கணிதம் (திருக்கணிதம்) அடிப்படையிலானவை; வாக்கிய பஞ்சாங்கத்துடன் தமிழ் மாதப் பிறப்பு, திதி, நட்சத்திரம் ஆகியவை சில நாட்களில் ஒரு நாள் வரை வேறுபடலாம். சுபமுகூர்த்த நாட்கள் பொது விதிகளின் கணிப்பு மட்டுமே – அச்சிடும் முன் உங்கள் பஞ்சாங்கத்துடன் சரிபார்க்கவும்.</p>
+  </div>
   <label class="r" data-t="75">உங்கள் சொந்த நாட்கள் / நிகழ்வுகள்</label>
   <textarea id="hol" data-tp="1" placeholder="10-29 தீபாவளி&#10;2027-03-10 ரம்ஜான் (இந்த ஆண்டுக்கு மட்டும்)&#10;05-20 எங்கள் திருமண நாள்"></textarea>
   <p class="tip" data-t="76">வடிவம்: <b>மாதம்-நாள் பெயர்</b> (எல்லா ஆண்டுகளுக்கும்) அல்லது <b>ஆண்டு-மாதம்-நாள் பெயர்</b> (அந்த ஆண்டுக்கு மட்டும்). தீபாவளி, ரம்ஜான், பக்ரீத், விநாயகர் சதுர்த்தி போன்ற மாறும் தேதிகளை பஞ்சாங்கம் பார்த்து இங்கே சேர்க்கவும்.</p>
@@ -478,17 +558,79 @@ function easter(y){
   const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);
   return [Math.floor((h+l-7*m+114)/31),(h+l-7*m+114)%31+1];
 }
+/* ===== மாநில அரசு விடுமுறைகள் (மொழி → மாநிலம்) ===== */
+const HID={
+ny:["01-01","New Year's Day","ஆங்கிலப் புத்தாண்டு"],rep:["01-26","Republic Day","குடியரசு தினம்"],ind:["08-15","Independence Day","சுதந்திர தினம்"],gan:["10-02","Gandhi Jayanti","காந்தி ஜெயந்தி"],xms:["12-25","Christmas","கிறிஸ்துமஸ்"],may:["05-01","May Day","மே தினம்"],
+pon:["01-14","Thai Pongal","தைப்பொங்கல்"],mpo:["01-15","Mattu Pongal","மாட்டுப் பொங்கல்"],tvr:["01-15","Thiruvalluvar Day","திருவள்ளுவர் தினம்"],uzh:["01-16","Uzhavar Thirunal","உழவர் திருநாள்"],tny:["04-14","Tamil New Year","தமிழ்ப் புத்தாண்டு"],amb:["04-14","Ambedkar Jayanti","அம்பேத்கர் பிறந்தநாள்"],
+sank:["01-14","Makar Sankranti"],bhg:["01-13","Bhogi"],kan:["01-16","Kanuma"],vsu:["01-15","Vasi Uttarayan"],neta:["01-23","Netaji Jayanti"],siv:["02-19","Shivaji Jayanti"],mhd:["05-01","Maharashtra / Gujarat Day"],utk:["04-01","Utkal Divas"],kre:["11-01","Kannada Rajyotsava"],tgf:["06-02","Telangana Formation Day"],box:["12-26","Boxing Day"],bsk:["04-14","Baisakhi"],poi:["04-15","Poila Baisakh"],rab:["05-09","Rabindra Jayanti"],mmj:["01-02","Mannam Jayanthi"],bhs:["03-23","Bhagat Singh Martyrdom Day"],gtb:["11-24","Guru Teg Bahadur Martyrdom Day"],sng:["09-21","Sree Narayana Guru Samadhi"],pns:["04-14","Maha Vishuva (Pana) Sankranti"],vsh:["04-14","Vishu"],
+gf:["E-2","Good Friday","புனித வெள்ளி"],mt:["E-3","Maundy Thursday"],
+mil:["I3.12","Milad-un-Nabi","மீலாது நபி"],fit:["I10.1","Eid-ul-Fitr (Ramzan)","ரம்ஜான்"],adh:["I12.10","Bakrid (Eid-ul-Adha)","பக்ரீத்"],muh:["I1.10","Muharram","மொகரம்"],
+dwl:["L6.30.19","Diwali","தீபாவளி"],dpt:["L6.29.5","Deepavali","தீபாவளி"],nar:["L6.29.5","Naraka Chaturdashi"],bal:["L7.1.6","Balipratipada / Bestu Varas"],bhd:["L7.2.12","Bhai Dooj"],gnk:["L7.15.15","Guru Nanak Jayanti"],jag:["L7.9.12","Jagaddhatri Puja"],
+bud:["L1.15.15","Buddha Purnima"],mah:["L0.13.6","Mahavir Jayanti","மகாவீர் ஜெயந்தி"],hol:["L11.15.19~1","Holi"],dol:["L11.15.12","Dol Jatra / Holi"],sht:["L10.29.23","Maha Shivaratri"],ram:["L0.9.12","Ram Navami"],ugd:["L0.1.6","Ugadi / Gudi Padwa"],
+jan:["L4.23.23","Janmashtami","கிருஷ்ண ஜெயந்தி"],gch:["L5.4.12","Ganesh Chaturthi","விநாயகர் சதுர்த்தி"],nav:["L6.9.12","Mahanavami / Ayudha Puja","ஆயுத பூஜை"],dus:["L6.10.14","Dussehra / Vijayadashami","விஜயதசமி"],
+lak:["L6.15.15","Lakshmi Puja / Kumar Purnima"],val:["L6.15.15","Valmiki Jayanti"],mhl:["L5.30.6","Mahalaya Amavasya"],bth:["L5.30.6","Bathukamma begins (TG)"],dsp:["L6.7.12","Durga Puja – Saptami"],dsa:["L6.8.12","Durga Puja – Ashtami"],
+rth:["L3.2.8","Rath Yatra"],rak:["L4.15.12","Raksha Bandhan"],bas:["L10.5.9","Vasant Panchami / Saraswati Puja"],nua:["L5.5.9","Nuakhai"],bsv:["L1.3.12","Basava Jayanti"],ggs:["L9.7.12","Guru Gobind Singh Jayanti"],rav:["L10.15.15","Guru Ravidas Jayanti"],
+utr:["N21.C.C~-1","Uthradom"],onm:["N21.C.C","Thiruvonam (Onam)"],ton:["N21.C.C~1","Third Onam"],sgj:["N23.C.C","Sree Narayana Guru Jayanthi"],thp:["N7.1-10.2-25.14-16","Thaipusam","தைப்பூசம்"]};
+const IN="rep ind gan xms gf mil fit adh muh dwl gnk bud mah hol jan sht ram dus";
+const HST={
+ta:["Tamil Nadu","ny pon mpo tvr uzh rep thp tny amb mah gf may fit adh muh ind jan gch mil nav dus gan dpt xms"],
+hi:["Delhi / Hindi belt","rep sht hol ram mah gf amb bud fit adh muh ind jan rak dus gan dwl bhd gnk rav mil xms"],
+te:["Andhra Pradesh & Telangana","rep bhg sank kan sht hol ugd ram amb gf fit adh muh ind gch gan mhl bth dus dwl mil gnk xms box tgf"],
+kn:["Karnataka","rep sank sht ugd gf amb bsv may fit adh muh ind gch nav dus val kre nar bal dwl mil gan xms"],
+ml:["Kerala","ny mmj rep sht vsh mt gf may fit adh muh ind utr onm ton sng sgj gch nav dus mil gan xms"],
+mr:["Maharashtra","rep siv sht hol ugd ram mah gf amb mhd bud adh muh ind gch mil dus dwl bal gnk gan xms fit"],
+bn:["West Bengal","rep neta bas dol gf poi may rab fit adh muh ind jan mhl dsp dsa nav dus lak dwl bhd jag gnk gan xms mil bud"],
+gu:["Gujarat","sank vsu rep sht hol ram mah gf amb mhd fit adh muh ind jan nav dus dwl bal bhd gnk gan xms"],
+pa:["Punjab","rep rav sht hol bhs bsk amb ram mah gf fit adh muh ind jan dus val dwl gnk gtb gan ggs xms"],
+or:["Odisha","rep neta bas utk sht dol ram gf amb pns bud rth fit adh muh ind gch nua dsa nav dus lak dwl gan xms"]};
+const _hc={};
+function lunarDay(y,mi,t,h){
+  const R=regional(y,"mr"),S=R.seg;
+  for(let k=0;k<S.length;k++){const g=S[k];if(g.i!==mi||g.a)continue;const e=k+1<S.length?S[k+1].s:g.s+31;
+    for(let di=g.s;di<e;di++){const x=new Date(di*864e5);if(x.getUTCFullYear()!==y)continue;if(astro(y,x.getUTCMonth(),x.getUTCDate(),h).t===t)return di}}
+  return null;
+}
+function islamicDays(y,mo,dd){
+  const r=[];try{const f=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura",{day:"numeric",month:"numeric",timeZone:"UTC"});
+    for(let t=Date.UTC(y,0,1);t<Date.UTC(y+1,0,1);t+=864e5){const p=f.formatToParts(t-864e5),m=+p.find(x=>x.type==="month").value,d=+p.find(x=>x.type==="day").value;if(m===mo&&d===dd)r.push(t/864e5)}}catch(e){}
+  return r; /* இந்தியாவில் பிறை சவுதியை விட ஒரு நாள் தாமதம் → +1 */
+}
+function nkDay(y,k,s,e,t1,t2){
+  let best=null,bs=0;
+  for(let di=s;di<=e;di++){const x=new Date(di*864e5),M=x.getUTCMonth(),Dd=x.getUTCDate();let sc=0;
+    [6,12,18].forEach(h=>{const q=astro(y,M,Dd,h);if(Math.floor(q.nk/(360/27))===k&&(!t1||(q.t%30>=t1&&q.t%30<=t2||(t1<=15&&q.t===15))))sc++});
+    if(sc>bs){bs=sc;best=di}}
+  return best;
+}
+function stateHols(){
+  const key=YEAR+LANG[0];if(_hc[key])return _hc[key];
+  const st=HST[LANG[0]],ids=(st?st[1]:IN).split(" "),ta=LANG[0]==="ta",out=[],fd=di=>{const x=new Date(di*864e5);return[x.getUTCMonth()+1,x.getUTCDate()]};
+  ids.forEach(id=>{const h=HID[id];if(!h)return;let [sp,nm,tn]=h;const name=ta&&tn?tn:nm;let sh=0;
+    if(sp.includes("~")){[sp,sh]=sp.split("~");sh=+sh}
+    const c=sp[0],a=sp.slice(1).split("."),days=[];
+    if(c==="E"){const e=easter(YEAR);days.push(Date.UTC(YEAR,e[0]-1,e[1]+ +a[0])/864e5)}
+    else if(c==="I")islamicDays(YEAR,+a[0],+a[1]).forEach(d=>days.push(d+1));
+    else if(c==="L"){const d=lunarDay(YEAR,+a[0],+a[1],+a[2]);if(d!=null)days.push(d)}
+    else if(c==="N"){let s,e,t=a[3]?a[3].split("-").map(Number):[0,0];
+      if(a[1]==="C"){const g=regional(YEAR,"ml").seg.find(z=>z.n==="ചിങ്ങം"&&new Date(z.s*864e5).getUTCFullYear()===YEAR);if(!g)return;s=g.s;e=g.s+30}
+      else{const r=a[1].split("-").map(Number),q=a[2].split("-").map(Number);s=Date.UTC(YEAR,r[0]-1,r[1])/864e5;e=Date.UTC(YEAR,q[0]-1,q[1])/864e5}
+      const d=nkDay(YEAR,+a[0],s,e,t[0],t[1]);if(d!=null)days.push(d)}
+    else{const [m,d]=sp.split("-").map(Number);days.push(Date.UTC(YEAR,m-1,d)/864e5)}
+    days.forEach(d=>{const [m,dd]=fd(d+sh);out.push([m,dd,name])})});
+  return _hc[key]=out;
+}
+
 function events(){
   const o={}, on=k=>$("c-"+k).checked;
   const add=(m,d,t,c)=>{(o[m+"-"+d]=o[m+"-"+d]||[]).push({t,c})};
-  FIX.forEach(([c,md,t],i)=>{if(!on(c))return;const [m,d]=md.split("-"),n=D.fix?D.fix[i]:t;add(+m,+d,c==="b"?n+D.bd:n,c)});
-  if(on("f")){const e=easter(YEAR),g=new Date(YEAR,e[0]-1,e[1]-2);add(e[0],e[1],D.easter,"f");add(g.getMonth()+1,g.getDate(),D.gf,"f");}
+  FIX.forEach(([c,md,t],i)=>{if(!on(c)||c==="f")return;const [m,d]=md.split("-"),n=D.fix?D.fix[i]:t;add(+m,+d,c==="b"?n+D.bd:n,c)});
+  if(on("f"))stateHols().forEach(([m,d,t])=>add(m,d,t,"f"));
   if(on("v"))vrata(YEAR).forEach(([m,d,k])=>{if($("v-"+k).checked)add(m,d,VR[k],"v")});
   $("hol").value.split("\n").forEach(l=>{const r=l.trim().match(/^(?:(\d{4})[-\/.])?(\d{1,2})[-\/.](\d{1,2})\s+(.+)$/);if(r&&(!r[1]||+r[1]===YEAR))add(+r[2],+r[3],r[4],"f")});
   const P={f:0,v:1,b:2,e:3};Object.values(o).forEach(a=>a.sort((x,y)=>P[x.c]-P[y.c]));
   return o;
 }
-function legend(){return Object.keys(CATS).filter(k=>$("c-"+k).checked).map(k=>`<span><i style="background:${CATS[k][1]}"></i>${CATS[k][0]}</span>`).join("")}
+function legend(){return Object.keys(CATS).filter(k=>$("c-"+k).checked).map(k=>`<span><i style="background:${CATS[k][1]}"></i>${CATS[k][0]}</span>`).join("")+(PG?`<span><i style="background:#1a8f4a"></i>சுபமுகூர்த்தம்</span><span><i style="background:#1558b0"></i>வாஸ்து</span><span><i style="background:#c1121f"></i>கரிநாள்</span><span>வ.=வளர்பிறை தே.=தேய்பிறை · மே/கீ/ச=மேல்/கீழ்/சம நோக்கு</span>`:"")}
 const P={}, SEL={}, cl=(v,a,b)=>Math.min(b,Math.max(a,v));
 const defIdx=k=>k[0]==="m"?+k.slice(1)+($("mode").value==="combo"?1:0):0;
 const tcount=k=>P[k]?.tiles?.length||+$("cnt").value;
@@ -518,22 +660,30 @@ function tb(k,label){
 }
 const wrap=(k,label,html)=>`<div class="pw">${tb(k,label)}${html}</div>`;
 function monthPage(m,H){
-  const lay=$("lay").value, k="m"+m, dm=lay==="side"?[118,186]:lay==="top"?[277,74]:[297,210];
+  const lay=$("lay").value, k="m"+m, dm=lay==="side"?[82,78]:lay==="top"?[277,74]:[297,210];
   const first=new Date(YEAR,m,1).getDay(), n=new Date(YEAR,m+1,0).getDate();
-  let cells="";
+  let cells="";const RW=[];
   for(let i=0;i<first;i++)cells+=`<div class="d z"></div>`;
   for(let d=1;d<=n;d++){
-    const L=H[(m+1)+"-"+d]||[], sun=(first+d-1)%7===0;
-    cells+=`<div class="d ${sun?"sun":""} ${L.some(x=>x.c==="f")?"hol":""}"><b>${d}</b><div class="ev">${L.slice(0,4).map(x=>`<small style="color:${CATS[x.c][1]}">${x.t}</small>`).join("")}</div></div>`;
+    const L=H[(m+1)+"-"+d]||[], sun=(first+d-1)%7===0, di=Date.UTC(YEAR,m,d)/864e5, g=rgAt(di);
+    let rd="";
+    if(g){ if(g.s===di)rd=`<i class="rd rs">${g.n}</i>`;
+      else if(RG.solar)rd=`<i class="rd">${di-g.s+1}</i>`;
+      else if(RG.pk){const t=astro(YEAR,m,d,6).t;rd=`<i class="rd">${RG.pk[t>15?1:0]} ${(t-1)%15+1}</i>`} }
+    let pcell="";
+    if(PG){const I=dayInfo(m,d);pcell=`<div class="tt ${I.wx?"wx":"wn"}"><span class="s">${I.wx?"வ.":"தே."}</span><span class="f">${I.wx?"வளர்பிறை ":"தேய்பிறை "}</span>${I.tn}</div><div class="nk">${I.nk} · ${I.nkc}</div>${I.bd?`<div class="bg2">${I.bd}</div>`:""}`}
+    {const ri=Math.floor((first+d-1)/7),sc=4+L.slice(0,4).reduce((a,x)=>a+Math.ceil(x.t.length/14),0)+(PG?1.5:0);RW[ri]=Math.max(RW[ri]||0,sc)}
+    cells+=`<div class="d ${sun?"sun":""} ${L.some(x=>x.c==="f")?"hol":""}"><b>${d}</b>${rd}${pcell}<div class="ev">${L.slice(0,4).map(x=>`<small style="color:${CATS[x.c][1]}">${x.t}</small>`).join("")}</div></div>`;
   }
-  return wrap(k,TM[m],`<section class="page pm L-${lay} ${$("swap").checked?"rev":""} cs-${$("cell").value} bg-${$("bgp").value}" style="${pv(m)}">
+  return wrap(k,TM[m],`<section class="page pm L-${lay} ${PG?"pc":""} ${$("swap").checked?"rev":""} cs-${$("cell").value} bg-${$("bgp").value}" style="${pv(m)}">
     <b class="dc d1"></b><b class="dc d2"></b>
-    ${photo(k,$("shape").value,dm[0],dm[1])}
+    ${lay==="side"?`<div class="lc"><div class="mh hd ${rgHead(m)?"hr":""}"><div><span class="mt">${TM[m]}</span><span class="me">${LANG[0]==="en"?"":EM[m].toUpperCase()}</span>${rgHead(m)?`<span class="rm">${rgHead(m)}</span>`:""}</div><div class="yr">${YEAR}</div></div>
+      ${photo(k,$("shape").value,dm[0],dm[1])}<div class="ft hd"><span class="lg">${legend()}</span><span>${$("title").value}</span></div></div>`:photo(k,$("shape").value,dm[0],dm[1])}
     <div class="rt">
-      <div class="mh hd"><div><span class="mt">${TM[m]}</span><span class="me">${LANG[0]==="en"?"":EM[m].toUpperCase()}</span></div><div class="yr">${YEAR}</div></div>
+      ${lay==="side"?"":`<div class="mh hd ${rgHead(m)?"hr":""}"><div><span class="mt">${TM[m]}</span><span class="me">${LANG[0]==="en"?"":EM[m].toUpperCase()}</span>${rgHead(m)?`<span class="rm">${rgHead(m)}</span>`:""}</div><div class="yr">${YEAR}</div></div>`}
       <div class="wk">${WF.map(w=>`<span>${w}</span>`).join("")}</div>
-      <div class="gr">${cells}</div>
-      <div class="ft hd"><span class="lg">${legend()}</span><span>${$("title").value}</span></div>
+      <div class="gr" style="grid-template-rows:${RW.map(w=>`minmax(0,${w}fr)`).join(" ")}">${cells}</div>
+      ${lay==="side"?"":`<div class="ft hd"><span class="lg">${legend()}</span><span>${$("title").value}</span></div>`}
     </div></section>`);
 }
 function miniMonth(m,H){
@@ -544,7 +694,7 @@ function miniMonth(m,H){
     const L=H[(m+1)+"-"+d]||[], sun=(first+d-1)%7===0, f=L.some(x=>x.c==="f"), o=L.find(x=>x.c!=="f"&&x.c!=="v")||L.find(x=>x.c==="v");
     g+=`<span class="${f?"h":sun?"s":""} ${!f&&o?"u":""}" style="${!f&&o?`border-color:${CATS[o.c][1]}`:""}" ${L.length?`title="${L.map(x=>x.t).join(", ")}"`:""}>${d}</span>`;
   }
-  return `<div class="mc" style="${pv(m)}"><h4>${TM[m]}<em>${LANG[0]==="en"?"":EM[m]}</em></h4><div class="mg">${g}</div></div>`;
+  return `<div class="mc" style="${pv(m)}"><h4>${TM[m]}<em>${LANG[0]==="en"?"":EM[m]}</em></h4>${rgHead(m)?`<div class="rmm">${rgHead(m)}</div>`:""}<div class="mg">${g}</div></div>`;
 }
 function yearPage(H){
   const lay=$("lay").value, dm=lay==="side"?[78,126]:lay==="top"?[181,44]:[297,210];
@@ -558,13 +708,34 @@ function coverPage(){
     <div class="tx hd"><div class="big">${YEAR}</div><div class="nm">${D.cal}</div><div class="ttl">${$("title").value}</div></div>
     <div class="dots">${Array.from({length:12},(_,m)=>`<i style="background:${pv(m).match(/--a:([^;]+)/)[1]}"></i>`).join("")}</div></section>`);
 }
+function fitMonths(){
+  document.querySelectorAll(".pm .lc").forEach(lc=>{
+    const W=lc.getBoundingClientRect().width-8;
+    [[".mt",19,8],[".me",5.5,3],[".rm",6,3.2],[".yr",13,7]].forEach(([sel,max,min])=>{
+      const e=lc.querySelector(sel); if(!e)return;
+      let f=max; e.style.fontSize=f+"mm";
+      while(f>min && e.getBoundingClientRect().width>W){f=Math.round((f-0.25)*100)/100;e.style.fontSize=f+"mm"}
+    });
+  });
+  document.querySelectorAll(".pm .gr").forEach(g=>{
+    const cells=[...g.querySelectorAll(".d:not(.z)")];
+    const bad=()=>cells.some(c=>c.scrollHeight>c.clientHeight+1||c.scrollWidth>c.clientWidth+1);
+    let k=1.9; g.style.setProperty("--k",k); g.style.setProperty("--kn",1);
+    while(k>0.5&&bad()){k=Math.round((k-0.04)*100)/100;g.style.setProperty("--k",k)}
+    let n=1; g.style.setProperty("--kn",n);
+    while(n<2.4){const t=Math.round((n+0.1)*100)/100;g.style.setProperty("--kn",t);if(bad()){g.style.setProperty("--kn",n);break}n=t}
+  });
+}
+if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener("loadingdone",()=>fitMonths());
+window.addEventListener("load",()=>{fitMonths();setTimeout(fitMonths,800);setTimeout(fitMonths,2500)});
+window.addEventListener("beforeprint",()=>{try{fitMonths()}catch(e){}});
 function render(){
   YEAR=Math.min(2200,Math.max(1900,+$("year").value||2027)); document.title=YEAR+" "+D.cal;
   document.documentElement.style.setProperty("--hf",LANG[0]==="ta"?$("hf").value:$("hf").value.replace(/"Noto (?:Sans|Serif) Tamil"|"Mukta Malar"|"Latha"/g,`"${LANG[4]}"`));
-  const H=events(),md=$("mode").value; let h=$("cover").checked?coverPage():"";
+  RG=regional(YEAR,LANG[0]); PG=LANG[0]==="ta"&&$("pgc").checked; PGP=LANG[0]==="ta"&&$("pgp").checked; const H=events(),md=$("mode").value; let h=$("cover").checked?coverPage():"";
   if(md!=="month")h+=yearPage(H);
-  if(md!=="year")h+=Array.from({length:12},(_,m)=>monthPage(m,H)).join("");
-  $("pages").innerHTML=h; vars(); layoutAll();
+  if(md!=="year")h+=Array.from({length:12},(_,m)=>monthPage(m,H)+(PGP?panchPage(m,H):"")).join("");
+  $("pages").innerHTML=h; vars(); layoutAll(); fitMonths(); if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitMonths);
 }
 function vars(){
   const v=id=>+$(id).value, s=document.documentElement.style, a=v("sh")/100;
@@ -606,6 +777,120 @@ $("auto").onclick=()=>{
 };
 
 const TA_N={TM:TM.slice(),WF:WF.slice(),WS:WS.slice()};
+/* ===== பிராந்திய மாதங்கள் (Regional months) – சூரிய/சந்திர கணக்கீடு, IST ===== */
+const RGN={
+ ta:{k:"s",r:"sunset",n:["சித்திரை","வைகாசி","ஆனி","ஆடி","ஆவணி","புரட்டாசி","ஐப்பசி","கார்த்திகை","மார்கழி","தை","மாசி","பங்குனி"]},
+ ml:{k:"s",r:"noon",n:["മേടം","ഇടവം","മിഥുനം","കർക്കടകം","ചിങ്ങം","കന്നി","തുലാം","വൃശ്ചികം","ധനു","മകരം","കുംഭം","മീനം"]},
+ bn:{k:"s",r:"next",n:["বৈশাখ","জ্যৈষ্ঠ","আষাঢ়","শ্রাবণ","ভাদ্র","আশ্বিন","কার্তিক","অগ্রহায়ণ","পৌষ","মাঘ","ফাল্গুন","চৈত্র"]},
+ or:{k:"s",r:"day",n:["ବୈଶାଖ","ଜ୍ୟେଷ୍ଠ","ଆଷାଢ଼","ଶ୍ରାବଣ","ଭାଦ୍ରବ","ଆଶ୍ୱିନ","କାର୍ତ୍ତିକ","ମାର୍ଗଶିର","ପୌଷ","ମାଘ","ଫାଲ୍ଗୁନ","ଚୈତ୍ର"]},
+ pa:{k:"s",r:"day",n:["ਵੈਸਾਖ","ਜੇਠ","ਹਾੜ","ਸਾਉਣ","ਭਾਦੋਂ","ਅੱਸੂ","ਕੱਤਕ","ਮੱਘਰ","ਪੋਹ","ਮਾਘ","ਫੱਗਣ","ਚੇਤ"]},
+ hi:{k:"p",pk:["शु","कृ"],ad:"अधिक ",n:["चैत्र","वैशाख","ज्येष्ठ","आषाढ़","श्रावण","भाद्रपद","आश्विन","कार्तिक","मार्गशीर्ष","पौष","माघ","फाल्गुन"]},
+ mr:{k:"a",pk:["शु","कृ"],ad:"अधिक ",n:["चैत्र","वैशाख","ज्येष्ठ","आषाढ","श्रावण","भाद्रपद","आश्विन","कार्तिक","मार्गशीर्ष","पौष","माघ","फाल्गुन"]},
+ gu:{k:"a",pk:["સુ","વ"],ad:"અધિક ",n:["ચૈત્ર","વૈશાખ","જેઠ","અષાઢ","શ્રાવણ","ભાદરવો","આસો","કારતક","માગશર","પોષ","મહા","ફાગણ"]},
+ te:{k:"a",pk:["శు","బ"],ad:"అధిక ",n:["చైత్రం","వైశాఖం","జ్యేష్ఠం","ఆషాఢం","శ్రావణం","భాద్రపదం","ఆశ్వయుజం","కార్తీకం","మార్గశిరం","పుష్యం","మాఘం","ఫాల్గుణం"]},
+ kn:{k:"a",pk:["ಶು","ಕೃ"],ad:"ಅಧಿಕ ",n:["ಚೈತ್ರ","ವೈಶಾಖ","ಜ್ಯೇಷ್ಠ","ಆಷಾಢ","ಶ್ರಾವಣ","ಭಾದ್ರಪದ","ಆಶ್ವಯುಜ","ಕಾರ್ತಿಕ","ಮಾರ್ಗಶಿರ","ಪುಷ್ಯ","ಮಾಘ","ಫಾಲ್ಗುಣ"]}
+};
+let RG=null;
+const IST=5.5/24, JD0=2440587.5;
+function sunElong(t){ /* t = நாட்கள் (UTC, 1970 முதல்) → [நிரயன சூரிய தீர்க்கம், சந்திர-சூரிய கோணம்] */
+  const T=(t+JD0-2451545)/36525, S=Math.sin;
+  const D=(297.8501921+445267.1114034*T)*rad, M=(357.5291092+35999.0502909*T)*rad, Mp=(134.9633964+477198.8675055*T)*rad, F=(93.272095+483202.0175233*T)*rad;
+  const moon=nm(218.3164477+481267.88123421*T+6.288774*S(Mp)+1.274027*S(2*D-Mp)+.658314*S(2*D)+.213618*S(2*Mp)-.185116*S(M)-.114332*S(2*F)+.058793*S(2*D-2*Mp)+.057066*S(2*D-M-Mp)+.053322*S(2*D+Mp)+.045758*S(2*D-M)-.040923*S(M-Mp)-.03472*S(D)-.030383*S(M+Mp));
+  const sun=nm(280.46646+36000.76983*T+1.914602*S(M)+.019993*S(2*M)-.00569);
+  return [nm(sun-23.853-1.3969*T), nm(moon-sun)];
+}
+function crossings(a,b,fn,test){ /* fn(t) தொடர்ச்சியான மதிப்பு; test(prev,cur) true ஆனால் இடைவெளியில் இருபிரிவு தேடல் */
+  const out=[]; let pv=fn(a);
+  for(let t=a+.25;t<=b;t+=.25){
+    const v=fn(t);
+    if(test(pv,v)){let lo=t-.25,hi=t;for(let i=0;i<36;i++){const mid=(lo+hi)/2;if(test(pv,fn(mid)))hi=mid;else lo=mid}out.push(hi)}
+    pv=v;
+  }
+  return out;
+}
+function regional(y,code){
+  const c=RGN[code]; if(!c)return null;
+  const seg=[], day=t=>t+IST;
+  if(c.k==="s"){
+    const a=Date.UTC(y-1,11,1)/864e5, b=Date.UTC(y+1,1,1)/864e5;
+    const L=t=>Math.floor(sunElong(t)[0]/30);
+    let prev=L(a), pr=prev;
+    const ts=[]; /* ராசி மாறும் நேரங்கள் */
+    for(let t=a+.25;t<=b;t+=.25){const r=L(t);if(r!==pr){let lo=t-.25,hi=t;for(let i=0;i<36;i++){const mid=(lo+hi)/2;if(L(mid)===pr)lo=mid;else hi=mid}ts.push([r,hi]);pr=r}}
+    ts.forEach(([r,t])=>{const x=day(t),d=Math.floor(x),f=x-d;
+      const s=c.r==="sunset"?(f<18/24?d:d+1):c.r==="noon"?(f<13.2/24?d:d+1):c.r==="next"?d+1:d;
+      seg.push({s,n:c.n[r],a:false})});
+  }else{
+    const a=Date.UTC(y-1,9,1)/864e5, b=Date.UTC(y+1,2,20)/864e5;
+    const el=ang=>t=>((sunElong(t)[1]-ang+540)%360)-180;
+    const asc=(p,v)=>p<0&&v>=0&&v-p<90;
+    const nmn=crossings(a,b,el(0),asc).map(t=>({t,r:Math.floor(sunElong(t)[0]/30)}));
+    /* முதல் நாள் = சூரிய உதயத்தில் (≈6:00 IST) பிரதமை இருக்கும் நாள்; உதயத்துக்குள் முடியும் (க்ஷய) திதியெனில் தொடங்கும் நாள் */
+    const first=(t,ang)=>{const x=day(t),c=Math.ceil(x-.25);
+      let lo=t,hi=t+1.5;const g=u=>((sunElong(u)[1]-ang-12+540)%360)-180;
+      for(let i=0;i<30;i++){const mid=(lo+hi)/2;if(g(mid)<0)lo=mid;else hi=mid}
+      return day(hi)<c+.25?Math.floor(x):c};
+    if(c.k==="a"){
+      for(let i=0;i<nmn.length-1;i++)seg.push({s:first(nmn[i].t,0),i:(nmn[i].r+1)%12,n:c.n[(nmn[i].r+1)%12],a:nmn[i].r===nmn[i+1].r});
+    }else{
+      const full=crossings(a,b,el(180),asc);
+      full.forEach(f=>{const i=nmn.findIndex(m=>m.t>f);if(i<0||i>=nmn.length-1)return;
+        seg.push({s:first(f,180),n:c.n[(nmn[i].r+1)%12],a:nmn[i].r===nmn[i+1].r})});
+    }
+    seg.forEach(g=>{if(g.a)g.n=c.ad+g.n});
+  }
+  seg.sort((p,q)=>p.s-q.s);
+  return {solar:c.k==="s",seg,pk:c.pk};
+}
+function rgAt(di){let r=null;if(!RG)return null;for(const g of RG.seg){if(g.s<=di)r=g;else break}return r}
+function rgHead(m){
+  if(!RG)return "";
+  const a=Date.UTC(YEAR,m,1)/864e5,b=Date.UTC(YEAR,m+1,0)/864e5,o=[],g=rgAt(a);
+  if(g)o.push(g.n);RG.seg.forEach(s=>{if(s.s>a&&s.s<=b&&o[o.length-1]!==s.n)o.push(s.n)});
+  return o.join(" – ");
+}
+
+
+/* ===== தமிழ் பஞ்சாங்க விவரங்கள்: திதி, நட்சத்திரம், நோக்கு, கரிநாள், வாஸ்து, சுபமுகூர்த்தம், சந்திராஷ்டமம் ===== */
+const TT=["பிரதமை","துவிதியை","திருதியை","சதுர்த்தி","பஞ்சமி","சஷ்டி","சப்தமி","அஷ்டமி","நவமி","தசமி","ஏகாதசி","துவாதசி","திரயோதசி","சதுர்த்தசி"];
+const NKN=["அஸ்வினி","பரணி","கார்த்திகை","ரோகிணி","மிருகசீரிடம்","திருவாதிரை","புனர்பூசம்","பூசம்","ஆயில்யம்","மகம்","பூரம்","உத்திரம்","அஸ்தம்","சித்திரை","சுவாதி","விசாகம்","அனுஷம்","கேட்டை","மூலம்","பூராடம்","உத்திராடம்","திருவோணம்","அவிட்டம்","சதயம்","பூரட்டாதி","உத்திரட்டாதி","ரேவதி"];
+/* நோக்கு: 1 = மேல், 2 = கீழ், 0 = சம */
+const NKK=[0,2,2,1,0,1,0,1,2,2,2,1,0,0,0,2,0,0,2,2,1,1,1,1,2,1,0];
+const NKT=["சம நோக்கு","மேல் நோக்கு","கீழ் நோக்கு"], NKC=["ச","மே","கீ"];
+const RAS=["மேஷம்","ரிஷபம்","மிதுனம்","கடகம்","சிம்மம்","கன்னி","துலாம்","விருச்சிகம்","தனுசு","மகரம்","கும்பம்","மீனம்"];
+const KARI=[[6,15],[7,16,17],[1,6],[2,10,20],[2,9,28],[16,29],[6,20],[1,10,17],[6,9,11],[1,2,3,11,17],[15,16,17],[6,15,19]];
+const VAAS={0:10,1:21,3:11,4:6,6:11,7:8,9:12,10:22};
+let PG=false,PGP=false;
+const pcache={};
+const hm=h=>{h=((h%24)+24)%24;let m=Math.round(h*60),H=Math.floor(m/60)%24;return String(H).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
+function dayInfo(m,d){
+  const k=YEAR+"-"+m+"-"+d; if(pcache[k])return pcache[k];
+  const di=Date.UTC(YEAR,m,d)/864e5, g=rgAt(di), dn=g?di-g.s+1:0, mi=g?RGN.ta.n.indexOf(g.n):-1;
+  const a=astro(YEAR,m,d,6), b=astro(YEAR,m,d,30), t=a.t;
+  const nx=Math.floor(a.nk/(360/27))%27, r1=Math.floor(a.nk/30)%12, r2=Math.floor(b.nk/30)%12;
+  let tm=null; if(r1!==r2){let lo=6,hi=30;for(let i=0;i<22;i++){const mid=(lo+hi)/2;if(Math.floor(astro(YEAR,m,d,mid).nk/30)%12===r1)lo=mid;else hi=mid}tm=hi}
+  const n=(t-1)%15+1, wx=t<=15, wd=new Date(YEAR,m,d).getDay();
+  const kari=mi>=0&&KARI[mi].includes(dn), vas=mi>=0&&VAAS[mi]===dn;
+  const sub=mi>=0&&![3,5,8].includes(mi)&&[1,3,4,5].includes(wd)&&!kari
+    &&(wx?[2,3,5,7,10,11,13]:[2,3,5,7,10]).includes(n)&&[3,4,9,11,12,14,16,18,20,25,26].includes(nx);
+  const ch=RAS[(r1+5)%12]+(tm!==null?` (${hm(tm)} வரை) · ${RAS[(r2+5)%12]}`:"");
+  const bd=(sub?'<u class="b1">சுபம்</u>':"")+(vas?'<u class="b2">வாஸ்து</u>':"")+(kari?'<u class="b3">கரிநாள்</u>':"");
+  return pcache[k]={g,dn,mi,t,wx,tn:n===15?(wx?"பௌர்ணமி":"அமாவாசை"):TT[n-1],nk:NKN[nx],nkc:NKC[NKK[nx]],nkf:NKT[NKK[nx]],kari,vas,sub,ch,bd};
+}
+function panchPage(m,H){
+  const n=new Date(YEAR,m+1,0).getDate(); let rows="";
+  for(let d=1;d<=n;d++){
+    const I=dayInfo(m,d), L=H[(m+1)+"-"+d]||[], wd=new Date(YEAR,m,d).getDay();
+    const sp=(I.sub?'<u class="b1">சுபமுகூர்த்தம்</u>':"")+(I.vas?'<u class="b2">வாஸ்து நாள்</u>':"")+(I.kari?'<u class="b3">கரிநாள்</u>':"")+L.map(x=>`<span style="color:${CATS[x.c][1]}">${x.t}</span>`).join(" · ");
+    rows+=`<tr class="${wd===0?"sn":""} ${I.kari?"kr":I.sub?"sb":I.vas?"vs":""}"><td>${d}</td><td>${TA_N.WF[wd]}</td><td>${I.g?I.g.n+" "+I.dn:""}</td><td class="${I.wx?"wx":"wn"}">${I.wx?"வளர்பிறை":"தேய்பிறை"} · ${I.tn}</td><td>${I.nk}</td><td>${I.nkf}</td><td>${I.ch}</td><td class="sp">${sp}</td></tr>`;
+  }
+  return `<div class="pw"><div class="tb"><b>${TM[m]} பஞ்சாங்கம்</b></div><section class="page pg bg-${$("bgp").value}" style="${pv(m)}">
+    <div class="pgh hd"><span>${TM[m]} ${YEAR}</span><em>${rgHead(m)}</em></div>
+    <table class="pgt"><thead><tr><th>தேதி</th><th>கிழமை</th><th>தமிழ் நாள்</th><th>பிறை · திதி</th><th>நட்சத்திரம்</th><th>நோக்கு</th><th>சந்திராஷ்டமம் (ராசி)</th><th>சிறப்பு / நிகழ்வுகள்</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="pgf">திருக்கணித (வானியல் கணக்கீட்டு) முறை; வாக்கிய பஞ்சாங்கத்துடன் ஒரு நாள் வேறுபடலாம். திதி, நட்சத்திரம், சந்திராஷ்டமம் ஆகியவை சூரிய உதய நேரத்தை (காலை 6 மணி, IST) அடிப்படையாகக் கொண்டவை. சந்திராஷ்டமம்: அந்த நாளில் சந்திரன் ராசிக்கு 8-ஆம் இடத்தில் இருக்கும் ஜென்ம ராசி. சுபமுகூர்த்த நாள்: மாதம், கிழமை, திதி, நட்சத்திரம், கரிநாள் தவிர்ப்பு என்ற பொது விதிகளின் கணிப்பு (லக்னம், ஜாதகப் பொருத்தம் கணிக்கப்படவில்லை). முக்கிய காரியங்களுக்கு முன் பஞ்சாங்கம்/ஜோதிடரிடம் உறுதி செய்யவும்.</p>
+  </section></div>`;
+}
+
 /* ===== languages: choose first, then the calendar + panel follow ===== */
 const LANGS=[["ta","தமிழ்","Tamil","ta-IN","Noto Sans Tamil"],["en","English","English","en","Noto Sans"],["hi","हिन्दी","Hindi","hi-IN","Noto Sans Devanagari"],["te","తెలుగు","Telugu","te-IN","Noto Sans Telugu"],["kn","ಕನ್ನಡ","Kannada","kn-IN","Noto Sans Kannada"],["ml","മലയാളം","Malayalam","ml-IN","Noto Sans Malayalam"],["mr","मराठी","Marathi","mr-IN","Noto Sans Devanagari"],["bn","বাংলা","Bengali","bn-IN","Noto Sans Bengali"],["gu","ગુજરાતી","Gujarati","gu-IN","Noto Sans Gujarati"],["pa","ਪੰਜਾਬੀ","Punjabi","pa-IN","Noto Sans Gurmukhi"],["or","ଓଡ଼ିଆ","Odia","or-IN","Noto Sans Oriya"],["fr","Français","French","fr","Noto Sans"],["es","Español","Spanish","es","Noto Sans"],["de","Deutsch","German","de","Noto Sans"]];
 const UI={en:["Calendar Designer", "A4 Landscape • Your photos • Colourful designs", "📷 Choose photos / drag them here", "One or many photos – they alternate across the months", "Photos auto-arranged per page", "1 photo", "2 photos", "3 photos", "4 photos", "5 photos", "6 photos", "Photos are neatly arranged on each page automatically. Use <b>📁 Upload</b> / <b>➕ Photo</b> on each page's toolbar to add any number of photos to just that page.", "🎨 Design", "Year – choose any year", "Layout", "First page: full year + next 12 month pages", "12 month pages only", "Full year on a single page only", "Colour theme", "Rainbow (a different colour each month)", "Sunset", "Ocean blue", "Forest green", "Royal purple", "Rose", "Photo shape", "Rounded corners", "Arch", "Slanted", "Oval", "Leaf", "Add a cover page (before the year page)", "Photo on the right (side layout)", "Page layout", "Side photo", "Wide photo on top", "Full photo + glass card", "Cover style", "Full photo", "Half photo + colour panel", "Framed photo", "Date cell style", "Box", "Circle", "Line", "Filled box", "Background pattern", "None", "Dots", "Diagonal stripes", "Grid", "Rings", "Heading font", "Rounded (Baloo)", "Classic (Serif)", "Modern (Mukta)", "✨ Photo enhancement", "⚡ Auto enhance", "Brightness", "Contrast", "Saturation", "Sharpen", "Warmth", "Glow tint", "🖼️ Photo fitting (all pages)", "Each page has its own toolbar on top to adjust that page's photo: <b>drag to move</b>, zoom with the <b>mouse wheel</b> / ＋ − / slider, and pick another photo with ◀ ▶. The controls below apply only to pages you haven't adjusted individually.", "↺ Clear per-page changes", "Zoom", "Position ← →", "Position ↑ ↓", "✍️ Text", "Name / business / phone", "📌 Events", "What to show?", "Fasting-day types", "Your own days / events", "Format: <b>month-day name</b> (every year) or <b>year-month-day name</b> (that year only). Add moving dates such as Diwali, Eid, Bakrid or Vinayagar Chathurthi here after checking a panchang.", "⚠️ Amavasya, Pournami, Ekadashi, Pradosham and other fasting days are computed astronomically and may differ from the panchang by up to a day. Please verify before printing.", "🖨️ Save as PDF / Print", "In the print window: Destination → <b>Save as PDF</b>, Layout → <b>Landscape</b>, Paper → <b>A4</b>, Margins → <b>None</b>, tick <b>Background graphics</b>.", "📲 Install as app", "🔒 Privacy policy", "• Works offline after the first load.", "🔒 Privacy policy (summary)", "The photos you choose are processed <b>on your device only</b>; they are never sent to any server.", "No accounts, sign-in, ads or analytics tools.", "Closing the page discards your photos and changes; we store nothing.", "Google Fonts may be loaded for language fonts (your IP address is visible to Google); they are then cached for offline use.", "Read the full policy", "Close"],hi:["कैलेंडर डिज़ाइनर", "A4 लैंडस्केप • आपकी तस्वीरें • रंगीन डिज़ाइन", "📷 तस्वीरें चुनें / यहाँ खींचकर छोड़ें", "एक या कई तस्वीरें – महीनों में बारी-बारी से आएँगी", "प्रति पृष्ठ स्वतः लगने वाली तस्वीरें", "1 तस्वीर", "2 तस्वीरें", "3 तस्वीरें", "4 तस्वीरें", "5 तस्वीरें", "6 तस्वीरें", "हर पृष्ठ पर इतनी तस्वीरें अपने-आप सुंदर ढंग से लगेंगी। हर पृष्ठ के टूलबार में <b>📁 अपलोड</b> / <b>➕ तस्वीर</b> से उस पृष्ठ पर कितनी भी तस्वीरें जोड़ें।", "🎨 डिज़ाइन", "वर्ष (Year) – कोई भी वर्ष चुनें", "लेआउट", "पहला पृष्ठ: पूरा वर्ष + अगले 12 माह के पृष्ठ", "केवल 12 माह के पृष्ठ", "केवल एक पृष्ठ पर पूरा वर्ष", "रंग थीम", "इंद्रधनुष (हर माह अलग रंग)", "सूर्यास्त", "समुद्री नीला", "हरियाली", "शाही बैंगनी", "गुलाबी", "तस्वीर का आकार", "गोल कोने", "मेहराब", "तिरछा", "अंडाकार", "पत्ती", "मुखपृष्ठ जोड़ें (वर्ष पृष्ठ से पहले)", "तस्वीर दाईं ओर (साइड लेआउट में)", "पृष्ठ लेआउट", "साइड तस्वीर", "ऊपर चौड़ी तस्वीर", "पूरी तस्वीर + काँच कार्ड", "मुखपृष्ठ शैली", "पूरी तस्वीर", "आधी तस्वीर + रंग पट्टी", "फ्रेम वाली तस्वीर", "तारीख खाने की शैली", "डिब्बा", "गोला", "रेखा", "रंगीन डिब्बा", "पृष्ठभूमि पैटर्न", "कोई नहीं", "बिंदु", "तिरछी रेखाएँ", "ग्रिड", "छल्ले", "शीर्षक फ़ॉन्ट", "गोलाकार (Baloo)", "पारंपरिक (Serif)", "आधुनिक (Mukta)", "✨ तस्वीर सुधार", "⚡ स्वतः सुधारें", "चमक", "कॉन्ट्रास्ट", "रंग की गहराई", "शार्पनेस", "गर्माहट", "रंगीन आभा", "🖼️ तस्वीर बैठाना (सभी पृष्ठ)", "हर पृष्ठ के ऊपर टूलबार से उसकी तस्वीर अलग से बदलें: <b>खींचकर खिसकाएँ</b>, <b>माउस व्हील</b> / ＋ − / स्लाइडर से ज़ूम करें, ◀ ▶ से दूसरी तस्वीर चुनें। नीचे की सेटिंग केवल उन पृष्ठों पर लागू होती हैं जिन्हें अलग से नहीं बदला गया।", "↺ पृष्ठवार बदलाव हटाएँ", "ज़ूम", "स्थान ← →", "स्थान ↑ ↓", "✍️ पाठ", "नाम / संस्था / फ़ोन", "📌 आयोजन", "क्या दिखाना है?", "व्रत दिनों के प्रकार", "आपके अपने दिन / आयोजन", "प्रारूप: <b>माह-दिन नाम</b> (हर वर्ष) या <b>वर्ष-माह-दिन नाम</b> (केवल उसी वर्ष)। दीपावली, ईद, बकरीद, गणेश चतुर्थी जैसी बदलने वाली तारीखें पंचांग देखकर यहाँ जोड़ें।", "⚠️ अमावस्या, पूर्णिमा, एकादशी, प्रदोष जैसे व्रत-दिन खगोलीय गणना से अपने-आप आते हैं; पंचांग से एक दिन तक अंतर हो सकता है। छापने से पहले जाँच लें।", "🖨️ PDF सहेजें / प्रिंट करें", "प्रिंट विंडो में: Destination → <b>Save as PDF</b>, Layout → <b>Landscape</b>, Paper → <b>A4</b>, Margins → <b>None</b>, <b>Background graphics</b> ✔ चुनें।", "📲 ऐप की तरह इंस्टॉल करें", "🔒 गोपनीयता नीति", "• पहली बार खुलने के बाद ऑफ़लाइन भी चलता है।", "🔒 गोपनीयता नीति (सारांश)", "आपकी चुनी तस्वीरें <b>केवल आपके डिवाइस पर</b> प्रोसेस होती हैं; किसी सर्वर को नहीं भेजी जातीं।", "कोई खाता, लॉगिन, विज्ञापन या एनालिटिक्स टूल नहीं।", "पृष्ठ बंद करने पर तस्वीरें और बदलाव मिट जाते हैं; हम कुछ भी सहेजते नहीं।", "भाषा के फ़ॉन्ट के लिए Google Fonts लोड हो सकते हैं (आपका IP पता Google को दिख सकता है); बाद में वे ऑफ़लाइन के लिए सहेजे जाते हैं।", "पूरी नीति पढ़ें", "बंद करें"]};
@@ -631,7 +916,7 @@ function setLang(c){
   Object.keys(CATS).forEach(k=>{CATS[k][0]=D.cat[k];const l=document.querySelector(`label[for="c-${k}"]`);if(l)l.textContent=D.cat[k]});
   Object.assign(VR,D.vr);Object.keys(VR).forEach(k=>{const l=document.querySelector(`label[for="v-${k}"]`);if(l)l.textContent=VR[k]});
   $("presets").innerHTML=Object.keys(PRESETS).map((k,i)=>`<button data-k="${k}">${D.pre[i]}</button>`).join("");
-  applyUI(); $("lbn").textContent=LANG[1];
+  applyUI(); $("lbn").textContent=LANG[1]; $("pgBox").hidden=LANG[0]!=="ta";
   const id="f-"+LANG[4].replace(/ /g,"_");
   if(!document.getElementById(id)){const k=document.createElement("link");k.id=id;k.rel="stylesheet";k.href="https://fonts.googleapis.com/css2?family="+LANG[4].replace(/ /g,"+")+":wght@400;600;700;800&display=swap";document.head.appendChild(k)}
   document.documentElement.style.setProperty("--lf",`"${LANG[4]}","Noto Sans Tamil","Nirmala UI",system-ui,sans-serif`);
@@ -651,7 +936,7 @@ function initLang(){
 $("presets").onclick=e=>{const k=e.target.dataset.k;if(k)setVals(PRESETS[k])};
 $("cats").innerHTML=Object.entries(CATS).map(([k,v])=>`<div class="chk"><input type="checkbox" id="c-${k}" checked><label for="c-${k}" style="border-left:4px solid ${v[1]};padding-left:6px">${v[0]}</label></div>`).join("");
 $("vrs").innerHTML=Object.entries(VR).map(([k,v])=>`<div class="chk"><input type="checkbox" id="v-${k}" checked><label for="v-${k}">${v}</label></div>`).join("");
-document.querySelectorAll("#cats input,#vrs input").forEach(c=>c.onchange=render);
+document.querySelectorAll("#cats input,#vrs input,#pgBox input").forEach(c=>c.onchange=render);
 $("year").oninput=render;
 ["mode","theme","shape","cover","swap","lay","cell","bgp","hf","cv","cnt"].forEach(id=>$(id).onchange=render);
 ["title","hol"].forEach(id=>$(id).oninput=render);
